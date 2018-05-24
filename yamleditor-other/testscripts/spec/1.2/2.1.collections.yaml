@@ -1,0 +1,47 @@
+# Examples originally from http://yaml.org/spec/1.2/spec.html
+
+---
+# 2.1 Collections
+--- 
+
+# Example 2.1
+- Mark McGwire
+- Sammy Sosa
+- Ken Griffey
+
+# Example 2.2
+hr:  65    # Home runs
+avg: 0.278 # Batting average
+rbi: 147   # Runs Batted In
+
+# Example 2.3
+american:
+  - Boston Red Sox
+  - Detroit Tigers
+  - New York Yankees
+national:
+  - New York Mets
+  - Chicago Cubs
+  - Atlanta Braves
+  
+# Example 2.4
+-
+  name: Mark McGwire
+  hr:   65
+  avg:  0.278
+-
+  name: Sammy Sosa
+  hr:   63
+  avg:  0.288 
+  
+# Example 2.5. Sequence of Sequences
+- [name        , hr, avg  ]
+- [Mark McGwire, 65, 0.278]
+- [Sammy Sosa  , 63, 0.288]
+  
+# Example 2.6. Mapping of Mappings
+Mark McGwire: {hr: 65, avg: 0.278}
+Sammy Sosa: {
+    hr: 63,
+    avg: 0.288
+  }

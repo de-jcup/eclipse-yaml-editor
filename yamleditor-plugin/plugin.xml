@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          KEYWORDS                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension point="org.eclipse.ui.keywords">
+     <keyword
+   		id="yamleditor.preferences.keyword.yaml"
+   		label="yaml">
+     </keyword>
+      <keyword
+   		id="yamleditor.preferences.keyword.color"
+   		label="color">
+     </keyword>
+     <keyword
+   		id="yamleditor.preferences.keyword.editor"
+   		label="editor">
+     </keyword>
+     <keyword
+   		id="yamleditor.preferences.keyword.validation"
+   		label="validation">
+     </keyword>
+    
+   </extension>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          EDITOR                                      -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+      		name="Yaml Editor"
+            extensions="yaml,yml"
+            icon="icons/yaml-editor.png"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="de.jcup.yamleditor.YamlEditor"
+            id="yamleditor.editors.YamlEditor">
+      </editor>
+   </extension>
+   
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          MARKER                          			 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
+   <extension 
+   		id="de.jcup.yamleditor.script.problem"
+    	point="org.eclipse.core.resources.markers"
+    	name="Yamleditor script problem">
+        <super type="org.eclipse.core.resources.problemmarker"/>
+        <super type="org.eclipse.core.resources.textmarker"/>
+        <persistent value="false"/>
+    </extension>
+   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          CONTEXT                                     -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension point="org.eclipse.ui.contexts">
+	  <context
+	        name="Yaml context"
+	        description="Editing Yaml files"
+	        parentId="org.eclipse.ui.textEditorScope"
+	        id="yamleditor.editors.YamlEditor.context">
+	        
+	  </context>
+   </extension>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          COMMANDS                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->^
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            description="Yaml editor"
+            id="yamleditor.commands.category"
+            name="Yaml editor">
+      </category>
+   </extension>
+   
+   <extension point="org.eclipse.ui.commands">
+   	   <command
+            name="Quick outline"
+            description="Show quick outline dialog"
+            categoryId="yamleditor.commands.category"
+            id="yamleditor.editor.commands.quickoutline">
+      </command>
+      <command
+      		name="Move column marker to current caret position"
+      		description="Sets column marker line to current caret position"
+      		categoryId="yamleditor.commands.category"
+      		id="yamleditor.editor.commands.movecolumnline">
+      </command>
+      <command
+            name="Toggle comment"
+            description="Toggle comment in selected line(s)"
+            categoryId="yamleditor.commands.category"
+            id="yamleditor.editor.commands.source.toggleComment">
+      </command>
+      <command
+            name="Goto matching bracket"
+            description="Goto matching bracket inside gradle document"
+            categoryId="yamleditor.commands.category"
+            id="yamleditor.editor.commands.gotomatchingbracket">
+      </command>
+	</extension>
+	<extension point="org.eclipse.ui.handlers">
+	 <handler
+            commandId="yamleditor.editor.commands.quickoutline"
+            class="de.jcup.yamleditor.handlers.OpenQuickOutlineHandler">
+      </handler>
+      <handler
+            commandId="yamleditor.editor.commands.source.toggleComment"
+            class="de.jcup.yamleditor.handlers.ToggleCommentHandler">
+      </handler>
+       <handler
+            commandId="yamleditor.editor.commands.gotomatchingbracket"
+            class="de.jcup.yamleditor.handlers.GotoMatchingBracketHandler">
+      </handler>
+        <handler
+      		commandId="yamleditor.editor.commands.movecolumnline"
+      		class="de.jcup.yamleditor.handlers.MoveColumnLinesHandler">
+      </handler>
+    </extension> 
+    
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          KEY BINDING                                 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension point="org.eclipse.ui.bindings">
+   		<key
+            sequence="M1+O"
+            contextId="yamleditor.editors.YamlEditor.context"
+            commandId="yamleditor.editor.commands.quickoutline"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+		<key
+            sequence="M1+7"
+            contextId="yamleditor.editors.YamlEditor.context"
+            commandId="yamleditor.editor.commands.source.toggleComment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+		<key
+            sequence="M1+M2+P"
+            contextId="yamleditor.editors.YamlEditor.context"
+            commandId="yamleditor.editor.commands.gotomatchingbracket"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+		<key
+            sequence="F3"
+            contextId="yamleditor.editors.YamlEditor.context"
+            commandId="yamleditor.editor.commands.movecolumnline"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+    </extension> 
+    
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          MENU                                 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <extension point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:yamleditor.editors.YamlEditor.context?after=additions">
+         <command
+               commandId="yamleditor.editor.commands.quickoutline"
+               >
+         </command>
+          <command commandId="yamleditor.editor.commands.movecolumnline">
+            </command>
+      </menuContribution>
+      
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=edit">
+            
+         <menu
+               id="yamleditor.editor.menu.sourceMenu"
+               label="Source"
+               mnemonic="S"
+               >
+               <visibleWhen checkEnabled="true">
+                     <with variable="activeEditor">
+                     	<instanceof
+                            value="de.jcup.yamleditor.YamlEditor"/>
+                     </with>
+               </visibleWhen>
+            <command commandId="yamleditor.editor.commands.movecolumnline">
+            </command>
+            <command commandId="yamleditor.editor.commands.source.toggleComment">
+            </command>
+         </menu>
+      </menuContribution>
+      
+      </extension> 
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          PREFERENCES                                 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+      point = "org.eclipse.ui.preferencePages">
+      <page
+         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage"
+         class="de.jcup.yamleditor.preferences.YamlEditorPreferencePage"
+         name="Yaml Editor"
+         >
+         <keywordReference
+               id="yamleditor.preferences.keyword.yaml">
+         </keywordReference>
+          <keywordReference
+               id="yamleditor.preferences.keyword.editor">
+         </keywordReference>
+      </page>
+      <page
+         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorSyntaxColorPreferencePage"
+         class="de.jcup.yamleditor.preferences.YamlEditorSyntaxColorPreferencePage"
+         name="Syntax coloring"
+         category="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage">
+         <keywordReference
+               id="yamleditor.preferences.keyword.yaml">
+         </keywordReference>
+          <keywordReference
+               id="yamleditor.preferences.keyword.color">
+         </keywordReference>
+      </page>
+    </extension>
+    <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="de.jcup.yamleditor.preferences.YamlEditorPreferenceInitializer">
+      </initializer>
+   </extension>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          MARKER                          			 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
+   <extension 
+   		id="de.jcup.yamleditor.parse.error"
+    	point="org.eclipse.core.resources.markers"
+    	name="Yaml editor parse error">
+        <super type="org.eclipse.core.resources.problemmarker"/>
+        <super type="org.eclipse.core.resources.textmarker"/>
+        <persistent value="true"/>
+    </extension>
+    
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          HELP                                         -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="toc.xml">
+      </toc>
+      <toc
+            file="EditorToc.xml"
+            primary="true">
+      </toc>
+   </extension>
+   
+</plugin>

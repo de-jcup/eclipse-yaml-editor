@@ -1,0 +1,79 @@
+# Examples originally from http://yaml.org/spec/1.2/spec.html
+
+---
+# 2.2. Structures
+--- 
+
+#Example 2.7.  Two Documents in a Stream (each with a leading comment) 
+
+# Ranking of 1998 home runs
+---
+- Mark McGwire
+- Sammy Sosa
+- Ken Griffey
+
+# Team ranking
+---
+- Chicago Cubs
+- St Louis Cardinals
+
+
+# Example 2.8.  Play by Play Feed from a Game 
+
+---
+time: 20:03:20
+player: Sammy Sosa
+action: strike (miss)
+...
+---
+time: 20:03:47
+player: Sammy Sosa
+action: grand slam
+...
+
+# Example 2.9  Single Document with Two Comments
+
+---
+hr: # 1998 hr ranking
+  - Mark McGwire
+  - Sammy Sosa
+rbi:
+  # 1998 rbi ranking
+  - Sammy Sosa
+  - Ken Griffey
+  
+
+# Example 2.10.  Node for “Sammy Sosa” appears twice in this document 
+---
+hr:
+  - Mark McGwire
+  # Following node labeled SS
+  - &SS Sammy Sosa
+rbi:
+  - *SS # Subsequent occurrence
+  - Ken Griffey
+  
+
+# Example 2.11. Mapping between Sequences
+
+? - Detroit Tigers
+  - Chicago cubs
+:
+  - 2001-07-23
+
+? [ New York Yankees,
+    Atlanta Braves ]
+: [ 2001-07-02, 2001-08-12,
+    2001-08-14 ]
+
+# Example 2.12. Compact Nested Mapping
+---
+# Products purchased
+- item    : Super Hoop
+  quantity: 1
+- item    : Basketball
+  quantity: 4
+- item    : Big Shoes
+  quantity: 1
+  
+

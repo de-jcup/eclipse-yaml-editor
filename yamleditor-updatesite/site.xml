@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/de.jcup.yamleditor_0.1.0.jar" id="de.jcup.yamleditor" version="0.1.0"/>
+</site>
