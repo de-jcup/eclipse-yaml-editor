@@ -34,6 +34,7 @@
             icon="icons/yaml-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.jcup.yamleditor.YamlEditor"
+            default="true"
             id="yamleditor.editors.YamlEditor">
       </editor>
    </extension>
@@ -44,7 +45,7 @@
    <extension 
    		id="de.jcup.yamleditor.script.problem"
     	point="org.eclipse.core.resources.markers"
-    	name="Yamleditor script problem">
+    	name="Yamleditor file problem">
         <super type="org.eclipse.core.resources.problemmarker"/>
         <super type="org.eclipse.core.resources.textmarker"/>
         <persistent value="false"/>

@@ -75,6 +75,7 @@ import de.jcup.yamleditor.outline.YamlEditorTreeContentProvider;
 import de.jcup.yamleditor.outline.YamlQuickOutlineDialog;
 import de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants;
 import de.jcup.yamleditor.preferences.YamlEditorPreferences;
+import de.jcup.yamleditor.script.YamlError;
 import de.jcup.yamleditor.script.YamlLabel;
 import de.jcup.yamleditor.script.YamlScriptModel;
 import de.jcup.yamleditor.script.YamlScriptModelBuilder;
@@ -173,13 +174,25 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		return IMarker.SEVERITY_INFO;
 	}
 
-	private void addErrorMarkers(YamlScriptModel model) {
+	private void addErrorMarkers(YamlScriptModel model, int severity) {
 		if (model == null) {
 			return;
 		}
 		IDocument document = getDocument();
-		if (document==null){
+		if (document == null) {
 			return;
+		}
+		Collection<YamlError> errors = model.getErrors();
+		for (YamlError error : errors) {
+			int startPos = error.getStart();
+			int line;
+			try {
+				line = document.getLineOfOffset(startPos);
+			} catch (BadLocationException e) {
+				EclipseUtil.logError("Cannot get line offset for " + startPos, e);
+				line = 0;
+			}
+			YamlEditorUtil.addScriptError(this, line, error, severity);
 		}
 
 	}
@@ -396,7 +409,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 				getOutlinePage().rebuild(model);
 
 				if (model.hasErrors()) {
-					addErrorMarkers(model);
+					addErrorMarkers(model, IMarker.SEVERITY_ERROR);
 				}
 			}
 		});

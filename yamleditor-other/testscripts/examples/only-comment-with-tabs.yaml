@@ -1,0 +1,3 @@
+# This line contains	2	tabs inside which is not allowed in a YAML file.
+
+#			Another one with tabs...

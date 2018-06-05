@@ -21,8 +21,6 @@ import java.util.List;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 
-import de.jcup.yamleditor.AdaptedFromEGradle;
-
 /**
  * Unpersisted marker helper is a helper object for markers. "Unpersisted",
  * because the created markers are recognized and added to a list. So they can
@@ -60,14 +58,14 @@ public class UnpersistedMarkerHelper extends AbstractMarkerHelper {
 		for (IMarker marker : workingCopy) {
 			String type = null;
 			boolean markerExists = marker.exists();
-					
-			if (markerExists){
+
+			if (markerExists) {
 				try {
 					type = marker.getType();
 				} catch (CoreException e) {
-					markerExists=false;
+					markerExists = false;
 				}
-				
+
 				if (IMarker.TASK.equals(type)) {
 					/* tasks are not deleted */
 					continue;
@@ -77,7 +75,8 @@ public class UnpersistedMarkerHelper extends AbstractMarkerHelper {
 			if (!markerExists) {
 				/*
 				 * means marker.getType() failed, because marker does not exist
-				 * any more. This can happen when a marker is removed manually on ui.
+				 * any more. This can happen when a marker is removed manually
+				 * on ui.
 				 */
 				continue;
 			}

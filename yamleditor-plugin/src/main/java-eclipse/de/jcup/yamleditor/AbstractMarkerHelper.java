@@ -26,9 +26,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 
-import de.jcup.yamleditor.AdaptedFromEGradle;
-import de.jcup.yamleditor.SimpleStringUtils;
-
 @AdaptedFromEGradle
 abstract class AbstractMarkerHelper {
 	protected String markerType;
@@ -59,13 +56,9 @@ abstract class AbstractMarkerHelper {
 		return null;
 	}
 
-	public void createErrorMarker(IResource resource, String message, int lineNumber) throws CoreException {
-		createErrorMarker(resource, message, lineNumber, -1, -1);
-	}
-
-	public void createErrorMarker(IResource resource, String message, int lineNumber, int charStart, int charEnd)
+	public void createScriptMarker(int severity, IResource resource, String message, int lineNumber, int charStart, int charEnd)
 			throws CoreException {
-		createMarker(resource, message, lineNumber, markerType, IMarker.SEVERITY_ERROR, charStart, charEnd);
+		createMarker(resource, message, lineNumber, markerType, severity, charStart, charEnd);
 	}
 
 	private void createMarker(IResource resource, String message, int lineNumber, String markerType, int severity,

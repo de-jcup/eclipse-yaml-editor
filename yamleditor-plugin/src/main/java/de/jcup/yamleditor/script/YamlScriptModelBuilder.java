@@ -37,6 +37,13 @@ public class YamlScriptModelBuilder {
 		 */
 		StringBuilder labelSb = null;
 		YamlscriptContext context = new YamlscriptContext();
+		int errorPos=0;
+		for (char c : inspect.toCharArray()) {
+			if (c=='\t'){
+				model.errors.add(new YamlError(errorPos, errorPos+1, "Found a tab character! This is not allowed in YAML files! You must replace it with spaces!"));
+			}
+			errorPos++;
+		}
 		for (char c : inspect.toCharArray()) {
 			if (c == '\n' || c == '\r') {
 				/* terminate search - got the label or none*/

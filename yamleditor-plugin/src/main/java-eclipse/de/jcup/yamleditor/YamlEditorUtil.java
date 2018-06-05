@@ -15,6 +15,8 @@
  */
 package de.jcup.yamleditor;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -22,6 +24,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 
 import de.jcup.yamleditor.preferences.YamlEditorPreferences;
+import de.jcup.yamleditor.script.YamlError;
 
 public class YamlEditorUtil {
 
@@ -29,6 +32,9 @@ public class YamlEditorUtil {
 		return YamlEditorPreferences.getInstance();
 	}
 
+	private static UnpersistedMarkerHelper scriptProblemMarkerHelper = new UnpersistedMarkerHelper(
+			"de.jcup.yamleditor.script.problem");
+	
 	public static void logInfo(String info) {
 		getLog().log(new Status(IStatus.INFO, YamlEditorActivator.PLUGIN_ID, info));
 	}
@@ -49,7 +55,35 @@ public class YamlEditorUtil {
 		if (input == null) {
 			return;
 		}
+		IResource editorResource = input.getAdapter(IResource.class);
+		if (editorResource == null) {
+			return;
+		}
+		scriptProblemMarkerHelper.removeMarkers(editorResource);
+	}
 
+	public static void addScriptError(IEditorPart editor, int line, YamlError error, int severity) {
+		if (editor == null) {
+			return;
+		}
+		if (error == null) {
+			return;
+		}
+
+		IEditorInput input = editor.getEditorInput();
+		if (input == null) {
+			return;
+		}
+		IResource editorResource = input.getAdapter(IResource.class);
+		if (editorResource == null) {
+			return;
+		}
+		try {
+			scriptProblemMarkerHelper.createScriptMarker(severity, editorResource, error.getMessage(), line, error.getStart(),
+					+ error.getEnd());
+		} catch (CoreException e){
+			logError("Was not able to add error markers", e);
+		}
 	}
 
 	private static ILog getLog() {

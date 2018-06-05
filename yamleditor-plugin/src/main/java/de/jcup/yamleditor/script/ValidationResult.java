@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Albert Tregnaghi
+ * Copyright 2017 Albert Tregnaghi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,22 @@
  * and limitations under the License.
  *
  */
-package de.jcup.yamleditor.script;
+ package de.jcup.yamleditor.script;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-public class YamlScriptModel {
-
-	private List<YamlLabel> labels;
-	Collection<YamlError> errors = new ArrayList<>();
+public interface ValidationResult {
 	
-	public YamlScriptModel() {
-		labels=new ArrayList<>();
-	}
-	
-	public List<YamlLabel> getLabels() {
-		return labels;
+	public enum Type{
+		ERROR, 
+		
+		WARNING
 	}
 
-	public boolean hasErrors() {
-		return errors.size()>0;
-	}
-	
-	public Collection<YamlError> getErrors() {
-		return errors;
-	}
+	int getStart();
 
+	int getEnd();
+
+	String getMessage();
+	
+	Type getType();
+	
 }

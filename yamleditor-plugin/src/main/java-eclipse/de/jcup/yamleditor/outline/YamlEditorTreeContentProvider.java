@@ -27,7 +27,7 @@ import de.jcup.yamleditor.script.YamlScriptModel;
 
 public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 
-	private static final String YAML_SCRIPT_CONTAINS_ERRORS = "Yaml script contains errors.";
+	private static final String YAML_SCRIPT_CONTAINS_ERRORS = "Yaml file contains errors.";
 	/* FIXME Albert: 2018-23-05 support outline data*/
 	private static final String YAML_SCRIPT_DOES_NOT_CONTAIN_ANY_LABELS = "Yaml outline not available in alpha version - will come in future";
 	private static final Object[] RESULT_WHEN_EMPTY = new Object[] { YAML_SCRIPT_DOES_NOT_CONTAIN_ANY_LABELS };
