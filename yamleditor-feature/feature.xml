@@ -2,7 +2,7 @@
 <feature
       id="de.jcup.yamleditor"
       label="Yaml Editor"
-      version="0.1.0"
+      version="0.2.0"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/yaml-editor">
