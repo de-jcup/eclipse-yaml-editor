@@ -26,6 +26,7 @@ public enum YamlEditorSyntaxColorPreferenceConstants implements PreferenceIdenti
 	COLOR_EXTERNAL_COMMAND("colorCommands","External commands"),
 	COLOR_KNOWN_VARIABLES("colorKnownVariables","Variables"),
 	COLOR_MAPPINGS("colorMappings","Mappings"),
+	COLOR_LISTS("colorList","Lists"),
 	COLOR_BLOCK("colorBlock","Block"),
 	
 	;

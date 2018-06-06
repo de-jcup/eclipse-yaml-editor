@@ -37,6 +37,8 @@ public enum YamlDocumentIdentifiers implements YamlDocumentIdentifier {
 	
 	MAPPINGS,
 	
+	LISTS,
+	
 	BLOCK_KEYWORD,
 	;
 

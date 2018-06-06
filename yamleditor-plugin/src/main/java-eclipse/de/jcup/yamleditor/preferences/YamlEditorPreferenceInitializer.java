@@ -70,6 +70,7 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		preferences.setDefaultColor(COLOR_EXTERNAL_COMMAND, TASK_DEFAULT_RED);
 		preferences.setDefaultColor(COLOR_KNOWN_VARIABLES, DARK_GRAY);
 		preferences.setDefaultColor(COLOR_MAPPINGS, DARK_BLUE);
+		preferences.setDefaultColor(COLOR_LISTS, RED);
 		
 		preferences.setDefaultColor(COLOR_BLOCK, GRAY);
 		

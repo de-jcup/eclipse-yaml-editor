@@ -45,6 +45,7 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		IToken comment = createToken(COMMENT);
 		IToken doubleString = createToken(DOUBLE_STRING);
 		IToken mappings = createToken(MAPPINGS);
+		IToken list = createToken(LISTS);
 		IToken yamlBuildIn = createToken(YAML_KEYWORD);
 
 		IToken knownVariables = createToken(KNOWN_VARIABLES);
@@ -52,11 +53,14 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		IToken yamlExternalCommands = createToken(YAML_COMMAND);
 
 		List<IPredicateRule> rules = new ArrayList<>();
-		rules.add(new YamlMappingRule(mappings));
-		rules.add(new YamlVariableRule(variables));
+//		rules.add(new YamlOldSimpleMappingRule(mappings));
 		rules.add(new SingleLineRule("#", "", comment, (char) -1, true));
 		rules.add(new YamlStringRule("\"", "\"", doubleString));
 		rules.add(new SingleLineRule("---", "", block, (char) -1, true));
+
+		rules.add(new YamlListRule(list));
+		rules.add(new YamlMappingRule(mappings));
+		rules.add(new YamlVariableRule(variables));
 
 		buildWordRules(rules, yamlBuildIn, YamlBuildInKeywords.values());
 		buildWordRules(rules, yamlExternalCommands, YamlExternalKeyWords.values());

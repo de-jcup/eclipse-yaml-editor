@@ -1,0 +1,1 @@
+cmd: ./gradlew :my-cli:buildGo :my-cli:testGo
