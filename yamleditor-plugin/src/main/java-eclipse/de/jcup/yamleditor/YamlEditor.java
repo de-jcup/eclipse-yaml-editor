@@ -33,6 +33,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.CursorLinePainter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.ISourceViewerExtension2;
@@ -82,7 +83,9 @@ import de.jcup.yamleditor.script.YamlScriptModelBuilder;
 
 @AdaptedFromEGradle
 /**
- * Inspiredby BashEditor, EGradleEditor and additonally by my older stuff: https://sourceforge.net/p/yamli/code/HEAD/tree/de.jcup.yaml.editor/src/java/de/jcup/yaml/editor/YamlEditor.java
+ * Inspiredby BashEditor, EGradleEditor and additonally by my older stuff:
+ * https://sourceforge.net/p/yamli/code/HEAD/tree/de.jcup.yaml.editor/src/java/de/jcup/yaml/editor/YamlEditor.java
+ * 
  * @author Albert Tregnaghi
  *
  */
@@ -102,7 +105,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	private Object monitor = new Object();
 	private boolean quickOutlineOpened;
 	private int lastCaretPosition;
-	
+
 	public YamlEditor() {
 		setSourceViewerConfiguration(new YamlSourceViewerConfiguration(this));
 		this.modelBuilder = new YamlScriptModelBuilder();
@@ -115,7 +118,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 			setTitleImageDependingOnSeverity(severity);
 		}
 	}
-	
+
 	/**
 	 * Opens quick outline
 	 */
@@ -134,7 +137,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		YamlScriptModel model = buildModelWithoutValidation();
 		YamlQuickOutlineDialog dialog = new YamlQuickOutlineDialog(this, shell, "Quick outline");
 		dialog.setInput(model);
-		
+
 		dialog.open();
 		synchronized (monitor) {
 			quickOutlineOpened = false;
@@ -143,7 +146,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 
 	private YamlScriptModel buildModelWithoutValidation() {
 		String text = getDocumentText();
-		
+
 		YamlScriptModel model = modelBuilder.build(text);
 		return model;
 	}
@@ -215,7 +218,6 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 			text.addCaretListener(new YamlEditorCaretListener());
 		}
 
-		
 		activateYamlEditorContext();
 
 		installAdditionalSourceViewerSupport();
@@ -270,7 +272,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 			bracketMatcher.dispose();
 			bracketMatcher = null;
 		}
-		if (marginRulePainter!=null){
+		if (marginRulePainter != null) {
 			marginRulePainter.dispose();
 			marginRulePainter = null;
 		}
@@ -349,7 +351,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 			return (T) this;
 		}
 		if (ITreeContentProvider.class.equals(adapter) || YamlEditorTreeContentProvider.class.equals(adapter)) {
-			if (outlinePage==null){
+			if (outlinePage == null) {
 				return null;
 			}
 			return (T) outlinePage.getContentProvider();
@@ -397,13 +399,13 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	 */
 	public void rebuildOutline() {
 		String text = getDocumentText();
-		
+
 		EclipseUtil.safeAsyncExec(new Runnable() {
 
 			@Override
 			public void run() {
 				YamlEditorUtil.removeScriptErrors(YamlEditor.this);
-				
+
 				YamlScriptModel model = modelBuilder.build(text);
 
 				getOutlinePage().rebuild(model);
@@ -492,7 +494,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		// workaround to show action set for block mode etc.
 		// https://www.eclipse.org/forums/index.php/t/366630/
 		page.showActionSet("org.eclipse.ui.edit.text.actionSet.presentation");
-		
+
 	}
 
 	@Override
@@ -504,22 +506,54 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 
 		MarginPaintSetup setup = new MarginPaintSetup();
 		marginRulePainter = new YamlMarginRulePainter(viewer, setup);
-		RGB lineColor = YamlEditorPreferences.getInstance().getColor(YamlEditorPreferenceConstants.P_EDITOR_MARGIN_RULE_LINE_COLOR);
-		setup.lineColor= getColorManager().getColor(lineColor);
-		setup.lineStyle=SWT.LINE_DASH;
+		RGB lineColor = YamlEditorPreferences.getInstance()
+				.getColor(YamlEditorPreferenceConstants.P_EDITOR_MARGIN_RULE_LINE_COLOR);
+		setup.lineColor = getColorManager().getColor(lineColor);
+		setup.lineStyle = SWT.LINE_DASH;
 
 		verifier = new VerifyKeyListener() {
 
 			public void verifyKey(VerifyEvent event) {
-				/* we do not allow tab in any case !*/
+				/* we do not allow tab in any case ! */
 				if (event.character == '\t') {
+
 					event.doit = false;
+					
+					EclipseUtil.safeAsyncExec(new Runnable() {
+
+						public void run() {
+
+							ISelection selection = getSelectionProvider().getSelection();
+							if (! (selection instanceof ITextSelection)) {
+								return;
+							}
+							ITextSelection ts = (ITextSelection) selection;
+							IDocumentProvider dp = getDocumentProvider();
+							IDocument doc = dp.getDocument(getEditorInput());
+							int offset = ts.getOffset();
+							if (offset==-1){
+								offset = lastCaretPosition;
+							}
+							try {
+								String toInsert ="   ";
+								int toInsertLength = toInsert.length();
+								doc.replace(offset, ts.getLength(), toInsert);
+								Control control = getAdapter(Control.class);
+								if (control instanceof StyledText){
+									StyledText t = (StyledText) control;
+									t.setCaretOffset(offset+toInsertLength);
+								}
+							} catch (BadLocationException e) {
+								EclipseUtil.logError("Cannot insert tab replacement at " + offset, e);
+							}
+						}
+					});
 				}
 			}
 		};
 
 		viewer.getTextWidget().addVerifyKeyListener(verifier);
-		
+
 		CursorLinePainter cursorLinePainter = new CursorLinePainter(viewer);
 		viewer.addPainter(cursorLinePainter);
 		viewer.addPainter(marginRulePainter);
@@ -530,13 +564,13 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		viewer.doOperation(ProjectionViewer.TOGGLE);
 		return viewer;
 	}
-	
-	public void moveMargineLineIfNecessary(){
+
+	public void moveMargineLineIfNecessary() {
 		int caretXPosition = viewer.getTextWidget().getCaret().getLocation().x;
 		marginRulePainter.setX(caretXPosition);
-		
+
 	}
-	
+
 	@Override
 	protected void initializeEditor() {
 		super.initializeEditor();
@@ -663,7 +697,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	}
 
 	public Item getItemAt(int offset) {
-		if (outlinePage==null){
+		if (outlinePage == null) {
 			return null;
 		}
 		YamlEditorTreeContentProvider contentProvider = outlinePage.getContentProvider();
@@ -674,30 +708,29 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		return item;
 	}
 
-
 	public void selectFunction(String text) {
-		System.out.println("should select functin:"+text);
-		
+		System.out.println("should select functin:" + text);
+
 	}
 
 	public YamlLabel findYamlLabel(String labelName) {
-		if (labelName==null){
+		if (labelName == null) {
 			return null;
 		}
 		YamlScriptModel model = buildModelWithoutValidation();
 		Collection<YamlLabel> labels = model.getLabels();
-		for (YamlLabel label:labels){
-			if (labelName.equals(label.getName())){
+		for (YamlLabel label : labels) {
+			if (labelName.equals(label.getName())) {
 				return label;
 			}
 		}
 		return null;
 	}
-	
-	public YamlEditorPreferences getPreferences(){
+
+	public YamlEditorPreferences getPreferences() {
 		return YamlEditorPreferences.getInstance();
 	}
-	
+
 	private class YamlEditorCaretListener implements CaretListener {
 
 		@Override
