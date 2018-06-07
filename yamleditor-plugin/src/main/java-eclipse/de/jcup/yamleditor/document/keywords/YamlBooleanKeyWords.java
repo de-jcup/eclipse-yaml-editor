@@ -15,21 +15,19 @@
  */
  package de.jcup.yamleditor.document.keywords;
  
-//see https://en.wikibooks.org/wiki/Windows_Yaml_Scripting
-public enum YamlSpecialVariableKeyWords implements DocumentKeyWord {
+// https://juliankniephoff.wordpress.com/2012/09/01/reserved-words-in-yaml-and-translating-booleans-in-rails/
+public enum YamlBooleanKeyWords implements DocumentKeyWord {
 
-	TIME("TIME"),
-	DATE("DATE"),
+	TRUE("true"),
+	FALSE("false"),
+	YES("yes"),
+	NO("no"),
 	
-	RANDOM("RANDOM"),
-	ERRORLEVEL("ERRORLEVEL"),
-	CMDEXTVERSION("CMDEXTVERSION"),
-	CMDCMDLINE("CMDCMDLINE"),
 	;
 
 	private String text;
 
-	private YamlSpecialVariableKeyWords(String text) {
+	private YamlBooleanKeyWords(String text) {
 		this.text = text;
 	}
 

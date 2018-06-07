@@ -39,10 +39,10 @@ import org.eclipse.swt.graphics.Point;
 import de.jcup.yamleditor.SimpleWordCodeCompletion;
 import de.jcup.yamleditor.SimpleWordListBuilder;
 import de.jcup.yamleditor.WordListBuilder;
-import de.jcup.yamleditor.document.keywords.YamlExternalKeyWords;
-import de.jcup.yamleditor.document.keywords.YamlBuildInKeywords;
-import de.jcup.yamleditor.document.keywords.YamlSpecialVariableKeyWords;
+import de.jcup.yamleditor.document.keywords.YamlBooleanKeyWords;
+import de.jcup.yamleditor.document.YamlDocumentIdentifiers;
 import de.jcup.yamleditor.document.keywords.DocumentKeyWord;
+import de.jcup.yamleditor.document.keywords.YamlReservedWords;
 import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 
 public class YamlEditorSimpleWordContentAssistProcessor implements IContentAssistProcessor, ICompletionListener {
@@ -210,13 +210,10 @@ public class YamlEditorSimpleWordContentAssistProcessor implements IContentAssis
 	}
 
 	protected void addAllYamlKeyWords() {
-		for (DocumentKeyWord keyword : YamlExternalKeyWords.values()) {
+		for (DocumentKeyWord keyword : YamlBooleanKeyWords.values()) {
 			addKeyWord(keyword);
 		}
-		for (DocumentKeyWord keyword : YamlBuildInKeywords.values()) {
-			addKeyWord(keyword);
-		}
-		for (DocumentKeyWord keyword : YamlSpecialVariableKeyWords.values()) {
+		for (DocumentKeyWord keyword : YamlReservedWords.values()) {
 			addKeyWord(keyword);
 		}
 	}

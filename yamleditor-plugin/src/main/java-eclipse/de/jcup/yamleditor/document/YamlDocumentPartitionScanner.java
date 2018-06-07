@@ -26,9 +26,8 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
-import de.jcup.yamleditor.document.keywords.YamlBuildInKeywords;
-import de.jcup.yamleditor.document.keywords.YamlExternalKeyWords;
-import de.jcup.yamleditor.document.keywords.YamlSpecialVariableKeyWords;
+import de.jcup.yamleditor.document.keywords.YamlReservedWords;
+import de.jcup.yamleditor.document.keywords.YamlBooleanKeyWords;
 import de.jcup.yamleditor.document.keywords.DocumentKeyWord;
 
 public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
@@ -45,12 +44,10 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		IToken comment = createToken(COMMENT);
 		IToken doubleString = createToken(DOUBLE_STRING);
 		IToken mappings = createToken(MAPPINGS);
-		IToken list = createToken(LISTS);
-		IToken yamlBuildIn = createToken(YAML_KEYWORD);
+		IToken lists = createToken(LISTS);
+		IToken yamlReservedWords = createToken(RESERVED_WORDS);
 
-		IToken knownVariables = createToken(KNOWN_VARIABLES);
-		IToken variables = createToken(VARIABLES);
-		IToken yamlExternalCommands = createToken(YAML_COMMAND);
+		IToken booleans = createToken(BOOLEANS);
 
 		List<IPredicateRule> rules = new ArrayList<>();
 //		rules.add(new YamlOldSimpleMappingRule(mappings));
@@ -58,17 +55,11 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		rules.add(new YamlStringRule("\"", "\"", doubleString));
 		rules.add(new SingleLineRule("---", "", block, (char) -1, true));
 
-		rules.add(new YamlListRule(list));
+		rules.add(new YamlListRule(lists));
 		rules.add(new YamlMappingRule(mappings));
-		rules.add(new YamlVariableRule(variables));
 
-		buildWordRules(rules, yamlBuildIn, YamlBuildInKeywords.values());
-		buildWordRules(rules, yamlExternalCommands, YamlExternalKeyWords.values());
-		
-		buildWordRules(rules, knownVariables, YamlSpecialVariableKeyWords.values());
-
-		/* TODO ATR: 24.11.2017: remove the next linecomplete or support variable setup like in bash editor*/
-//		buildVarDefRules(rules, knownVariables, YamlSpecialVariableKeyWords.values());
+		buildWordRules(rules, booleans, YamlBooleanKeyWords.values());
+		buildWordRules(rules, yamlReservedWords, YamlReservedWords.values());
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}
@@ -77,25 +68,9 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		for (DocumentKeyWord keyWord : values) {
 			ExactWordPatternRule rule1 = new ExactWordPatternRule(onlyLettersWordDetector, createWordStart(keyWord), token,
 					keyWord.isBreakingOnEof());
-			rule1.setAllowedPrefix('@');
-			rule1.setAllowedPostfix(':');
 			rules.add(rule1);
-
-			ExactWordPatternRule rule2 = new ExactWordPatternRule(onlyLettersWordDetector, keyWord.getText().toUpperCase(), token,
-					keyWord.isBreakingOnEof());
-			rule2.setAllowedPrefix('@');
-			rule2.setAllowedPostfix(':');
-			rules.add(rule2);
-			
 		}
 	}
-
-//	private void buildVarDefRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {
-//		for (DocumentKeyWord keyWord : values) {
-//			rules.add(new VariableDefKeyWordPatternRule(variableDefKeyWordDetector, createWordStart(keyWord), token,
-//					keyWord.isBreakingOnEof()));
-//		}
-//	}
 
 	private String createWordStart(DocumentKeyWord keyWord) {
 		return keyWord.getText();

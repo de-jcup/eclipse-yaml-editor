@@ -20,11 +20,12 @@ package de.jcup.yamleditor.preferences;
  */
 public enum YamlEditorSyntaxColorPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled{
 	COLOR_NORMAL_TEXT("colorNormalText","Normal text color"),
-	COLOR_YAML_INTERNAL_KEYWORD("colorYamlKeywords", "Yaml keywords"),
+	
+	COLOR_RESERVED_KEYWORD("colorYamlKeywords", "Yaml keywords"),
+	COLOR_BOOLEANS("colorBooleans","Booleans"),
+
 	COLOR_GSTRING("colorDoubleStrings", "Double quoted strings"),
 	COLOR_COMMENT("colorComments", "Comment"),
-	COLOR_EXTERNAL_COMMAND("colorCommands","External commands"),
-	COLOR_KNOWN_VARIABLES("colorKnownVariables","Variables"),
 	COLOR_MAPPINGS("colorMappings","Mappings"),
 	COLOR_LISTS("colorList","Lists"),
 	COLOR_BLOCK("colorBlock","Block"),

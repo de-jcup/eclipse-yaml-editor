@@ -17,23 +17,15 @@
 
 public enum YamlDocumentIdentifiers implements YamlDocumentIdentifier {
 	
-	YAML_KEYWORD,
+	RESERVED_WORDS,
 	
 	COMMENT,
 	
-	SINGLE_STRING,
+	/*SINGLE_STRING, see https://stackoverflow.com/questions/19109912/do-i-need-quotes-for-strings-in-yaml maybe in future*/
 	
 	DOUBLE_STRING,
 	
-	BACKTICK_STRING,
-	
-	GRADLE_KEYWORD,
-	
-	YAML_COMMAND,
-	
-	KNOWN_VARIABLES,
-	
-	VARIABLES,
+	BOOLEANS,
 	
 	MAPPINGS,
 	

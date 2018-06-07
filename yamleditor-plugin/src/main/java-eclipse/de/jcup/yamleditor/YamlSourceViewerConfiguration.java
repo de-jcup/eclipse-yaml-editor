@@ -152,18 +152,15 @@ public class YamlSourceViewerConfiguration extends TextSourceViewerConfiguration
 
 		addPresentation(reconciler, BLOCK_KEYWORD.getId(), getPreferences().getColor(COLOR_BLOCK), SWT.BOLD);
 		
-		addPresentation(reconciler, YAML_KEYWORD.getId(), getPreferences().getColor(COLOR_YAML_INTERNAL_KEYWORD),SWT.BOLD);
+		addPresentation(reconciler, RESERVED_WORDS.getId(), getPreferences().getColor(COLOR_RESERVED_KEYWORD),SWT.BOLD);
+		addPresentation(reconciler, BOOLEANS.getId(), getPreferences().getColor(COLOR_BOOLEANS),SWT.NONE);
 
 		addPresentation(reconciler, DOUBLE_STRING.getId(), getPreferences().getColor(COLOR_GSTRING),SWT.NONE);
 		
 		addPresentation(reconciler, COMMENT.getId(), getPreferences().getColor(COLOR_COMMENT),SWT.NONE);
 		addPresentation(reconciler, MAPPINGS.getId(), getPreferences().getColor(COLOR_MAPPINGS),SWT.BOLD);
 		addPresentation(reconciler, LISTS.getId(), getPreferences().getColor(COLOR_LISTS),SWT.BOLD);
-		addPresentation(reconciler, YAML_COMMAND.getId(), getPreferences().getColor(COLOR_EXTERNAL_COMMAND),SWT.BOLD|SWT.NONE);
 		
-		
-		addPresentation(reconciler, VARIABLES.getId(), getPreferences().getColor(COLOR_KNOWN_VARIABLES),SWT.NONE);
-		addPresentation(reconciler, KNOWN_VARIABLES.getId(), getPreferences().getColor(COLOR_KNOWN_VARIABLES),SWT.NONE);
 		
 		return reconciler;
 	}
