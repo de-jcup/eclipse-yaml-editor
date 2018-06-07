@@ -33,7 +33,7 @@ import de.jcup.yamleditor.document.keywords.DocumentKeyWord;
 public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 
 	private OnlyLettersKeyWordDetector onlyLettersWordDetector = new OnlyLettersKeyWordDetector();
-//	private VariableDefKeyWordDetector variableDefKeyWordDetector = new VariableDefKeyWordDetector();
+	private OnlyHyphenKeyWordDetector onlyHyphenWordsDetector = new OnlyHyphenKeyWordDetector();
 
 	public int getOffset(){
 		return fOffset;
@@ -50,20 +50,19 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		IToken booleans = createToken(BOOLEANS);
 
 		List<IPredicateRule> rules = new ArrayList<>();
-//		rules.add(new YamlOldSimpleMappingRule(mappings));
 		rules.add(new SingleLineRule("#", "", comment, (char) -1, true));
 		rules.add(new YamlStringRule("\"", "\"", doubleString));
-		rules.add(new SingleLineRule("---", "", block, (char) -1, true));
+		rules.add(new ExactWordPatternRule(onlyHyphenWordsDetector, "---", block, true));
+		rules.add(new SingleLineRule("<tag:", ">", yamlReservedWords, (char) -1, true));
 
-		rules.add(new YamlListRule(lists));
 		rules.add(new YamlMappingRule(mappings));
+		rules.add(new YamlListRule(lists));
 
 		buildWordRules(rules, booleans, YamlBooleanKeyWords.values());
 		buildWordRules(rules, yamlReservedWords, YamlReservedWords.values());
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}
-
 	private void buildWordRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {
 		for (DocumentKeyWord keyWord : values) {
 			ExactWordPatternRule rule1 = new ExactWordPatternRule(onlyLettersWordDetector, createWordStart(keyWord), token,
@@ -71,7 +70,7 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 			rules.add(rule1);
 		}
 	}
-
+	
 	private String createWordStart(DocumentKeyWord keyWord) {
 		return keyWord.getText();
 	}

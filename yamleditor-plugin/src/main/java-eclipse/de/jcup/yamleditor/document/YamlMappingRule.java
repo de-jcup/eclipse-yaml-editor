@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Albert Tregnaghi
+ * Copyright 2017 Albert Tregnaghi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,78 @@
  */
 package de.jcup.yamleditor.document;
 
+import org.eclipse.jface.text.rules.ICharacterScanner;
+import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.Token;
 
-public class YamlMappingRule extends YamlLineStartsWithRule{
+/**
+ * A special rule to scan yaml variables
+ * 
+ * @author Albert Tregnaghi
+ *
+ */
+public class YamlMappingRule implements IPredicateRule {
 
+	private IToken token;
+	
 	public YamlMappingRule(IToken token) {
-		super(":","",true, false,token);
+		this.token = token;
 	}
 
 	@Override
-	protected boolean isAcceptedAtStart(int c) {
-		/* is accepted  "      sample: xxx" accepts until :*/
-		/* is accepted  " - sample: xxx" accepts until :*/
-		/* is accepted  " - sample: xxx" accepts until :*/
-		/* is accepted  " - sample: xxx:yyy:zzz" accepts until first:*/
-		return c!=':';
+	public IToken getSuccessToken() {
+		return token;
 	}
+
+	@Override
+	public IToken evaluate(ICharacterScanner scanner) {
+		return evaluate(scanner, false);
+	}
+
+	@Override
+	public IToken evaluate(ICharacterScanner scanner, boolean resume) {
+		char start = (char) scanner.read();
+		if (!isWordStart(start)) {
+			scanner.unread();
+			return Token.UNDEFINED;
+		}
+		/* okay is a variable, so read until end reached */
+		int readDone=0;
+		do {
+			int read = scanner.read(); // use int for EOF detection, char makes
+										// problems here!
+			readDone++;
+			char c = (char) read;
+			if (ICharacterScanner.EOF == read || (!isWordPart(c))) {
+				for (int i=0;i<readDone;i++){
+					scanner.unread();
+				}
+				return Token.UNDEFINED;
+			}
+			if (c==':'){
+				return getSuccessToken();
+			}
+		} while (true);
+	}
+
+	private boolean isWordPart(char c) {
+		
+		if (c==':' || c=='-' || c=='_'){
+			return true;
+		}
+		// spaces are allowed inside mappings, see http://yaml.org/spec/1.2/spec.html#id2761803
+		if (c==' '){
+			return true;
+		}
+		if (Character.isAlphabetic(c)){
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isWordStart(char c) {
+		return Character.isAlphabetic(c);
+	}
+
 }

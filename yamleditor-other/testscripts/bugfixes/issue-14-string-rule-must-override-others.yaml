@@ -1,0 +1,3 @@
+note:
+   data: "this is a string which contains a: but must override it ..."
+   - "a string inside a list - and should override it"

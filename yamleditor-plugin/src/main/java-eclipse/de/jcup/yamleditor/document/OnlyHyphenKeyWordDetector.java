@@ -16,11 +16,11 @@
  package de.jcup.yamleditor.document;
 import org.eclipse.jface.text.rules.IWordDetector;
 
-public class VariableDefKeyWordDetector implements IWordDetector{
+public class OnlyHyphenKeyWordDetector implements IWordDetector{
 	
 	@Override
 	public boolean isWordStart(char c) {
-		if (! Character.isLetter(c)){
+		if (c!='-'){
 			return false;
 		}
 		return true;
@@ -28,10 +28,7 @@ public class VariableDefKeyWordDetector implements IWordDetector{
 
 	@Override
 	public boolean isWordPart(char c) {
-		if (c=='='){
-			return true;
-		}
-		if (! Character.isLetter(c)){
+		if (c!='-'){
 			return false;
 		}
 		return true;
