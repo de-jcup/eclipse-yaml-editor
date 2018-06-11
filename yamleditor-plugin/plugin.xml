@@ -100,6 +100,12 @@
             categoryId="yamleditor.commands.category"
             id="yamleditor.editor.commands.gotomatchingbracket">
       </command>
+      <command
+      		name="Validate YAML"
+      		description="Start yaml parsing and shows validation problems"
+      		categoryId="yamleditor.commands.category"
+      		id="yamleditor.editor.commands.validate">
+      </command>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 	 <handler
@@ -114,9 +120,13 @@
             commandId="yamleditor.editor.commands.gotomatchingbracket"
             class="de.jcup.yamleditor.handlers.GotoMatchingBracketHandler">
       </handler>
-        <handler
+      <handler
       		commandId="yamleditor.editor.commands.movecolumnline"
       		class="de.jcup.yamleditor.handlers.MoveColumnLinesHandler">
+      </handler>
+      <handler
+      		commandId="yamleditor.editor.commands.validate"
+      		class="de.jcup.yamleditor.handlers.YamlValidationHandler">
       </handler>
     </extension> 
     
@@ -159,9 +169,12 @@
          <command
                commandId="yamleditor.editor.commands.quickoutline"
                >
-         </command>
-          <command commandId="yamleditor.editor.commands.movecolumnline">
-            </command>
+        </command>
+        <command commandId="yamleditor.editor.commands.movecolumnline">
+        </command>
+        <command commandId="yamleditor.editor.commands.validate" icon="icons/yaml-validation-call.png">
+         	
+        </command>
       </menuContribution>
       
       <menuContribution
@@ -182,6 +195,10 @@
             </command>
             <command commandId="yamleditor.editor.commands.source.toggleComment">
             </command>
+             <command commandId="yamleditor.editor.commands.validate" icon="icons/yaml-validation-call.png">
+             	
+            </command>
+           
          </menu>
       </menuContribution>
       

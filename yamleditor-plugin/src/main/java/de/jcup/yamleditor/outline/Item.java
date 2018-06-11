@@ -15,6 +15,9 @@
  */
  package de.jcup.yamleditor.outline;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Item {
 
 	ItemType type;
@@ -22,6 +25,8 @@ public class Item {
 	int offset;
 	int length;
 	int endOffset;
+	private List<Item> children=new ArrayList<>();
+	Item parent;
 	
 	/**
 	 * @return item type , or <code>null</code>
@@ -65,5 +70,17 @@ public class Item {
 
 	public String buildSearchString() {
 		return name;
+	}
+
+	public boolean hasChildren() {
+		return children.size()>0;
+	}
+
+	public List<Item> getChildren() {
+		return children;
+	}
+
+	public boolean isRoot() {
+		return false;
 	}
 }

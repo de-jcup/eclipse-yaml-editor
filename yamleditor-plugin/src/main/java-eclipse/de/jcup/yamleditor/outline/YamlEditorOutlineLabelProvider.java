@@ -71,7 +71,7 @@ public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements
 			}
 
 			switch (type) {
-			case LABEL:
+			case NODE:
 				return getOutlineImage(ICON_FUNCTION);
 			case META_ERROR:
 				return getOutlineImage(ICON_ERROR);
@@ -94,7 +94,7 @@ public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements
 			Item item = (Item) element;
 
 			ItemType itemType = item.getItemType();
-			if (itemType==ItemType.LABEL){
+			if (itemType==ItemType.NODE){
 				
 				StyledString typeString = new StyledString("label ", outlineItemTypeStyler);
 				styled.append(typeString);

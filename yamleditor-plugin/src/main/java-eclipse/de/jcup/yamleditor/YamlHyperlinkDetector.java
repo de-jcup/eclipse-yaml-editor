@@ -24,7 +24,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 
-import de.jcup.yamleditor.script.YamlLabel;
+import de.jcup.yamleditor.script.YamlNode;
 
 /**
  * Hyperlink detector for all kind of hyperlinks in egradle editor.
@@ -42,56 +42,57 @@ public class YamlHyperlinkDetector extends AbstractHyperlinkDetector {
 
 	@Override
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-		if (adaptable == null) {
-			return null;
-		}
-		YamlEditor editor = adaptable.getAdapter(YamlEditor.class);
-		if (editor == null) {
-			return null;
-		}
-		IDocument document = textViewer.getDocument();
-		int offset = region.getOffset();
-
-		IRegion lineInfo;
-		String line;
-		try {
-			lineInfo = document.getLineInformationOfOffset(offset);
-			line = document.get(lineInfo.getOffset(), lineInfo.getLength());
-		} catch (BadLocationException ex) {
-			return null;
-		}
-
-		int offsetInLine = offset - lineInfo.getOffset();
-		String leftChars = line.substring(0, offsetInLine);
-		String rightChars = line.substring(offsetInLine);
-		StringBuilder sb = new StringBuilder();
-		int offsetLeft=offset;
-		char[] left = leftChars.toCharArray();
-		for (int i=left.length-1; i>=0;i--) {
-			char c = left[i];
-			if (Character.isWhitespace(c)) {
-				break;
-			}
-			offsetLeft--;
-			sb.insert(0,c);
-		}
-		for (char c : rightChars.toCharArray()) {
-			if (Character.isWhitespace(c)) {
-				break;
-			}
-			sb.append(c);
-		}
-		String functionName = sb.toString();
-		if (functionName.startsWith(":") && functionName.length()>1) {
-			// handle goto :xxx like goto xxx
-			functionName=functionName.substring(1);
-		}
-		YamlLabel function = editor.findYamlLabel(functionName);
-		if (function == null) {
-			return null;
-		}
-		Region targetRegion = new Region(offsetLeft, functionName.length());
-		return new IHyperlink[] { new YamlLabelHyperlink(targetRegion, function, editor) };
+//		if (adaptable == null) {
+//			return null;
+//		}
+//		YamlEditor editor = adaptable.getAdapter(YamlEditor.class);
+//		if (editor == null) {
+//			return null;
+//		}
+//		IDocument document = textViewer.getDocument();
+//		int offset = region.getOffset();
+//
+//		IRegion lineInfo;
+//		String line;
+//		try {
+//			lineInfo = document.getLineInformationOfOffset(offset);
+//			line = document.get(lineInfo.getOffset(), lineInfo.getLength());
+//		} catch (BadLocationException ex) {
+//			return null;
+//		}
+//
+//		int offsetInLine = offset - lineInfo.getOffset();
+//		String leftChars = line.substring(0, offsetInLine);
+//		String rightChars = line.substring(offsetInLine);
+//		StringBuilder sb = new StringBuilder();
+//		int offsetLeft=offset;
+//		char[] left = leftChars.toCharArray();
+//		for (int i=left.length-1; i>=0;i--) {
+//			char c = left[i];
+//			if (Character.isWhitespace(c)) {
+//				break;
+//			}
+//			offsetLeft--;
+//			sb.insert(0,c);
+//		}
+//		for (char c : rightChars.toCharArray()) {
+//			if (Character.isWhitespace(c)) {
+//				break;
+//			}
+//			sb.append(c);
+//		}
+//		String functionName = sb.toString();
+//		if (functionName.startsWith(":") && functionName.length()>1) {
+//			// handle goto :xxx like goto xxx
+//			functionName=functionName.substring(1);
+//		}
+//		YamlNode function = editor.findYamlLabel(functionName);
+//		if (function == null) {
+//			return null;
+//		}
+//		Region targetRegion = new Region(offsetLeft, functionName.length());
+//		return new IHyperlink[] { new YamlLabelHyperlink(targetRegion, function, editor) };
+		return null;
 	}
 
 }

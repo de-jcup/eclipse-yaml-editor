@@ -77,7 +77,7 @@ import de.jcup.yamleditor.outline.YamlQuickOutlineDialog;
 import de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants;
 import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 import de.jcup.yamleditor.script.YamlError;
-import de.jcup.yamleditor.script.YamlLabel;
+import de.jcup.yamleditor.script.YamlNode;
 import de.jcup.yamleditor.script.YamlScriptModel;
 import de.jcup.yamleditor.script.YamlScriptModelBuilder;
 
@@ -711,20 +711,6 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	public void selectFunction(String text) {
 		System.out.println("should select functin:" + text);
 
-	}
-
-	public YamlLabel findYamlLabel(String labelName) {
-		if (labelName == null) {
-			return null;
-		}
-		YamlScriptModel model = buildModelWithoutValidation();
-		Collection<YamlLabel> labels = model.getLabels();
-		for (YamlLabel label : labels) {
-			if (labelName.equals(label.getName())) {
-				return label;
-			}
-		}
-		return null;
 	}
 
 	public YamlEditorPreferences getPreferences() {

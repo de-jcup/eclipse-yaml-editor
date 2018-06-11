@@ -17,7 +17,7 @@
 
 public enum ItemType {
 	
-	LABEL, 
+	NODE, 
 	
 	META_INFO, 
 	

@@ -13,32 +13,18 @@
  * and limitations under the License.
  *
  */
-package de.jcup.yamleditor.script;
+package de.jcup.yamleditor.handlers;
 
-public class YamlLabel {
+import de.jcup.yamleditor.YamlEditor;
 
-	private String name;
-	int pos;
-	int end;
+public class YamlValidationHandler extends AbstractYamlEditorHandler {
 
-	public YamlLabel(String name){
-		this.name=name;
+	public static final String COMMAND_ID = "yamleditor.editor.commands.validate";
+
+	@Override
+	protected void executeOnYamlEditor(YamlEditor yamlEditor) {
+		yamlEditor.rebuildOutline();
 	}
 	
-	public String getName() {
-		return name;
-	}
-
-	public int getPosition() {
-		return pos;
-	}
-
-	public int getLengthToNameEnd() {
-		return name.length();
-	}
-
-	public int getEnd() {
-		return end;
-	}
 
 }

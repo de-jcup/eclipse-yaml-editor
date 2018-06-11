@@ -15,22 +15,17 @@
  */
 package de.jcup.yamleditor.outline;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
-import de.jcup.yamleditor.outline.Item;
-import de.jcup.yamleditor.outline.ItemType;
-import de.jcup.yamleditor.script.YamlLabel;
+import de.jcup.yamleditor.script.YamlNode;
 import de.jcup.yamleditor.script.YamlScriptModel;
 
 public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 
-	private static final String YAML_SCRIPT_CONTAINS_ERRORS = "Yaml file contains errors.";
-	/* FIXME Albert: 2018-23-05 support outline data*/
-	private static final String YAML_SCRIPT_DOES_NOT_CONTAIN_ANY_LABELS = "Yaml outline not available in alpha version - will come in future";
-	private static final Object[] RESULT_WHEN_EMPTY = new Object[] { YAML_SCRIPT_DOES_NOT_CONTAIN_ANY_LABELS };
+	private static final String YAML_SCRIPT_CONTAINS_ERRORS = "No outline available: YAML file has errors.";
+	private static final Object[] RESULT_WHEN_EMPTY = new Object[] { };
 	private Object[] items;
 	private Object monitor = new Object();
 
@@ -53,39 +48,40 @@ public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getChildren(Object parentElement) {
+		if (parentElement instanceof Item){
+			Item item = (Item) parentElement;
+			return item.getChildren().toArray();
+		}
 		return null;
 	}
 
 	@Override
 	public Object getParent(Object element) {
+		if (element instanceof Item){
+			Item item = (Item) element;
+			if (item.parent==null || item.parent.isRoot()){
+				return null;
+			}
+			return item.parent;
+		}
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren(Object element) {
+		if (element instanceof Item){
+			Item item = (Item) element;
+			return item.hasChildren();
+		}
 		return false;
 	}
 
 	private Item[] createItems(YamlScriptModel model) {
-		List<Item> list = new ArrayList<>();
-		for (YamlLabel labelion : model.getLabels()) {
-			Item item = new Item();
-			item.name = labelion.getName();
-			item.type = ItemType.LABEL;
-			item.offset = labelion.getPosition();
-			item.length = labelion.getLengthToNameEnd();
-			item.endOffset=labelion.getEnd();
-			list.add(item);
-		}
-		if (list.isEmpty()) {
-			Item item = new Item();
-			item.name = YAML_SCRIPT_DOES_NOT_CONTAIN_ANY_LABELS;
-			item.type = ItemType.META_INFO;
-			item.offset = 0;
-			item.length = 0;
-			item.endOffset=0;
-			list.add(item);
-		}
+		List<YamlNode> nodes = model.getRootNode().getChildren();
+		RootItem root = new RootItem();
+		List<Item> list = root.getChildren();
+		buildItems(root, nodes);
+		
 		if (model.hasErrors()) {
 			Item item = new Item();
 			item.name = YAML_SCRIPT_CONTAINS_ERRORS;
@@ -97,6 +93,22 @@ public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 		}
 		return list.toArray(new Item[list.size()]);
 
+	}
+
+	protected void buildItems(Item parent, List<YamlNode> nodes) {
+		List<Item> children = parent.getChildren();
+		for (YamlNode yamlNode: nodes){
+			Item child = new Item();
+			child.offset = yamlNode.getPosition();
+			child.endOffset=yamlNode.getEnd();
+			child.length=yamlNode.getLengthToNameEnd();
+			child.name=yamlNode.getName();
+			children.add(child);
+			child.parent=parent;
+			if (yamlNode.hasChildren()){
+				buildItems(child, yamlNode.getChildren());
+			}
+		}
 	}
 
 	public void rebuildTree(YamlScriptModel model) {

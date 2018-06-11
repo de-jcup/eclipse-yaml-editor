@@ -16,28 +16,41 @@
 package de.jcup.yamleditor.script;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
-public class YamlScriptModel {
+public class YamlNode {
 
-	Collection<YamlError> errors = new ArrayList<>();
-	
-	private YamlNode rootNode;
-	
-	public YamlScriptModel() {
-		rootNode = new YamlNode("root");
-	}
-	public YamlNode getRootNode() {
-		return rootNode;
-	}
-	
+	private String name;
+	private List<YamlNode> children = new ArrayList<>();
+	int pos;
+	int end;
 
-	public boolean hasErrors() {
-		return errors.size()>0;
+	public YamlNode(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getPosition() {
+		return pos;
+	}
+
+	public int getLengthToNameEnd() {
+		return name.length();
+	}
+
+	public int getEnd() {
+		return end;
+	}
+
+	public boolean hasChildren() {
+		return children.size()>0;
 	}
 	
-	public Collection<YamlError> getErrors() {
-		return errors;
+	public List<YamlNode> getChildren() {
+		return children;
 	}
 
 }

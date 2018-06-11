@@ -1,3 +1,5 @@
 note:
    data: "this is a string which contains a: but must override it ..."
+   datax:
    - "a string inside a list - and should override it"
+   # comment: - "a string inside a list - and should override it"

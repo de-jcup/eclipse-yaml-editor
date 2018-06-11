@@ -20,16 +20,16 @@ import static org.eclipse.core.runtime.Assert.*;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 
-import de.jcup.yamleditor.script.YamlLabel;
+import de.jcup.yamleditor.script.YamlNode;
 
 public class YamlLabelHyperlink implements IHyperlink {
 
 	private IRegion region;
-	private YamlLabel function;
+	private YamlNode function;
 	private YamlEditor editor;
 	
 
-	public YamlLabelHyperlink(IRegion region, YamlLabel function, YamlEditor editor) {
+	public YamlLabelHyperlink(IRegion region, YamlNode function, YamlEditor editor) {
 		isNotNull(region, "Gradle hyperlink region may not be null!");
 		isNotNull(function, "function may not be null!");
 		isNotNull(editor, "editor may not be null!");

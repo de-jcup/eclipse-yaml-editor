@@ -11,8 +11,9 @@ ext {
 		commons_io:						"commons-io:commons-io:2.2",
 		
 		// https://mvnrepository.com/artifact/antlr/antlr/2.7.7
-		antlr:		 				    "antlr:antlr:2.7.7"
+		antlr:		 				    "antlr:antlr:2.7.7",
 		
+		snake_yaml:					     "org.yaml:snakeyaml:1.21"
 	]
 	
 }

@@ -15,82 +15,119 @@
  */
 package de.jcup.yamleditor.script;
 
+import java.io.StringReader;
+
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.Mark;
+import org.yaml.snakeyaml.error.MarkedYAMLException;
+import org.yaml.snakeyaml.nodes.MappingNode;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.SequenceNode;
+import org.yaml.snakeyaml.nodes.Tag;
+
 public class YamlScriptModelBuilder {
 
-	private class YamlscriptContext {
-		int pos = 0;
-		int labelStart = 0;
-		int posAtLine = 0;
-	}
-
 	public YamlScriptModel build(String text) {
-		YamlScriptModel model = new YamlScriptModel();
-		if (text == null || text.trim().length() == 0) {
-			return model;
-		}
-		String inspect = text + "\n";// a simple workaround to get the last
-										// label accessed too, if there is no
-										// next line...
-		/*
-		 * very simple approach: a label is identified by being at first
-		 * position of line
-		 */
-		StringBuilder labelSb = null;
-		YamlscriptContext context = new YamlscriptContext();
-		int errorPos=0;
-		for (char c : inspect.toCharArray()) {
-			if (c=='\t'){
-				model.errors.add(new YamlError(errorPos, errorPos+1, "Found a tab character! This is not allowed in YAML files! You must replace it with spaces!"));
-			}
-			errorPos++;
-		}
-		for (char c : inspect.toCharArray()) {
-			if (c == '\n' || c == '\r') {
-				/* terminate search - got the label or none*/
-				addLabelDataWhenExisting(model, labelSb, context);
-				labelSb = null;
-				continue;
-			}
-			if (c == ':') {
-				if (context.posAtLine == 0) {
-					labelSb = new StringBuilder();
-					context.labelStart = context.pos;
-				} else {
-					/* :: detected - reset */
-					labelSb = null;
-				}
-			} else {
-				if (labelSb != null) {
-					if (Character.isWhitespace(c)) {
-						addLabelDataWhenExisting(model, labelSb, context);
-						labelSb = null;
-						continue;
-					} else {
-						labelSb.append(c);
-					}
-				}
-			}
-			context.pos++;
-			context.posAtLine++;
-		}
 
+		YamlScriptModel model = new YamlScriptModel();
+		Yaml yaml = new Yaml();
+		try {
+			StringReader reader = new StringReader(text);
+
+			Iterable<Node> nodes = yaml.composeAll(reader);
+			YamlNode root = model.getRootNode();
+			for (Node node : nodes) {
+				buildNode(root, node);
+			}
+
+		} catch (MarkedYAMLException e) {
+			String message = e.getMessage();
+			Mark problem = e.getProblemMark();
+			int start = problem.getIndex();
+			int end = start + 1;
+			YamlError error = new YamlError(start, end, message);
+			model.errors.add(error);
+		}
 		return model;
 	}
 
-	protected void addLabelDataWhenExisting(YamlScriptModel model, StringBuilder labelSb, YamlscriptContext context) {
-		if (labelSb != null) {
-			String labelName = labelSb.toString().trim();
-			if (! labelName.isEmpty()){
-
-				YamlLabel label = new YamlLabel(labelName);
-				label.pos = context.labelStart + 1;
-				label.end = context.pos - 1;
-				
-				model.getLabels().add(label);
-			}
+	private void buildNode(YamlNode parent, Node node) {
+		if (node instanceof MappingNode) {
+			appendMappings(parent, (MappingNode) node);
+			return;
+		}else if(node instanceof SequenceNode){
+			appendSequence(parent,(SequenceNode)node);
+		}else if (node instanceof ScalarNode){
+			appendScalar(parent,(ScalarNode)node);
+		}else{
+			/* anchor nodes are ignored*/
 		}
-		context.pos++;
-		context.posAtLine = 0;
+		return;
 	}
 
+	private void appendScalar(YamlNode parent, ScalarNode node) {
+		YamlNode yamlNode = new YamlNode(resolveName(node));
+		prepare(yamlNode, node);
+		parent.getChildren().add(yamlNode);
+		
+	}
+
+	protected String resolveName(Node node) {
+		if (node instanceof ScalarNode){
+			return ((ScalarNode) node).getValue();
+		}
+		if (node instanceof SequenceNode){
+			return "<sequence>";
+		}
+		if (node instanceof MappingNode){
+			return "<mapping>";
+		}
+		return node.getType().getName();
+	}
+
+	private void appendSequence(YamlNode parent, SequenceNode node) {
+		for (Node element : node.getValue()) {
+			createYamlNodeAndAddToParent(parent, element);
+		}
+		
+	}
+
+	private void appendMappings(YamlNode parent, MappingNode node) {
+
+		for (NodeTuple nodeTuple : node.getValue()) {
+			Node keyNode = nodeTuple.getKeyNode();
+
+			YamlNode yamlkeyNode = createYamlNodeAndAddToParent(parent, keyNode);
+
+			Node valNode = nodeTuple.getValueNode();
+			createYamlNodeAndAddToParent(yamlkeyNode, valNode);
+		}
+	}
+
+	protected YamlNode createYamlNodeAndAddToParent(YamlNode parent, Node node) {
+		YamlNode yamlNodeToAppendNext = parent;
+		if (isShown(node)){
+			String keyName = resolveName(node);
+			YamlNode yamlNode = new YamlNode(keyName);
+			prepare(yamlNode, node);
+			parent.getChildren().add(yamlNode);
+			yamlNodeToAppendNext= yamlNode;
+		}else{
+			buildNode(parent, node);
+		}
+		
+		return yamlNodeToAppendNext;
+	}
+
+	private boolean isShown(Node node) {
+		return node instanceof ScalarNode;
+	}
+
+	void prepare(YamlNode yamlNode, Node node) {
+		Mark start = node.getStartMark();
+		yamlNode.pos =start.getIndex();
+		yamlNode.end = yamlNode.pos+yamlNode.getName().length();
+	}
 }
