@@ -1,0 +1,19 @@
+# Examples originally from http://yaml.org/spec/1.2/spec.html
+
+
+# Example 2.13.  In literals, newlines are preserved
+# ASCII Art
+--- |
+  \//||\/||
+  // ||  ||__
+  
+# Example 2.14.  In the folded scalars, newlines become spaces 
+--- >
+  Mark McGwire's
+  year was crippled
+  by a knee injury.
+ 
+
+
+
+
