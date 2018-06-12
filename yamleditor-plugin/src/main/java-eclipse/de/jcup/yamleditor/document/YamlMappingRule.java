@@ -79,7 +79,7 @@ public class YamlMappingRule implements IPredicateRule {
 		if (c==' '){
 			return true;
 		}
-		if (Character.isAlphabetic(c)){
+		if (Character.isLetterOrDigit(c) ){
 			return true;
 		}
 		return false;
