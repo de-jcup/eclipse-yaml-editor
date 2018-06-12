@@ -44,7 +44,6 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		IToken comment = createToken(COMMENT);
 		IToken doubleString = createToken(DOUBLE_STRING);
 		IToken mappings = createToken(MAPPINGS);
-		IToken lists = createToken(LISTS);
 		IToken yamlReservedWords = createToken(RESERVED_WORDS);
 
 		IToken booleans = createToken(BOOLEANS);
@@ -56,7 +55,6 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		rules.add(new SingleLineRule("<tag:", ">", yamlReservedWords, (char) -1, true));
 
 		rules.add(new YamlMappingRule(mappings));
-		rules.add(new YamlListRule(lists));
 
 		buildWordRules(rules, booleans, YamlBooleanKeyWords.values());
 		buildWordRules(rules, yamlReservedWords, YamlReservedWords.values());
