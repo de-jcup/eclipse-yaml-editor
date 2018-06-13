@@ -1,9 +1,1 @@
-dependencies {
-	// snake yaml as a small and fast yaml parser impl
-	// https://bitbucket.org/asomov/snakeyaml/wiki/Documentation#markdown-header-installation
-	// https://github.com/asomov/snakeyaml
-	// https://bitbucket.org/asomov/snakeyaml
-	// https://bitbucket.org/asomov/snakeyaml
-	compile library.snake_yaml
-}
 
