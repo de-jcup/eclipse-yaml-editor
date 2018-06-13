@@ -1,0 +1,33 @@
+---
+project: xyz1
+desc: description...
+mixin:
+   - myke-mixin
+discover:
+  - my-server
+env_files:
+  - server-version.env
+#      a comment 
+tasks:
+ build-server:
+    cmd: echo "building version {{.SERVER_VERSION}}";./gradlew build
+    #./gradlew clean build
+ 
+---
+project: xyz2
+desc: description2...
+mixin:
+   - myke-mixin
+discover:
+  - my-server
+env_files:
+  - server-version.env
+#      a comment 
+tasks:
+ build-server:
+    cmd: echo "building version {{.SERVER_VERSION}}";./gradlew build
+    #./gradlew clean build
+ 
+ 
+  
+ 

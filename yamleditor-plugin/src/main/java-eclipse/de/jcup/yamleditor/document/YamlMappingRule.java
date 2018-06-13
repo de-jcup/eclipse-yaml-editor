@@ -28,6 +28,16 @@ import org.eclipse.jface.text.rules.Token;
  */
 public class YamlMappingRule implements IPredicateRule {
 
+	/*
+	 * This is a security break: The prefix is the space before a mapping. If
+	 * the rule comes to an infinite loop (which shall no longer be possible)
+	 * this is a fallback to terminate at least the editor. There was an issue
+	 * with a file starting with "---" freezing eclipse on startup when editor
+	 * was opened. This "fuse" does prevent a freeze.
+	 * 
+	 */
+	private static final int MAXIMUM_PREFIX_BEFORE_INFINIT_LOOP_DETECTED = 10000;
+
 	private IToken token;
 
 	public YamlMappingRule(IToken token) {
@@ -61,12 +71,19 @@ public class YamlMappingRule implements IPredicateRule {
 				if (prefixSb == null) {
 					prefixSb = new StringBuilder();
 				}
+				if (prefixSb.length() > MAXIMUM_PREFIX_BEFORE_INFINIT_LOOP_DETECTED) {
+					/* infinite loop detected - but this situation should never happen any more*/
+					System.err.println("Yaml editor: Infinite loop detected. Prevent eclipse freeze by terminating editor.");
+					// we use the success token to prevent any longer calls of evaluate method
+					// will destroy editor when scanner is on wrong position but at least will never freeze eclipse again.
+					return getSuccessToken();
+				}
 				char cb = (char) cbefore;
-				prefixSb.append(cb);
 				/* only when its a space before inspect further */
-				boolean notAlreadyAList = prefixSb.indexOf("-")!=-1;
-				boolean possibleListEntry = cb=='-' && notAlreadyAList;
-				if (cb == ' ' || possibleListEntry ) {
+				boolean hyphenAlreadyInPrefix = prefixSb.indexOf("-") != -1;
+				boolean possibleListEntry = cb == '-' && !hyphenAlreadyInPrefix;
+				prefixSb.append(cb);
+				if (cb == ' ' || possibleListEntry) {
 					scanner.unread(); /*
 										 * go one step back - so position of
 										 * former space
@@ -83,8 +100,8 @@ public class YamlMappingRule implements IPredicateRule {
 					}
 					cbefore = scanner
 							.read(); /*
-										 * get char before former space, position
-										 * now again at former space
+										 * get char before former space,
+										 * position now again at former space
 										 */
 					scanner.unread();
 
