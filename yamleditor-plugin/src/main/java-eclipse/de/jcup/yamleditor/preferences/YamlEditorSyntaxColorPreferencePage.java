@@ -66,6 +66,7 @@ public class YamlEditorSyntaxColorPreferencePage extends FieldEditorPreferencePa
 				changeColor(editorMap, COLOR_RESERVED_KEYWORD, YamlEditorColorConstants.MIDDLE_GREEN);
 				
 				changeColor(editorMap, COLOR_GSTRING, YamlEditorColorConstants.MIDDLE_ORANGE);
+				changeColor(editorMap, COLOR_SINGLE_STRING, YamlEditorColorConstants.BRIGHT_MAGENTA);
 				changeColor(editorMap, COLOR_COMMENT, YamlEditorColorConstants.GREEN_JAVA);
 				changeColor(editorMap, COLOR_BOOLEANS, YamlEditorColorConstants.DARK_THEME_GRAY);
 				changeColor(editorMap, COLOR_MAPPINGS, YamlEditorColorConstants.BRIGHT_CYAN);

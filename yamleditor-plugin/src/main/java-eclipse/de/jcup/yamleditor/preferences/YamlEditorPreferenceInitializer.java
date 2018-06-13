@@ -65,6 +65,7 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		preferences.setDefaultColor(COLOR_RESERVED_KEYWORD, KEYWORD_DEFAULT_PURPLE);
 		
 		preferences.setDefaultColor(COLOR_GSTRING, ROYALBLUE);
+		preferences.setDefaultColor(COLOR_SINGLE_STRING, STEELBLUE);
 		preferences.setDefaultColor(COLOR_COMMENT, GREEN_JAVA);
 		
 		preferences.setDefaultColor(COLOR_BOOLEANS, DARK_GRAY);

@@ -21,7 +21,7 @@ public enum YamlDocumentIdentifiers implements YamlDocumentIdentifier {
 	
 	COMMENT,
 	
-	/*SINGLE_STRING, see https://stackoverflow.com/questions/19109912/do-i-need-quotes-for-strings-in-yaml maybe in future*/
+	SINGLE_STRING, 
 	
 	DOUBLE_STRING,
 	

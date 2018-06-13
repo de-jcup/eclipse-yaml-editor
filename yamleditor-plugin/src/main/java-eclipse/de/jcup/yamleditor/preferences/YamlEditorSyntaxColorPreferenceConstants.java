@@ -25,6 +25,7 @@ public enum YamlEditorSyntaxColorPreferenceConstants implements PreferenceIdenti
 	COLOR_BOOLEANS("colorBooleans","Booleans"),
 
 	COLOR_GSTRING("colorDoubleStrings", "Double quoted strings"),
+	COLOR_SINGLE_STRING("colorSingleStrings", "Quoted strings"),
 	COLOR_COMMENT("colorComments", "Comment"),
 	COLOR_MAPPINGS("colorMappings","Mappings"),
 	COLOR_BLOCK("colorBlock","Block"),

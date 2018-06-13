@@ -43,6 +43,8 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		IToken block = createToken(BLOCK_KEYWORD);
 		IToken comment = createToken(COMMENT);
 		IToken doubleString = createToken(DOUBLE_STRING);
+		IToken singleString = createToken(SINGLE_STRING);
+		
 		IToken mappings = createToken(MAPPINGS);
 		IToken yamlReservedWords = createToken(RESERVED_WORDS);
 
@@ -51,6 +53,7 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		List<IPredicateRule> rules = new ArrayList<>();
 		rules.add(new SingleLineRule("#", "", comment, (char) -1, true));
 		rules.add(new YamlStringRule("\"", "\"", doubleString));
+		rules.add(new YamlStringRule("'", "'", singleString));
 		rules.add(new ExactWordPatternRule(onlyHyphenWordsDetector, "---", block, true));
 		rules.add(new SingleLineRule("<tag:", ">", yamlReservedWords, (char) -1, true));
 

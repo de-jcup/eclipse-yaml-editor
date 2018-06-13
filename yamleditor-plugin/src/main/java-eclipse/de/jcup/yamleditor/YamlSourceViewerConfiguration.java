@@ -156,6 +156,7 @@ public class YamlSourceViewerConfiguration extends TextSourceViewerConfiguration
 		addPresentation(reconciler, BOOLEANS.getId(), getPreferences().getColor(COLOR_BOOLEANS),SWT.NONE);
 
 		addPresentation(reconciler, DOUBLE_STRING.getId(), getPreferences().getColor(COLOR_GSTRING),SWT.NONE);
+		addPresentation(reconciler, SINGLE_STRING.getId(), getPreferences().getColor(COLOR_SINGLE_STRING),SWT.NONE);
 		
 		addPresentation(reconciler, COMMENT.getId(), getPreferences().getColor(COLOR_COMMENT),SWT.NONE);
 		addPresentation(reconciler, MAPPINGS.getId(), getPreferences().getColor(COLOR_MAPPINGS),SWT.BOLD);
