@@ -33,7 +33,8 @@ import de.jcup.yamleditor.outline.ItemType;
 
 public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider {
 
-	private static final String ICON_FUNCTION = "public_co.png";
+	private static final String ICON_NODE = "public_co.png";
+	private static final String ICON_LEAF = "field_public_obj.png";
 	private static final String ICON_ERROR ="error_tsk.png";
 	private static final String ICON_INFO ="info_tsk.png";
 
@@ -67,18 +68,19 @@ public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements
 			
 			
 			if (type == null) {
-				return null;
+				if (item.hasChildren()){
+					return getOutlineImage(ICON_NODE);
+				}
+				return getOutlineImage(ICON_LEAF);
 			}
 
 			switch (type) {
-			case NODE:
-				return getOutlineImage(ICON_FUNCTION);
 			case META_ERROR:
 				return getOutlineImage(ICON_ERROR);
 			case META_INFO:
 				return getOutlineImage(ICON_INFO);
 			default:
-				return null;
+				
 			}
 		}
 		return null;
@@ -94,7 +96,7 @@ public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements
 			Item item = (Item) element;
 
 			ItemType itemType = item.getItemType();
-			if (itemType==ItemType.NODE){
+			if (itemType==ItemType.SPECIAL){
 				
 				StyledString typeString = new StyledString("label ", outlineItemTypeStyler);
 				styled.append(typeString);
