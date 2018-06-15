@@ -58,7 +58,7 @@ import de.jcup.yamleditor.presentation.PresentationSupport;
  */
 public class YamlSourceViewerConfiguration extends TextSourceViewerConfiguration {
 
-	private YamlDefaultTextScanner gradleScanner;
+	private YamlDefaultTextScanner scanner;
 	private ColorManager colorManager;
 
 	private TextAttribute defaultTextAttribute;
@@ -185,19 +185,19 @@ public class YamlSourceViewerConfiguration extends TextSourceViewerConfiguration
 	}
 
 	private YamlDefaultTextScanner getGradleDefaultTextScanner() {
-		if (gradleScanner == null) {
-			gradleScanner = new YamlDefaultTextScanner(colorManager);
+		if (scanner == null) {
+			scanner = new YamlDefaultTextScanner(colorManager);
 			updateTextScannerDefaultColorToken();
 		}
-		return gradleScanner;
+		return scanner;
 	}
 
 	public void updateTextScannerDefaultColorToken() {
-		if (gradleScanner == null) {
+		if (scanner == null) {
 			return;
 		}
 		RGB color = getPreferences().getColor(COLOR_NORMAL_TEXT);
-		gradleScanner.setDefaultReturnToken(createColorToken(color));
+		scanner.setDefaultReturnToken(createColorToken(color));
 	}
 	
 
