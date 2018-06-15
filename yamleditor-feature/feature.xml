@@ -6,15 +6,14 @@
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/yaml-editor">
-      Yaml Editor is a eclipse plugin to edit yaml scripts (.bat)
-
+      Yaml Editor is a eclipse plugin to edit yaml scripts (.yaml, .yml)
 You can find more information at
 https://marketplace.eclipse.org/content/yaml-editor
 and
 https://github.com/de-jcup/eclipse-yaml-editor
-
 It supports 
-- Syntax coloring which is customizeable and has additional defaults for dark theme
+- Syntax coloring which is customizeable and has additional defaults
+for dark theme
 - Bracket switching + highlighting
 - Block commenting (CTRL+7)
 - Auto bracket closing for []

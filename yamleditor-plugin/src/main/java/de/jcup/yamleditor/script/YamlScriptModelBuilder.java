@@ -25,18 +25,21 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
-import org.yaml.snakeyaml.nodes.Tag;
 
 public class YamlScriptModelBuilder {
+	private Yaml yamlParser;
 
+	public YamlScriptModelBuilder(){
+		yamlParser = new Yaml();
+	}
+	
 	public YamlScriptModel build(String text) {
 
 		YamlScriptModel model = new YamlScriptModel();
-		Yaml yaml = new Yaml();
 		try {
 			StringReader reader = new StringReader(text);
 
-			Iterable<Node> nodes = yaml.composeAll(reader);
+			Iterable<Node> nodes = yamlParser.composeAll(reader);
 			YamlNode root = model.getRootNode();
 			for (Node node : nodes) {
 				buildNode(root, node);
