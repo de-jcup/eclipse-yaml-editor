@@ -1,5 +1,7 @@
 ![Eclipse YAML editor logo](https://github.com/de-jcup/eclipse-yaml-editor/raw/master/yamleditor-plugin/icons/yaml-editor-logo.png "Eclipse YAML editor")
 
+[![Build status:](https://travis-ci.org/de-jcup/eclipse-yaml-editor.svg?branch=master)](https://travis-ci.org/de-jcup/eclipse-yaml-editor)
+
 ### About
 This is a simple YAML editor for eclipse. Project is hosted at https://github.com/de-jcup/eclipse-yaml-editor
 
