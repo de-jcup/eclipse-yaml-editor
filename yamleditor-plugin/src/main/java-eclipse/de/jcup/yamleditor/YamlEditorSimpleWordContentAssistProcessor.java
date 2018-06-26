@@ -36,12 +36,8 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
-import de.jcup.yamleditor.SimpleWordCodeCompletion;
-import de.jcup.yamleditor.SimpleWordListBuilder;
-import de.jcup.yamleditor.WordListBuilder;
-import de.jcup.yamleditor.document.keywords.YamlBooleanKeyWords;
-import de.jcup.yamleditor.document.YamlDocumentIdentifiers;
 import de.jcup.yamleditor.document.keywords.DocumentKeyWord;
+import de.jcup.yamleditor.document.keywords.YamlBooleanKeyWords;
 import de.jcup.yamleditor.document.keywords.YamlReservedWords;
 import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 

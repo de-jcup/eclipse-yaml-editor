@@ -16,15 +16,10 @@
 package de.jcup.yamleditor;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
-
-import de.jcup.yamleditor.script.YamlNode;
 
 /**
  * Hyperlink detector for all kind of hyperlinks in egradle editor.

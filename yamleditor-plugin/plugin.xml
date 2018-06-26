@@ -239,6 +239,21 @@
             class="de.jcup.yamleditor.preferences.YamlEditorPreferenceInitializer">
       </initializer>
    </extension>
+   
+   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          THEME                          			 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
+    <extension
+         point="org.eclipse.e4.ui.css.swt.theme">
+      <stylesheet
+            uri="css/dark.css">
+         <themeid
+               refid="org.eclipse.e4.ui.css.theme.e4_dark">
+         </themeid>
+      </stylesheet>
+   </extension>
+   
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          MARKER                          			 -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 

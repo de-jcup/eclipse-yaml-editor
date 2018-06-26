@@ -77,7 +77,6 @@ import de.jcup.yamleditor.outline.YamlQuickOutlineDialog;
 import de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants;
 import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 import de.jcup.yamleditor.script.YamlError;
-import de.jcup.yamleditor.script.YamlNode;
 import de.jcup.yamleditor.script.YamlScriptModel;
 import de.jcup.yamleditor.script.YamlScriptModelBuilder;
 
@@ -561,7 +560,6 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		ProjectionSupport support = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
 		support.install();
 		getSourceViewerDecorationSupport(viewer);
-		viewer.doOperation(ProjectionViewer.TOGGLE);
 		return viewer;
 	}
 
