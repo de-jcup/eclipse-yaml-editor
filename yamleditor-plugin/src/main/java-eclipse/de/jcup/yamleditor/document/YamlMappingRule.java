@@ -56,13 +56,13 @@ public class YamlMappingRule implements IPredicateRule {
 
 	@Override
 	public IToken evaluate(ICharacterScanner scanner, boolean resume) {
+		ScanSlider slider = new ScanSlider(scanner);
 		boolean startOfDocument = scanner.getColumn() == 0;
 		boolean newLine = startOfDocument;
 		if (!startOfDocument) {
 
 			/* get char before */
-			scanner.unread();
-			int cbefore = scanner.read();
+			int cbefore = slider.readBefore();
 
 			newLine = isNewLine(scanner, (char) cbefore);
 			int backwardSteps = 0;
@@ -72,10 +72,16 @@ public class YamlMappingRule implements IPredicateRule {
 					prefixSb = new StringBuilder();
 				}
 				if (prefixSb.length() > MAXIMUM_PREFIX_BEFORE_INFINIT_LOOP_DETECTED) {
-					/* infinite loop detected - but this situation should never happen any more*/
-					System.err.println("Yaml editor: Infinite loop detected. Prevent eclipse freeze by terminating editor.");
-					// we use the success token to prevent any longer calls of evaluate method
-					// will destroy editor when scanner is on wrong position but at least will never freeze eclipse again.
+					/*
+					 * infinite loop detected - but this situation should never
+					 * happen any more
+					 */
+					System.err.println(
+							"Yaml editor: Infinite loop detected. Prevent eclipse freeze by terminating editor.");
+					// we use the success token to prevent any longer calls of
+					// evaluate method
+					// will destroy editor when scanner is on wrong position but
+					// at least will never freeze eclipse again.
 					return getSuccessToken();
 				}
 				char cb = (char) cbefore;
@@ -84,56 +90,51 @@ public class YamlMappingRule implements IPredicateRule {
 				boolean possibleListEntry = cb == '-' && !hyphenAlreadyInPrefix;
 				prefixSb.append(cb);
 				if (cb == ' ' || possibleListEntry) {
-					scanner.unread(); /*
+					slider.moveBack(); /*
 										 * go one step back - so position of
 										 * former space
 										 */
-					backwardSteps++;
-					scanner.unread(); /*
-										 * additional step back - no one char
+					slider.moveBack(); /*
+										 * additional step back - now one char
 										 * before former space
 										 */
-					backwardSteps++;
 					if (scanner.getColumn() == 0) {
 						newLine = true;
 						break;
 					}
-					cbefore = scanner
-							.read(); /*
-										 * get char before former space,
-										 * position now again at former space
-										 */
-					scanner.unread();
-
+					cbefore = slider.readBefore();/*
+													 * get char before former
+													 * space, position now again
+													 * at former space
+													 */
 					newLine = isNewLine(scanner, (char) cbefore);
 				} else {
 					/* no space, so not an indent, so reset */
 					break;
 				}
 			}
-			resetScannerBackwards(scanner, backwardSteps);
+			slider.resetScanner();
 
 		}
 
 		if (!newLine) {
+			slider.resetScanner();
 			return Token.UNDEFINED;
 		}
 
-		char start = (char) scanner.read();
+		char start = (char) slider.moveForward();
 		if (!isWordStart(start)) {
-			scanner.unread();
+			slider.resetScanner();
 			return Token.UNDEFINED;
 		}
 		/* okay is a variable, so read until end reached */
 		StringBuilder sb = new StringBuilder();
-		int readDone = 0;
 		do {
-			int read = scanner.read(); // use int for EOF detection, char makes
+			int read = slider.moveForward(); // use int for EOF detection, char makes
 										// problems here!
-			readDone++;
 			char c = (char) read;
 			if (ICharacterScanner.EOF == read || (!isWordPart(sb, c))) {
-				resetScanner(scanner, readDone);
+				slider.resetScanner();
 				return Token.UNDEFINED;
 			}
 			if (c == ':') {
@@ -147,24 +148,6 @@ public class YamlMappingRule implements IPredicateRule {
 		newLine = newLine || cbefore == '\n';
 		newLine = newLine || cbefore == '\r';
 		return newLine;
-	}
-
-	protected void resetScanner(ICharacterScanner scanner, int readDone) {
-		commonResetScanner(scanner, readDone, true);
-	}
-
-	protected void resetScannerBackwards(ICharacterScanner scanner, int readDone) {
-		commonResetScanner(scanner, readDone, false);
-	}
-
-	private void commonResetScanner(ICharacterScanner scanner, int readDone, boolean unread) {
-		for (int i = 0; i < readDone; i++) {
-			if (unread) {
-				scanner.unread();
-			} else {
-				scanner.read();
-			}
-		}
 	}
 
 	private boolean isWordPart(StringBuilder sb, char c) {
