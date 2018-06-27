@@ -50,6 +50,15 @@
         <super type="org.eclipse.core.resources.textmarker"/>
         <persistent value="false"/>
     </extension>
+    
+    <extension 
+   		id="de.jcup.yamleditor.script.task"
+    	point="org.eclipse.core.resources.markers"
+    	name="Yamleditor task">
+        <super type="org.eclipse.core.resources.taskmarker"/>
+        <super type="org.eclipse.core.resources.textmarker"/>
+        <persistent value="true"/>
+    </extension>
    
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          CONTEXT                                     -->

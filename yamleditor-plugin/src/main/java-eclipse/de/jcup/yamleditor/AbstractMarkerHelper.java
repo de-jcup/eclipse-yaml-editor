@@ -58,17 +58,27 @@ abstract class AbstractMarkerHelper {
 
 	public void createScriptMarker(int severity, IResource resource, String message, int lineNumber, int charStart, int charEnd)
 			throws CoreException {
-		createMarker(resource, message, lineNumber, markerType, severity, charStart, charEnd);
+		createMarker(resource, message, lineNumber, markerType, severity, charStart, charEnd,-1);
+	}
+	
+	public void createTaskMarker(int priority, IResource resource, String message, int lineNumber, int charStart, int charEnd)
+			throws CoreException {
+		createMarker(resource, message, lineNumber, markerType, -1, charStart, charEnd,priority);
 	}
 
 	private void createMarker(IResource resource, String message, int lineNumber, String markerType, int severity,
-			int charStart, int charEnd) throws CoreException {
+			int charStart, int charEnd, int priority) throws CoreException {
 		if (lineNumber <= 0)
 			lineNumber = 1;
 		IMarker marker = findMarker(resource, message, lineNumber, markerType);
 		if (marker == null) {
 			HashMap<String, Object> map = new HashMap<>();
-			map.put(IMarker.SEVERITY, new Integer(severity));
+			if (severity!=-1){
+				map.put(IMarker.SEVERITY, new Integer(severity));
+			}
+			if (priority!=-1){
+				map.put(IMarker.PRIORITY, new Integer(priority));
+			}
 			map.put(IMarker.LOCATION, resource.getFullPath().toOSString());
 			map.put(IMarker.MESSAGE, message);
 			MarkerUtilities.setLineNumber(map, lineNumber);

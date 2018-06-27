@@ -104,6 +104,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	private Object monitor = new Object();
 	private boolean quickOutlineOpened;
 	private int lastCaretPosition;
+	private TodoTasksSupport todoTasksSupport = new TodoTasksSupport();
 
 	public YamlEditor() {
 		setSourceViewerConfiguration(new YamlSourceViewerConfiguration(this));
@@ -151,11 +152,18 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	}
 
 	void setTitleImageDependingOnSeverity(int severity) {
-		if (severity == IMarker.SEVERITY_ERROR) {
-			setTitleImage(EclipseUtil.getImage("icons/yaml-editor-with-error.png", YamlEditorActivator.PLUGIN_ID));
-		} else {
-			setTitleImage(EclipseUtil.getImage("icons/yaml-editor.png", YamlEditorActivator.PLUGIN_ID));
-		}
+		EclipseUtil.safeAsyncExec(new Runnable(){
+
+			@Override
+			public void run() {
+				if (severity == IMarker.SEVERITY_ERROR) {
+					setTitleImage(EclipseUtil.getImage("icons/yaml-editor-with-error.png", YamlEditorActivator.PLUGIN_ID));
+				} else {
+					setTitleImage(EclipseUtil.getImage("icons/yaml-editor.png", YamlEditorActivator.PLUGIN_ID));
+				}
+			}
+			
+		});
 	}
 
 	private int getSeverity() {
@@ -392,13 +400,15 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		super.editorSaved();
 		rebuildOutline();
 	}
-
+ 
 	/**
 	 * Does rebuild the outline - this is done asynchronous
 	 */
 	public void rebuildOutline() {
 		String text = getDocumentText();
-
+		
+		
+		
 		EclipseUtil.safeAsyncExec(new Runnable() {
 
 			@Override
@@ -411,6 +421,11 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 
 				if (model.hasErrors()) {
 					addErrorMarkers(model, IMarker.SEVERITY_ERROR);
+				}
+				try{
+					todoTasksSupport.updateTasksFor(text, getEditorInput());
+				}catch(CoreException e){
+					YamlEditorUtil.logError("Update task not possible", e);
 				}
 			}
 		});
