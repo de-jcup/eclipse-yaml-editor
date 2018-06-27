@@ -18,6 +18,7 @@
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
+import org.eclipse.jface.viewers.IToolTipProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Color;
@@ -31,7 +32,7 @@ import de.jcup.yamleditor.EclipseUtil;
 import de.jcup.yamleditor.outline.Item;
 import de.jcup.yamleditor.outline.ItemType;
 
-public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider {
+public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider, IToolTipProvider {
 
 	private static final String ICON_NODE = "public_co.png";
 	private static final String ICON_LEAF = "field_public_obj.png";
@@ -98,7 +99,7 @@ public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements
 			ItemType itemType = item.getItemType();
 			if (itemType==ItemType.SPECIAL){
 				
-				StyledString typeString = new StyledString("label ", outlineItemTypeStyler);
+				StyledString typeString = new StyledString("special:", outlineItemTypeStyler);
 				styled.append(typeString);
 			}else if (itemType==ItemType.META_DEBUG){
 				StyledString typeString = new StyledString(item.getOffset()+": ", outlineItemTypeStyler);
@@ -127,6 +128,17 @@ public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements
 
 	private Image getOutlineImage(String name) {
 		return EclipseUtil.getImage("/icons/outline/" + name, YamlEditorActivator.PLUGIN_ID);
+	}
+
+	@Override
+	public String getToolTipText(Object element) {
+		if (element instanceof Item){
+			Item item = (Item) element;
+			if (ItemType.META_ERROR.equals(item.getItemType())){
+				return item.getName()+"\nThe outline will only show valid parts of document!";
+			}
+		}
+		return null;
 	}
 
 }

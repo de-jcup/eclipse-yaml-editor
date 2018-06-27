@@ -20,6 +20,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -73,6 +74,8 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
 		viewer.addDoubleClickListener(this);
 		viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(labelProvider));
 		viewer.addSelectionChangedListener(this);
+		/* next line enables tooltips for tree viewer- necesseary, otherwise not working!*/
+		ColumnViewerToolTipSupport.enableFor(viewer);
 
 		/* it can happen that input is already updated before control created */
 		if (input != null) {
