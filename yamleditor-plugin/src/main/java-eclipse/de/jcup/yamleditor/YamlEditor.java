@@ -66,6 +66,7 @@ import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.junit.FixMethodOrder;
 
 import de.jcup.yamleditor.YamlMarginRulePainter.MarginPaintSetup;
 import de.jcup.yamleditor.document.YamlFileDocumentProvider;
@@ -104,7 +105,6 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	private Object monitor = new Object();
 	private boolean quickOutlineOpened;
 	private int lastCaretPosition;
-	private TodoTasksSupport todoTasksSupport = new TodoTasksSupport();
 
 	public YamlEditor() {
 		setSourceViewerConfiguration(new YamlSourceViewerConfiguration(this));
@@ -422,11 +422,12 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 				if (model.hasErrors()) {
 					addErrorMarkers(model, IMarker.SEVERITY_ERROR);
 				}
-				try{
-					todoTasksSupport.updateTasksFor(text, getEditorInput());
-				}catch(CoreException e){
-					YamlEditorUtil.logError("Update task not possible", e);
-				}
+				/* FIXME ATR: remove call when unnecessay because of listener!*/
+//				try{
+//					todoTasksSupport.updateTasksFor(text, getEditorInput());
+//				}catch(CoreException e){
+//					YamlEditorUtil.logError("Update task not possible", e);
+//				}
 			}
 		});
 	}

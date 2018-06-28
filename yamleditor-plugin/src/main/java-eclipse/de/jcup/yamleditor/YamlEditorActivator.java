@@ -36,6 +36,7 @@ public class YamlEditorActivator extends AbstractUIPlugin {
 	 */
 	public YamlEditorActivator() {
 		colorManager = new ColorManager();
+		TodoTasksSupport.INSTANCE.install();
 	}
 
 	public ColorManager getColorManager() {
@@ -50,6 +51,7 @@ public class YamlEditorActivator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		colorManager.dispose();
+		TodoTasksSupport.INSTANCE.uninstall();
 		super.stop(context);
 	}
 
