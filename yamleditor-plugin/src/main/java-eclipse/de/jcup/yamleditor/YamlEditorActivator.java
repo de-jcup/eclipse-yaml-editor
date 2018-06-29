@@ -18,10 +18,12 @@ package de.jcup.yamleditor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import de.jcup.eclipse.commons.TodoTasksSupport;
+
 /**
  * The activator class controls the plug-in life cycle
  */
-public class YamlEditorActivator extends AbstractUIPlugin {
+public class YamlEditorActivator extends AbstractUIPlugin{
 
 	// The plug-in COMMAND_ID
 	public static final String PLUGIN_ID = "de.jcup.yamleditor"; //$NON-NLS-1$
@@ -30,13 +32,14 @@ public class YamlEditorActivator extends AbstractUIPlugin {
 	private static YamlEditorActivator plugin;
 	private ColorManager colorManager;
 
+	private TodoTasksSupport taskSupport;
 
 	/**
 	 * The constructor
 	 */
 	public YamlEditorActivator() {
 		colorManager = new ColorManager();
-		TodoTasksSupport.INSTANCE.install();
+		taskSupport = new TodoTasksSupport(new YamlTodoTaskSupportProvider());
 	}
 
 	public ColorManager getColorManager() {
@@ -46,12 +49,13 @@ public class YamlEditorActivator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		taskSupport.install();
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		colorManager.dispose();
-		TodoTasksSupport.INSTANCE.uninstall();
+		taskSupport.uninstall();
 		super.stop(context);
 	}
 
