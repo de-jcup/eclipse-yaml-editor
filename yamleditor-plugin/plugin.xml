@@ -21,6 +21,10 @@
    		id="yamleditor.preferences.keyword.validation"
    		label="validation">
      </keyword>
+      <keyword
+   		id="yamleditor.preferences.keyword.folding"
+   		label="folding">
+     </keyword>
     
    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -225,8 +229,11 @@
          <keywordReference
                id="yamleditor.preferences.keyword.yaml">
          </keywordReference>
-          <keywordReference
+         <keywordReference
                id="yamleditor.preferences.keyword.editor">
+         </keywordReference>
+         <keywordReference
+               id="yamleditor.preferences.keyword.folding">
          </keywordReference>
       </page>
       <page

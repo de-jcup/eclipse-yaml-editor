@@ -18,6 +18,9 @@ package de.jcup.yamleditor;
 import static de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants.*;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -34,11 +37,15 @@ import org.eclipse.jface.text.CursorLinePainter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
+import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -78,6 +85,7 @@ import de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants;
 import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 import de.jcup.yamleditor.script.YamlError;
 import de.jcup.yamleditor.script.YamlScriptModel;
+import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 import de.jcup.yamleditor.script.YamlScriptModelBuilder;
 
 @AdaptedFromEGradle
@@ -104,11 +112,12 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	private Object monitor = new Object();
 	private boolean quickOutlineOpened;
 	private int lastCaretPosition;
-	private TodoTasksSupport todoTasksSupport = new TodoTasksSupport();
+	private ProjectionAnnotationModel annotationModel;
 
 	public YamlEditor() {
 		setSourceViewerConfiguration(new YamlSourceViewerConfiguration(this));
 		this.modelBuilder = new YamlScriptModelBuilder();
+		codeFoldingEnabledForYamlEditors=YamlEditorPreferences.getInstance().isCodeFoldingEnabled();
 	}
 
 	public void resourceChanged(IResourceChangeEvent event) {
@@ -152,17 +161,18 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	}
 
 	void setTitleImageDependingOnSeverity(int severity) {
-		EclipseUtil.safeAsyncExec(new Runnable(){
+		EclipseUtil.safeAsyncExec(new Runnable() {
 
 			@Override
 			public void run() {
 				if (severity == IMarker.SEVERITY_ERROR) {
-					setTitleImage(EclipseUtil.getImage("icons/yaml-editor-with-error.png", YamlEditorActivator.PLUGIN_ID));
+					setTitleImage(
+							EclipseUtil.getImage("icons/yaml-editor-with-error.png", YamlEditorActivator.PLUGIN_ID));
 				} else {
 					setTitleImage(EclipseUtil.getImage("icons/yaml-editor.png", YamlEditorActivator.PLUGIN_ID));
 				}
 			}
-			
+
 		});
 	}
 
@@ -229,8 +239,11 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 
 		installAdditionalSourceViewerSupport();
 
-		StyledText styledText = getSourceViewer().getTextWidget();
+		ISourceViewer sourceViewer = getSourceViewer();
+		StyledText styledText = sourceViewer.getTextWidget();
 		styledText.addKeyListener(new YamlBracketInsertionCompleter(this));
+
+		handleFolding();
 
 		/*
 		 * register as resource change listener to provide marker change
@@ -239,6 +252,19 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 
 		setTitleImageInitial();
+	}
+
+	private void handleFolding() {
+		if (!isCodeFoldingEnabledForYamlEditors()) {
+			return;
+		}
+		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
+
+		// turn projection mode on
+		viewer.doOperation(ProjectionViewer.TOGGLE);
+
+		annotationModel = viewer.getProjectionAnnotationModel();
+
 	}
 
 	public YamlEditorContentOutlinePage getOutlinePage() {
@@ -400,15 +426,13 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		super.editorSaved();
 		rebuildOutline();
 	}
- 
+
 	/**
 	 * Does rebuild the outline - this is done asynchronous
 	 */
 	public void rebuildOutline() {
 		String text = getDocumentText();
-		
-		
-		
+
 		EclipseUtil.safeAsyncExec(new Runnable() {
 
 			@Override
@@ -418,15 +442,19 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 				YamlScriptModel model = modelBuilder.build(text);
 
 				getOutlinePage().rebuild(model);
+				updateFoldingStructure(model.getFoldingPositions());
 
 				if (model.hasErrors()) {
 					addErrorMarkers(model, IMarker.SEVERITY_ERROR);
 				}
-				try{
-					todoTasksSupport.updateTasksFor(text, getEditorInput());
-				}catch(CoreException e){
-					YamlEditorUtil.logError("Update task not possible", e);
-				}
+				/*
+				 * FIXME ATR: remove call when unnecessay because of listener!
+				 */
+				// try{
+				// todoTasksSupport.updateTasksFor(text, getEditorInput());
+				// }catch(CoreException e){
+				// YamlEditorUtil.logError("Update task not possible", e);
+				// }
 			}
 		});
 	}
@@ -517,6 +545,8 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		fOverviewRuler = createOverviewRuler(getSharedColors());
 
 		viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
+		// ensure decoration support has been created and configured.
+		getSourceViewerDecorationSupport(viewer);
 
 		MarginPaintSetup setup = new MarginPaintSetup();
 		marginRulePainter = new YamlMarginRulePainter(viewer, setup);
@@ -532,30 +562,30 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 				if (event.character == '\t') {
 
 					event.doit = false;
-					
+
 					EclipseUtil.safeAsyncExec(new Runnable() {
 
 						public void run() {
 
 							ISelection selection = getSelectionProvider().getSelection();
-							if (! (selection instanceof ITextSelection)) {
+							if (!(selection instanceof ITextSelection)) {
 								return;
 							}
 							ITextSelection ts = (ITextSelection) selection;
 							IDocumentProvider dp = getDocumentProvider();
 							IDocument doc = dp.getDocument(getEditorInput());
 							int offset = ts.getOffset();
-							if (offset==-1){
+							if (offset == -1) {
 								offset = lastCaretPosition;
 							}
 							try {
-								String toInsert ="   ";
+								String toInsert = "   ";
 								int toInsertLength = toInsert.length();
 								doc.replace(offset, ts.getLength(), toInsert);
 								Control control = getAdapter(Control.class);
-								if (control instanceof StyledText){
+								if (control instanceof StyledText) {
 									StyledText t = (StyledText) control;
-									t.setCaretOffset(offset+toInsertLength);
+									t.setCaretOffset(offset + toInsertLength);
 								}
 							} catch (BadLocationException e) {
 								EclipseUtil.logError("Cannot insert tab replacement at " + offset, e);
@@ -576,6 +606,38 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		support.install();
 		getSourceViewerDecorationSupport(viewer);
 		return viewer;
+	}
+
+	private Annotation[] oldAnnotations;
+	private boolean codeFoldingEnabledForYamlEditors;
+
+	protected void updateFoldingStructure(SortedSet<FoldingPosition> positions) {
+		if (!isCodeFoldingEnabledForYamlEditors()) {
+			return;
+		}
+		Annotation[] annotations = new Annotation[positions.size()];
+
+		// this will hold the new annotations along
+		// with their corresponding positions
+		Map<ProjectionAnnotation, Position> newAnnotations = new HashMap<>();
+
+		int i=0;
+		for (FoldingPosition foldingPos: positions) {
+			ProjectionAnnotation annotation = new ProjectionAnnotation();
+			Position pos = new Position(foldingPos.getOffset());
+			pos.length=foldingPos.getLength();
+			
+			newAnnotations.put(annotation, pos);
+			annotations[i++] = annotation;
+		}
+
+		annotationModel.modifyAnnotations(oldAnnotations, newAnnotations, null);
+
+		oldAnnotations = annotations;
+	}
+
+	protected boolean isCodeFoldingEnabledForYamlEditors() {
+		return codeFoldingEnabledForYamlEditors;
 	}
 
 	public void moveMargineLineIfNecessary() {

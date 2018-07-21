@@ -18,9 +18,12 @@ package de.jcup.yamleditor.script;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.SortedSet;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 
 public class YamlScriptModelBuilderTest {
 
@@ -31,6 +34,23 @@ public class YamlScriptModelBuilderTest {
 		builderToTest = new YamlScriptModelBuilder();
 	}
 
+	@Test
+	public void folding_pos_correct(){
+		/* execute */
+		StringBuilder sb = new StringBuilder();
+		sb.append("entry:\n");
+		sb.append("  subentry:\n");
+		
+		YamlScriptModel result = builderToTest.build("");
+
+		/* test */
+		SortedSet<FoldingPosition> foldingPositions = result.getFoldingPositions();
+		assertEquals(1,foldingPositions.size());
+		FoldingPosition first = foldingPositions.iterator().next();
+		assertEquals(6,first.getOffset());
+		assertEquals(sb.length()-6,first.getLength());
+	}
+	
 	@Test
 	public void empty_string_has_no_nodes() {
 		/* execute */

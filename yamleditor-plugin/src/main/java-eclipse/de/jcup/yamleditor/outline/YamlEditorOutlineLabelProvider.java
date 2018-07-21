@@ -67,7 +67,6 @@ public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements
 
 			ItemType type = item.getItemType();
 			
-			
 			if (type == null) {
 				if (item.hasChildren()){
 					return getOutlineImage(ICON_NODE);
@@ -90,6 +89,7 @@ public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements
 	@Override
 	public StyledString getStyledText(Object element) {
 		StyledString styled = new StyledString();
+		
 		if (element == null) {
 			styled.append("null");
 		}
@@ -116,7 +116,6 @@ public class YamlEditorOutlineLabelProvider extends BaseLabelProvider implements
 
 		return styled;
 	}
-
 
 	public ColorManager getColorManager() {
 		YamlEditorActivator editorActivator = YamlEditorActivator.getDefault();

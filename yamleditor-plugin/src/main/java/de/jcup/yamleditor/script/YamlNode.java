@@ -18,15 +18,27 @@ package de.jcup.yamleditor.script;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.yaml.snakeyaml.nodes.Node;
+
 public class YamlNode {
 
 	private String name;
 	private List<YamlNode> children = new ArrayList<>();
 	int pos;
 	int end;
+	Node snakeNode;
+	boolean debug;
+	
+	public boolean isDebug() {
+		return debug;
+	}
 
 	public YamlNode(String name) {
 		this.name = name;
+	}
+	
+	public Node getSnakeNode() {
+		return snakeNode;
 	}
 
 	public String getName() {

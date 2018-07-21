@@ -72,6 +72,7 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 	private BooleanFieldEditor codeAssistWithYamlKeywords;
 	private BooleanFieldEditor codeAssistWithSimpleWords;
 	private ColorFieldEditor marginRuleColor;
+	private BooleanFieldEditor codeFoldingEnabled;
 
 	public YamlEditorPreferencePage() {
 		super(GRID);
@@ -115,13 +116,22 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		layout.numColumns = 2;
 		appearanceComposite.setLayout(layout);
 
-		/* OTHER */
+		/* --------------------- */
+		/* -- Other group    -- */
+		/* --------------------- */
 		Composite otherComposite = new Composite(appearanceComposite, SWT.NONE);
 		GridLayout otherLayout = new GridLayout();
 		otherLayout.marginWidth = 0;
 		otherLayout.marginHeight = 0;
 		otherComposite.setLayout(otherLayout);
 
+		/* code folding */
+		codeFoldingEnabled = new BooleanFieldEditor(P_CODE_FOLDING_ENABLED.getId(),
+				"Code folding enabled", otherComposite);
+		codeFoldingEnabled.getDescriptionControl(otherComposite)
+		.setToolTipText("When enabled code foldings is active");
+		addField(codeFoldingEnabled);
+		
 		/* linking with outline */
 		linkEditorWithOutline = new BooleanFieldEditor(P_LINK_OUTLINE_WITH_EDITOR.getId(),
 				"New opened editors are linked with outline", otherComposite);
@@ -218,8 +228,6 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		createDependency(bracketHighlightingCheckbox, matchingBracketsColor.getLabelControl(radioComposite));
 		createDependency(bracketHighlightingCheckbox, matchingBracketsColor.getColorSelector().getButton());
 
-		
-		
 		/* --------------------- */
 		/* -- Code assistance -- */
 		/* --------------------- */
