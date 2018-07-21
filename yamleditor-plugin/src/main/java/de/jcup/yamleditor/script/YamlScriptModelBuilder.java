@@ -16,7 +16,9 @@
 package de.jcup.yamleditor.script;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.Mark;
@@ -27,6 +29,8 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 
+import de.jcup.yamleditor.YamlEditorDebugSettings;
+import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 
 public class YamlScriptModelBuilder {
@@ -47,9 +51,7 @@ public class YamlScriptModelBuilder {
 			for (Node node : nodes) {
 				buildNode(model, root, node);
 			}
-			IndentionBlockBuilder builder = new IndentionBlockBuilder();
-			List<IndentionBlock> blocks = builder.build(text);
-			transformIndentionsToFoldings(model,blocks);
+			buildFoldingAll(model);
 
 		} catch (MarkedYAMLException e) {
 			String message = e.getMessage();
@@ -63,9 +65,48 @@ public class YamlScriptModelBuilder {
 		return model;
 	}
 
-	private void transformIndentionsToFoldings(YamlScriptModel model, List<IndentionBlock> blocks) {
-		for (IndentionBlock block: blocks){
-			model.addFolding(new FoldingPosition(block.getStart(), block.getLength()));
+	private void buildFoldingAll(YamlScriptModel model) {
+		if (!YamlEditorPreferences.getInstance().isCodeFoldingEnabled()) {
+			return;
+		}
+
+		YamlNode node = model.getRootNode();
+		Context context = new Context(model.getFoldingPositions());
+		buildFolding(context, node);
+		model.getRootNode().getChildren().addAll(context.debugNodes);
+	}
+
+	private class Context {
+		private SortedSet<FoldingPosition> foldingPositions;
+
+		private Context(SortedSet<FoldingPosition> foldingPositions) {
+			this.foldingPositions = foldingPositions;
+		}
+
+		private List<YamlNode> debugNodes = new ArrayList<YamlNode>();
+	}
+
+	private void buildFolding(Context context, YamlNode node) {
+		List<YamlNode> children = node.getChildren();
+		YamlNode childBefore= null;
+		for (YamlNode child : children) {
+			buildFolding(context, child);
+			if (childBefore!=null){
+				FoldingPosition foldingForChildBefore = new FoldingPosition(childBefore.pos, child.pos - childBefore.pos);
+				context.foldingPositions.add(foldingForChildBefore);
+				
+				if (YamlEditorDebugSettings.DEBUG_OUTLINE_ENABLED) {
+					String name = node.getName() + "=" + foldingForChildBefore.toString();
+					
+					YamlNode debugNode = new YamlNode(name);
+					debugNode.pos = foldingForChildBefore.getOffset();
+					debugNode.end = foldingForChildBefore.getOffset()+foldingForChildBefore.getLength();
+					debugNode.debug = true;
+					
+					context.debugNodes.add(debugNode);
+				}
+			}
+			childBefore=child;
 		}
 	}
 
