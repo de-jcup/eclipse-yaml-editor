@@ -35,6 +35,8 @@ public enum YamlEditorPreferenceConstants implements PreferenceIdentifiable{
 	P_CODE_ASSIST_ADD_KEYWORDS("codeAssistAddsKeyWords"),
 	P_CODE_ASSIST_ADD_SIMPLEWORDS("codeAssistAddsSimpleWords"),
 	
+	P_CODE_FOLDING_ENABLED("codeFoldingEnabled"),
+	
 	;
 
 	private String id;

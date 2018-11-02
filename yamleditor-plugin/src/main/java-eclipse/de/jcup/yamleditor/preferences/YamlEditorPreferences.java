@@ -153,6 +153,10 @@ public class YamlEditorPreferences {
 		String webColor = ColorUtil.convertToHexColor(color);
 		return webColor;
 	}
+	
+	public boolean isCodeFoldingEnabled() {
+		return getBooleanPreference(P_CODE_FOLDING_ENABLED);
+	}
 
 	public void setDefaultColor(PreferenceIdentifiable identifiable, RGB color) {
 		PreferenceConverter.setDefault(getPreferenceStore(), identifiable.getId(), color);
@@ -161,6 +165,8 @@ public class YamlEditorPreferences {
 	public static YamlEditorPreferences getInstance() {
 		return INSTANCE;
 	}
+
+	
 
 	
 

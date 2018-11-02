@@ -18,9 +18,12 @@ package de.jcup.yamleditor.script;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.SortedSet;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 
 public class YamlScriptModelBuilderTest {
 
@@ -31,6 +34,49 @@ public class YamlScriptModelBuilderTest {
 		builderToTest = new YamlScriptModelBuilder();
 	}
 
+	@Test
+	public void folding_pos_correct_when_last_line(){
+		/* execute */
+		StringBuilder sb = new StringBuilder();
+		sb.append("entry:\n");
+		sb.append("  subentry1:\n");
+		sb.append("  subentry2:\n");
+		sb.append("  subentry3:\n");
+		
+		YamlScriptModel result = builderToTest.build(sb.toString());
+
+		/* test */
+		SortedSet<FoldingPosition> foldingPositions = result.getFoldingPositions();
+		assertEquals(1,foldingPositions.size());
+		FoldingPosition first = foldingPositions.iterator().next();
+		assertEquals(0,first.getOffset());
+		assertEquals(sb.length(),first.getLength());
+	}
+	
+	@Test
+	public void folding_pos_correct_when_has_following_line(){
+		/* execute */
+		StringBuilder sb = new StringBuilder();
+		sb.append("entry:\n");
+		sb.append("  subentry1:\n");
+		sb.append("  subentry2:\n");
+		sb.append("  subentry3:\n");
+		
+		StringBuilder sb2 = new StringBuilder();
+		sb2.append(sb.toString());
+		sb2.append("entry:\n");
+		sb2.append("  subentry1:\n");
+		
+		YamlScriptModel result = builderToTest.build(sb2.toString());
+
+		/* test */
+		SortedSet<FoldingPosition> foldingPositions = result.getFoldingPositions();
+		assertEquals(1,foldingPositions.size());
+		FoldingPosition first = foldingPositions.iterator().next();
+		assertEquals(0,first.getOffset());
+		assertEquals(sb.length(),first.getLength());
+	}
+	
 	@Test
 	public void empty_string_has_no_nodes() {
 		/* execute */
