@@ -45,8 +45,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.UIJob;
 
-import de.jcup.yamleditor.AdaptedFromEGradle;
-import de.jcup.yamleditor.FilterPatternMatcher;
 import de.jcup.yamleditor.outline.FallbackOutlineContentProvider;
 
 @AdaptedFromEGradle

@@ -21,9 +21,21 @@
    		id="yamleditor.preferences.keyword.validation"
    		label="validation">
      </keyword>
-      <keyword
+     <keyword
    		id="yamleditor.preferences.keyword.folding"
    		label="folding">
+     </keyword>
+     <keyword
+   		id="yamleditor.preferences.keyword.task"
+   		label="task">
+     </keyword>
+     <keyword
+   		id="yamleditor.preferences.keyword.tasks"
+   		label="tasks">
+     </keyword>
+     <keyword
+   		id="yamleditor.preferences.keyword.todo"
+   		label="todo">
      </keyword>
     
    </extension>
@@ -248,11 +260,32 @@
                id="yamleditor.preferences.keyword.color">
          </keywordReference>
       </page>
+      <page
+         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorSyntaxColorPreferencePage"
+         class="de.jcup.yamleditor.preferences.YamlTaskTagsPreferencePage"
+         name="Task Tags"
+         category="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage">
+         <keywordReference
+               id="yamleditor.preferences.keyword.yaml">
+         </keywordReference>
+         <keywordReference
+               id="yamleditor.preferences.keyword.todo">
+         </keywordReference>
+         <keywordReference
+               id="yamleditor.preferences.keyword.task">
+         </keywordReference>
+          <keywordReference
+               id="yamleditor.preferences.keyword.tasks">
+         </keywordReference>
+      </page>
     </extension>
     <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="de.jcup.yamleditor.preferences.YamlEditorPreferenceInitializer">
+      </initializer>
+      <initializer
+            class="de.jcup.yamleditor.preferences.YamlTaskTagsPreferenceInitializer">
       </initializer>
    </extension>
    

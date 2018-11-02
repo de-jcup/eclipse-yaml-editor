@@ -73,7 +73,7 @@ import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-
+import de.jcup.eclipse.commons.ui.ColorUtil;
 import de.jcup.yamleditor.YamlMarginRulePainter.MarginPaintSetup;
 import de.jcup.yamleditor.document.YamlFileDocumentProvider;
 import de.jcup.yamleditor.document.YamlTextFileDocumentProvider;

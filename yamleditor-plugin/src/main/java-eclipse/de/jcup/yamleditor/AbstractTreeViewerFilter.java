@@ -25,9 +25,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
-import de.jcup.yamleditor.AdaptedFromEGradle;
-import de.jcup.yamleditor.Matcher;
-
 @AdaptedFromEGradle
 public abstract class AbstractTreeViewerFilter<T> extends ViewerFilter {
 

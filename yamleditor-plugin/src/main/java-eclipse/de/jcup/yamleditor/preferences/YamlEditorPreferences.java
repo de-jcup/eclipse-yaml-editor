@@ -28,10 +28,10 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
+import de.jcup.eclipse.commons.ui.ColorUtil;
+import de.jcup.yamleditor.EclipseUtil;
 import de.jcup.yamleditor.YamlEditor;
 import de.jcup.yamleditor.YamlEditorActivator;
-import de.jcup.yamleditor.ColorUtil;
-import de.jcup.yamleditor.EclipseUtil;
 
 public class YamlEditorPreferences {
 

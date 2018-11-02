@@ -19,4 +19,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui
 Bundle-ClassPath: .,
- libs/snakeyaml-1.21.jar
+ libs/snakeyaml-1.21.jar,
+ libs/de-jcup-eclipse-commons.jar

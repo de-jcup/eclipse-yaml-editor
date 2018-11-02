@@ -18,10 +18,14 @@ package de.jcup.yamleditor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import de.jcup.eclipse.commons.PluginContextProvider;
+import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvider;
+import de.jcup.eclipse.commons.ui.PluginContextProviderRegistry;
+
 /**
  * The activator class controls the plug-in life cycle
  */
-public class YamlEditorActivator extends AbstractUIPlugin {
+public class YamlEditorActivator extends AbstractUIPlugin implements PluginContextProvider {
 
 	// The plug-in COMMAND_ID
 	public static final String PLUGIN_ID = "de.jcup.yamleditor"; //$NON-NLS-1$
@@ -29,27 +33,35 @@ public class YamlEditorActivator extends AbstractUIPlugin {
 	// The shared instance
 	private static YamlEditorActivator plugin;
 	private ColorManager colorManager;
-
+	private AbstractConfigurableTaskTagsSupportProvider taskSupportProvider;
 
 	/**
 	 * The constructor
 	 */
 	public YamlEditorActivator() {
 		colorManager = new ColorManager();
+		taskSupportProvider = new YamlTaskTagsSupportProvider(this) ;
+		PluginContextProviderRegistry.register(this);
 	}
 
 	public ColorManager getColorManager() {
 		return colorManager;
 	}
+	
+	public AbstractConfigurableTaskTagsSupportProvider getTaskSupportProvider() {
+		return taskSupportProvider;
+	}
 
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		taskSupportProvider.getTodoTaskSupport().install();
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		colorManager.dispose();
+		taskSupportProvider.getTodoTaskSupport().uninstall();
 		super.stop(context);
 	}
 
@@ -60,6 +72,16 @@ public class YamlEditorActivator extends AbstractUIPlugin {
 	 */
 	public static YamlEditorActivator getDefault() {
 		return plugin;
+	}
+
+	@Override
+	public AbstractUIPlugin getActivator() {
+		return this;
+	}
+
+	@Override
+	public String getPluginID() {
+		return PLUGIN_ID;
 	}
 
 }

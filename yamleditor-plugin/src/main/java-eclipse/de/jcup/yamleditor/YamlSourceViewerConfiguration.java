@@ -49,8 +49,8 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 import de.jcup.yamleditor.document.YamlDocumentIdentifier;
 import de.jcup.yamleditor.document.YamlDocumentIdentifiers;
-import de.jcup.yamleditor.presentation.YamlDefaultTextScanner;
 import de.jcup.yamleditor.presentation.PresentationSupport;
+import de.jcup.yamleditor.presentation.YamlDefaultTextScanner;
 /**
  * 
  * @author Albert Tregnaghi
