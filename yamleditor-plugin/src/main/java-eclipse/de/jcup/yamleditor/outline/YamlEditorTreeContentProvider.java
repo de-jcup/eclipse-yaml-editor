@@ -22,7 +22,7 @@ import org.yaml.snakeyaml.nodes.Node;
 
 import de.jcup.yamleditor.script.YamlNode;
 import de.jcup.yamleditor.script.YamlScriptModel;
-import static de.jcup.yamleditor.YamlEditorDebugSettings.DEBUG_OUTLINE_ENABLED;
+import static de.jcup.yamleditor.YamlEditorDebugSettings.DEBUG_OUTPUT_ENABLED;
 
 public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 
@@ -119,7 +119,7 @@ public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 		if (yamlNode.isDebug()) {
 			child.type = ItemType.META_DEBUG;
 		} else {
-			if (DEBUG_OUTLINE_ENABLED) {
+			if (DEBUG_OUTPUT_ENABLED) {
 				StringBuilder sb = new StringBuilder();
 				sb.append("pos:");
 				sb.append(yamlNode.getPosition());
