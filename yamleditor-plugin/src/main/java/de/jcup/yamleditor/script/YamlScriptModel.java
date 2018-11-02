@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import de.jcup.yamleditor.YamlEditorDebugSettings;
+
 public class YamlScriptModel {
 
 	Collection<YamlError> errors = new ArrayList<>();
@@ -51,6 +53,16 @@ public class YamlScriptModel {
 	
 	public void addFolding(FoldingPosition folding) {
 		this.foldingPositions.add(folding);
+		if (YamlEditorDebugSettings.DEBUG_OUTPUT_ENABLED){
+			int offset = folding.offset;
+			int end = offset+folding.length;
+			YamlNode foldingNodeInfo = new YamlNode(offset+","+end+"="+folding.toString());
+			foldingNodeInfo.pos=offset;
+			foldingNodeInfo.end=end;
+			foldingNodeInfo.debug=true;
+			
+			this.getRootNode().getChildren().add(foldingNodeInfo);
+		}
 	}
 
 	public static class FoldingPosition implements Comparable<FoldingPosition>{
