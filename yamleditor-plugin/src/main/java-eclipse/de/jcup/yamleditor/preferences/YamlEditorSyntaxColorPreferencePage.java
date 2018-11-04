@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import de.jcup.yamleditor.YamlEditorColorConstants;
 import de.jcup.yamleditor.YamlEditorUtil;
 
 public class YamlEditorSyntaxColorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
@@ -62,16 +61,15 @@ public class YamlEditorSyntaxColorPreferencePage extends FieldEditorPreferencePa
 			public void widgetSelected(SelectionEvent e) {
 
 				/* editor colors */
-				changeColor(editorMap, COLOR_NORMAL_TEXT, YamlEditorColorConstants.GRAY_JAVA);
-				changeColor(editorMap, COLOR_RESERVED_KEYWORD, YamlEditorColorConstants.MIDDLE_GREEN);
+				changeColor(editorMap, COLOR_NORMAL_TEXT, new RGB(217,232,247));
+				changeColor(editorMap, COLOR_RESERVED_KEYWORD, new RGB(154,140,124));
 				
-				changeColor(editorMap, COLOR_GSTRING, YamlEditorColorConstants.MIDDLE_ORANGE);
-				changeColor(editorMap, COLOR_SINGLE_STRING, YamlEditorColorConstants.BRIGHT_MAGENTA);
-				changeColor(editorMap, COLOR_COMMENT, YamlEditorColorConstants.MIDDLE_GRAY);
-				changeColor(editorMap, COLOR_BOOLEANS, YamlEditorColorConstants.DARK_THEME_GRAY);
-				changeColor(editorMap, COLOR_MAPPINGS, YamlEditorColorConstants.BRIGHT_CYAN);
-				changeColor(editorMap, COLOR_BLOCK, YamlEditorColorConstants.DARK_THEME_ECHO_OUTPUT);
-				
+				changeColor(editorMap, COLOR_GSTRING, new RGB(23,198,163));
+				changeColor(editorMap, COLOR_SINGLE_STRING, new RGB(23,198,163));
+				changeColor(editorMap, COLOR_COMMENT, new RGB(128,128,128));
+				changeColor(editorMap, COLOR_BOOLEANS, new RGB(104,151,187));
+				changeColor(editorMap, COLOR_MAPPINGS, new RGB(204,108,29));
+				changeColor(editorMap, COLOR_BLOCK,new RGB(49,98,98));
 				
 			}
 

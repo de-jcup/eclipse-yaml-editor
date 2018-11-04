@@ -1,13 +1,13 @@
 IEclipsePreferences#de-jcup-yamleditor:de-jcup-yamleditor { /* pseudo attribute added to allow contributions without replacing this node, see Bug 466075 */
 	preferences:
-		'colorNormalText=192,192,192'
-		'colorYamlKeywords=85,255,255'
-		'colorBooleans=88,98,98'
-		'colorDoubleStrings=128,128,0'
-		'colorSingleStrings=0,128,128'
+		'colorNormalText=217,232,247'
+		'colorYamlKeywords=154,140,124'
+		'colorBooleans=104,151,187'
+		'colorDoubleStrings=23,198,163'
+		'colorSingleStrings=23,198,163'
 		'colorComments=128,128,128',
-		'colorMappings=86,156,214'
+		'colorMappings=204,108,29'
 		'colorBlock=49,98,98'
-		'colorHyperlink=49,98,98'
+		'colorHyperlink=169,156,140'
 }
 
