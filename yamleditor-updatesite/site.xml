@@ -4,4 +4,5 @@
    <feature url="features/de.jcup.yamleditor_0.2.0.jar" id="de.jcup.yamleditor" version="0.2.0"/>
    <feature url="features/de.jcup.yamleditor_0.3.0.jar" id="de.jcup.yamleditor" version="0.3.0"/>
    <feature url="features/de.jcup.yamleditor_0.4.0.jar" id="de.jcup.yamleditor" version="0.4.0"/>
+   <feature url="features/de.jcup.yamleditor_1.0.0.jar" id="de.jcup.yamleditor" version="1.0.0"/>
 </site>
