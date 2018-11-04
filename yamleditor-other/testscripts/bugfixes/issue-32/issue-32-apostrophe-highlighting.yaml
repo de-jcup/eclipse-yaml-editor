@@ -1,0 +1,49 @@
+some-key1: there's an apostrophe in this string!
+some-key2: "there's an apostrophe in this string!"
+some-key3: 'xxy'   # a comment
+some-key3: 'xxy'''
+some-key3: 'xxy'''   # a comment
+
+escape1: "an escape\"is interesting in double quoted string"
+
+# http://yaml.org/spec/current.html#id2534365
+escaping: 'The next '' is escaped! but not the \'
+
+# Example parts from http://blogs.perl.org/users/tinita/2018/03/strings-in-yaml---to-quote-or-not-to-quote.html
+plain scalars:
+- a string
+- a string with a \ backslash that doesn't need to be escaped
+- can also use " quotes ' and $ a % lot /&?+ of other {} [] stuff
+
+single quoted:
+- '& starts with a special character, needs quotes'
+- 'this \ backslash also does not need to be escaped'
+- 'just like the " double quote'
+- 'to express one single quote, use '' two of them'
+
+double quoted:
+- "here we can use predefined escape sequences like \t \n \b"
+- "or generic escape sequences \x0b \u0041 \U00000041"
+- "the double quote \" needs to be escaped"
+- "just like the \\ backslash"   
+- "the single quote ' and other characters must not be escaped"
+
+literal block scalar: |
+  a multiline text
+  line 2
+  line 3
+
+folded block scalar: >
+  a long line split into
+  several short
+  lines for readability
+  
+# scalar examples:
+a string:         '&enclosed in single quotes'
+colon plus space: 'this colon : would be forbidden without quotes'
+another colon plus space:
+  'this colon : would create a mapping without quotes'
+no comment:       'this would be # a comment without quotes'
+curly brace:      '{ this would be: a flow style mapping }'
+square bracket:   '[ this would be a flow style sequence ]'
+backslash:        'this \n is a backslash and "n", not a linebreak'

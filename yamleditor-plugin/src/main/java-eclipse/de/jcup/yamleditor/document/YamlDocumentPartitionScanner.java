@@ -52,8 +52,8 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 
 		List<IPredicateRule> rules = new ArrayList<>();
 		rules.add(new SingleLineRule("#", "", comment, (char) -1, true));
-		rules.add(new YamlStringRule("\"", "\"", doubleString));
-		rules.add(new YamlStringRule("'", "'", singleString));
+		rules.add(new YamlDoubleQuoteRule(doubleString));
+		rules.add(new YamlSingleQuoteRule(singleString));
 		rules.add(new ExactWordPatternRule(onlyHyphenWordsDetector, "---", block, true));
 		rules.add(new SingleLineRule("<tag:", ">", yamlReservedWords, (char) -1, true));
 
