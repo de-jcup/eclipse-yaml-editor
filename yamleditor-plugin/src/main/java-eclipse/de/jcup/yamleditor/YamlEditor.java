@@ -15,10 +15,15 @@
  */
 package de.jcup.yamleditor;
 
-import static de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants.*;
+import static de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants.P_EDITOR_ENCLOSING_BRACKETS;
+import static de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants.P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION;
+import static de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants.P_EDITOR_MATCHING_BRACKETS_COLOR;
+import static de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants.P_EDITOR_MATCHING_BRACKETS_ENABLED;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
@@ -73,6 +78,7 @@ import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+
 import de.jcup.eclipse.commons.ui.ColorUtil;
 import de.jcup.yamleditor.YamlMarginRulePainter.MarginPaintSetup;
 import de.jcup.yamleditor.document.YamlFileDocumentProvider;
@@ -112,12 +118,12 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	private Object monitor = new Object();
 	private boolean quickOutlineOpened;
 	private int lastCaretPosition;
-	private ProjectionAnnotationModel annotationModel;
+	
 
 	public YamlEditor() {
 		setSourceViewerConfiguration(new YamlSourceViewerConfiguration(this));
 		this.modelBuilder = new YamlScriptModelBuilder();
-		codeFoldingEnabledForYamlEditors=YamlEditorPreferences.getInstance().isCodeFoldingEnabled();
+		codeFoldingEnabled = YamlEditorPreferences.getInstance().isCodeFoldingEnabled();
 	}
 
 	public void resourceChanged(IResourceChangeEvent event) {
@@ -135,8 +141,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		synchronized (monitor) {
 			if (quickOutlineOpened) {
 				/*
-				 * already opened - this is in future the anker point for
-				 * ctrl+o+o...
+				 * already opened - this is in future the anker point for ctrl+o+o...
 				 */
 				return;
 			}
@@ -243,27 +248,25 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		StyledText styledText = sourceViewer.getTextWidget();
 		styledText.addKeyListener(new YamlBracketInsertionCompleter(this));
 
-		handleFolding();
+		handleInitialFolding();
 
 		/*
-		 * register as resource change listener to provide marker change
-		 * listening
+		 * register as resource change listener to provide marker change listening
 		 */
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 
 		setTitleImageInitial();
 	}
 
-	private void handleFolding() {
-		if (!isCodeFoldingEnabledForYamlEditors()) {
+	private void handleInitialFolding() {
+		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
+		if (!isCodeFoldingEnabled()) {
 			return;
 		}
-		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
 
 		// turn projection mode on
 		viewer.doOperation(ProjectionViewer.TOGGLE);
 
-		annotationModel = viewer.getProjectionAnnotationModel();
 
 	}
 
@@ -275,11 +278,11 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	}
 
 	/**
-	 * Installs an additional source viewer support which uses editor
-	 * preferences instead of standard text preferences. If standard source
-	 * viewer support would be set with editor preferences all standard
-	 * preferences would be lost or had to be reimplmented. To avoid this
-	 * another source viewer support is installed...
+	 * Installs an additional source viewer support which uses editor preferences
+	 * instead of standard text preferences. If standard source viewer support would
+	 * be set with editor preferences all standard preferences would be lost or had
+	 * to be reimplmented. To avoid this another source viewer support is
+	 * installed...
 	 */
 	private void installAdditionalSourceViewerSupport() {
 
@@ -335,8 +338,8 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 			}
 
 			/*
-			 * TODO ATR, 03.02.2017: there should be an easier approach to get
-			 * editors back and foreground, without syncexec
+			 * TODO ATR, 03.02.2017: there should be an easier approach to get editors back
+			 * and foreground, without syncexec
 			 */
 			EclipseUtil.getSafeDisplay().syncExec(new Runnable() {
 
@@ -447,22 +450,14 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 				if (model.hasErrors()) {
 					addErrorMarkers(model, IMarker.SEVERITY_ERROR);
 				}
-				/*
-				 * FIXME ATR: remove call when unnecessay because of listener!
-				 */
-				// try{
-				// todoTasksSupport.updateTasksFor(text, getEditorInput());
-				// }catch(CoreException e){
-				// YamlEditorUtil.logError("Update task not possible", e);
-				// }
 			}
 		});
 	}
 
 	/**
-	 * Set initial title image dependent on current marker severity. This will
-	 * mark error icon on startup time which is not handled by resource change
-	 * handling, because having no change...
+	 * Set initial title image dependent on current marker severity. This will mark
+	 * error icon on startup time which is not handled by resource change handling,
+	 * because having no change...
 	 */
 	private void setTitleImageInitial() {
 		IResource resource = resolveResource();
@@ -609,10 +604,14 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	}
 
 	private Annotation[] oldAnnotations;
-	private boolean codeFoldingEnabledForYamlEditors;
+	private boolean codeFoldingEnabled;
 
 	protected void updateFoldingStructure(SortedSet<FoldingPosition> positions) {
-		if (!isCodeFoldingEnabledForYamlEditors()) {
+		if (!isCodeFoldingEnabled()) {
+			return;
+		}
+		ProjectionAnnotationModel annotationModel = viewer.getProjectionAnnotationModel();
+		if (annotationModel==null) {
 			return;
 		}
 		Annotation[] annotations = new Annotation[positions.size()];
@@ -621,29 +620,45 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		// with their corresponding positions
 		Map<ProjectionAnnotation, Position> newAnnotations = new HashMap<>();
 
-		int i=0;
-		for (FoldingPosition foldingPos: positions) {
+		int i = 0;
+		for (FoldingPosition foldingPos : positions) {
 			ProjectionAnnotation annotation = new ProjectionAnnotation();
 			Position pos = new Position(foldingPos.getOffset());
-			pos.length=foldingPos.getLength();
-			
+			pos.length = foldingPos.getLength();
+
 			newAnnotations.put(annotation, pos);
+
 			annotations[i++] = annotation;
 		}
-
+		
 		annotationModel.modifyAnnotations(oldAnnotations, newAnnotations, null);
 
 		oldAnnotations = annotations;
 	}
 
-	protected boolean isCodeFoldingEnabledForYamlEditors() {
-		return codeFoldingEnabledForYamlEditors;
+	public boolean isCodeFoldingEnabled() {
+		return codeFoldingEnabled;
 	}
 
 	public void moveMargineLineIfNecessary() {
 		int caretXPosition = viewer.getTextWidget().getCaret().getLocation().x;
 		marginRulePainter.setX(caretXPosition);
 
+	}
+	@Override
+	protected String[] collectContextMenuPreferencePages() {
+		List<String> list = new ArrayList<>();
+		list.add("yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage");
+		list.add("yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorSyntaxColorPreferencePage");
+		list.add("yamleditor.eclipse.gradleeditor.preferences.YamlEditorTaskTagsPreferencePage");
+
+		String[] inheritedPages = super.collectContextMenuPreferencePages();
+		for (String inheritedPage: inheritedPages) {
+			if (inheritedPage!=null) {
+				list.add(inheritedPage);
+			}
+		}
+		return list.toArray(new String[list.size()]);
 	}
 
 	@Override
@@ -783,11 +798,6 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		return item;
 	}
 
-	public void selectFunction(String text) {
-		System.out.println("should select functin:" + text);
-
-	}
-
 	public YamlEditorPreferences getPreferences() {
 		return YamlEditorPreferences.getInstance();
 	}
@@ -810,5 +820,37 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 			outlinePage.onEditorCaretMoved(event.caretOffset);
 		}
 
+	}
+
+	public void collapseAllFoldings() {
+		setCollapseStateForAllFoldings(true);
+	}
+	
+	protected void setCollapseStateForAllFoldings(boolean collapse) {
+		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
+
+		if (collapse) {
+			viewer.doOperation(ProjectionViewer.COLLAPSE_ALL);
+		}else {
+			viewer.doOperation(ProjectionViewer.EXPAND_ALL);
+		}
+
+	}
+
+	public void expandAllFoldings() {
+		setCollapseStateForAllFoldings(false);
+	}
+
+	public void toggleFolding() {
+		boolean old = this.codeFoldingEnabled;// getPreferences().getBooleanPreference(YamlEditorPreferenceConstants.P_CODE_FOLDING_ENABLED);
+		this.codeFoldingEnabled=!old;
+//		getPreferences().setBooleanPreference(YamlEditorPreferenceConstants.P_CODE_FOLDING_ENABLED, this.codeFoldingEnabled);
+		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
+		if (this.codeFoldingEnabled) {
+			viewer.enableProjection();
+			rebuildOutline();
+		}else {
+			viewer.disableProjection();
+		}
 	}
 }

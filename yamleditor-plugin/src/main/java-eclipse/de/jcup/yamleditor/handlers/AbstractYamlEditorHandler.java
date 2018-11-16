@@ -40,6 +40,15 @@ public abstract class AbstractYamlEditorHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		YamlEditor yamlEditor = getYamlEditor();
+		if (yamlEditor==null) {
+			return null;
+		}
+		executeOnYamlEditor(yamlEditor);
+		return null;
+	}
+
+	protected YamlEditor getYamlEditor() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		if (workbench==null){
 			return null;
@@ -55,7 +64,8 @@ public abstract class AbstractYamlEditorHandler extends AbstractHandler {
 		IEditorPart editor = activePage.getActiveEditor();
 		
 		if (editor instanceof YamlEditor){
-			executeOnYamlEditor((YamlEditor) editor);
+			YamlEditor yamlEditor = (YamlEditor) editor;
+			return yamlEditor;
 		}
 		return null;
 	}

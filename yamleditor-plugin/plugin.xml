@@ -131,6 +131,24 @@
       		categoryId="yamleditor.commands.category"
       		id="yamleditor.editor.commands.validate">
       </command>
+      <command
+      		name="Toggle folding enabled"
+      		description="Toggle folding enabled state for this editor. If you want change initial behaviour change preferences"
+      		categoryId="yamleditor.commands.category"
+      		id="yamleditor.editor.commands.folding.toggle">
+      </command>
+      <command
+      		name="Expand all folding"
+      		description="Expand all folding nodes inside editor"
+      		categoryId="yamleditor.commands.category"
+      		id="yamleditor.editor.commands.folding.expandall">
+      </command>
+      <command
+      		name="Collapse all folding"
+      		description="Collapse all folding nodes inside editor"
+      		categoryId="yamleditor.commands.category"
+      		id="yamleditor.editor.commands.folding.collapseall">
+      </command>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 	 <handler
@@ -152,6 +170,18 @@
       <handler
       		commandId="yamleditor.editor.commands.validate"
       		class="de.jcup.yamleditor.handlers.YamlValidationHandler">
+      </handler>
+      <handler
+      		commandId="yamleditor.editor.commands.folding.toggle"
+      		class="de.jcup.yamleditor.handlers.YamlFoldingToggleHandler">
+      </handler>
+       <handler
+      		commandId="yamleditor.editor.commands.folding.collapseall"
+      		class="de.jcup.yamleditor.handlers.YamlFoldingCollapseAllHandler">
+      </handler>
+       <handler
+      		commandId="yamleditor.editor.commands.folding.expandall"
+      		class="de.jcup.yamleditor.handlers.YamlFoldingExpandAllHandler">
       </handler>
     </extension> 
     
@@ -191,7 +221,7 @@
     <extension point="org.eclipse.ui.menus">
       <menuContribution
             locationURI="popup:yamleditor.editors.YamlEditor.context?after=additions">
-         <command
+         <command 
                commandId="yamleditor.editor.commands.quickoutline"
                >
         </command>
@@ -200,6 +230,14 @@
         <command commandId="yamleditor.editor.commands.validate" icon="icons/yaml-validation-call.png">
          	
         </command>
+      </menuContribution>
+      
+      <menuContribution
+            locationURI="popup:yamleditor.editors.YamlEditor.context.ruler?after=additions">
+        <command commandId="yamleditor.editor.commands.folding.toggle" >
+        </command>
+        <command commandId="yamleditor.editor.commands.folding.expandall" icon="icons/expandall.png"/>
+        <command commandId="yamleditor.editor.commands.folding.collapseall" icon="icons/collapseall.png"/>
       </menuContribution>
       
       <menuContribution
@@ -261,7 +299,7 @@
          </keywordReference>
       </page>
       <page
-         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorSyntaxColorPreferencePage"
+         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorTaskTagsPreferencePage"
          class="de.jcup.yamleditor.preferences.YamlTaskTagsPreferencePage"
          name="Task Tags"
          category="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage">

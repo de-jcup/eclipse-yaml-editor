@@ -72,7 +72,7 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 	private BooleanFieldEditor codeAssistWithYamlKeywords;
 	private BooleanFieldEditor codeAssistWithSimpleWords;
 	private ColorFieldEditor marginRuleColor;
-	private BooleanFieldEditor codeFoldingEnabled;
+	private BooleanFieldEditor codeFoldingEnabledOnNewEditors;
 
 	public YamlEditorPreferencePage() {
 		super(GRID);
@@ -126,11 +126,11 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		otherComposite.setLayout(otherLayout);
 
 		/* code folding */
-		codeFoldingEnabled = new BooleanFieldEditor(P_CODE_FOLDING_ENABLED.getId(),
-				"Code folding enabled", otherComposite);
-		codeFoldingEnabled.getDescriptionControl(otherComposite)
-		.setToolTipText("When enabled code foldings is active");
-		addField(codeFoldingEnabled);
+		codeFoldingEnabledOnNewEditors = new BooleanFieldEditor(P_CODE_FOLDING_ENABLED.getId(),
+				"New opened editors have code folding enabled", otherComposite);
+		codeFoldingEnabledOnNewEditors.getDescriptionControl(otherComposite)
+		.setToolTipText("When enabled code foldings is active per default. Can be changed in ruler context menu for each editor instance");
+		addField(codeFoldingEnabledOnNewEditors);
 		
 		/* linking with outline */
 		linkEditorWithOutline = new BooleanFieldEditor(P_LINK_OUTLINE_WITH_EDITOR.getId(),
