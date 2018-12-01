@@ -56,7 +56,7 @@ class YamlBracketInsertionCompleter extends KeyAdapter {
 		if (!(selection instanceof ITextSelection)) {
 			return;
 		}
-		boolean enabled = getPreferences().getBooleanPreference(P_EDITOR_AUTO_CREATE_END_BRACKETSY);
+		boolean enabled = getPreferences().getBooleanPreference(P_EDITOR_AUTO_CREATE_END_BRACKETS);
 		if (!enabled) {
 			return;
 		}

@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -49,7 +50,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 public class YamlEditorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
 	protected static final int INDENT = 20;
-	
 
 	protected static void indent(Control control) {
 		((GridData) control.getLayoutData()).horizontalIndent += INDENT;
@@ -117,7 +117,7 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		appearanceComposite.setLayout(layout);
 
 		/* --------------------- */
-		/* -- Other group    -- */
+		/* -- Other group -- */
 		/* --------------------- */
 		Composite otherComposite = new Composite(appearanceComposite, SWT.NONE);
 		GridLayout otherLayout = new GridLayout();
@@ -128,22 +128,29 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		/* code folding */
 		codeFoldingEnabledOnNewEditors = new BooleanFieldEditor(P_CODE_FOLDING_ENABLED.getId(),
 				"New opened editors have code folding enabled", otherComposite);
-		codeFoldingEnabledOnNewEditors.getDescriptionControl(otherComposite)
-		.setToolTipText("When enabled code foldings is active per default. Can be changed in ruler context menu for each editor instance");
+		codeFoldingEnabledOnNewEditors.getDescriptionControl(otherComposite).setToolTipText(
+				"When enabled code foldings is active per default. Can be changed in ruler context menu for each editor instance");
 		addField(codeFoldingEnabledOnNewEditors);
-		
+
 		/* linking with outline */
 		linkEditorWithOutline = new BooleanFieldEditor(P_LINK_OUTLINE_WITH_EDITOR.getId(),
 				"New opened editors are linked with outline", otherComposite);
 		linkEditorWithOutline.getDescriptionControl(otherComposite)
-		.setToolTipText("Via this setting the default behaviour for new opened outlines is set");
+				.setToolTipText("Via this setting the default behaviour for new opened outlines is set");
 		addField(linkEditorWithOutline);
 
-		marginRuleColor = new ColorFieldEditor(P_EDITOR_MARGIN_RULE_LINE_COLOR.getId(),
-				"Margin rule line color", otherComposite);
+		IntegerFieldEditor replaceTabsBySpacesEditor = new IntegerFieldEditor(P_SPACES_TO_REPLACE_TAB.getId(),
+				"Spaces used for tab replacement", otherComposite);
+		replaceTabsBySpacesEditor.setValidRange(1, 20);
+		addField(replaceTabsBySpacesEditor);
+		replaceTabsBySpacesEditor.getLabelControl(otherComposite).setToolTipText(
+				"Yaml editor replaces all tab key presses with spaces,because illegal for YAML format.\n"
+				+ "This defines the amout of spaces to use.");
+
+		marginRuleColor = new ColorFieldEditor(P_EDITOR_MARGIN_RULE_LINE_COLOR.getId(), "Margin rule line color",
+				otherComposite);
 		addField(marginRuleColor);
 
-		
 		Label spacer = new Label(appearanceComposite, SWT.LEFT);
 		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gd.horizontalSpan = 2;
@@ -153,20 +160,19 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		/* BRACKETS */
 		/*
 		 * Why so ugly implemented and not using field editors ? Because
-		 * SourceViewerDecorationSupport needs 3 different preference keys to do
-		 * its job, so this preference doing must be same as on Java editor
-		 * preferences.
+		 * SourceViewerDecorationSupport needs 3 different preference keys to do its
+		 * job, so this preference doing must be same as on Java editor preferences.
 		 */
 		GridData bracketsGroupLayoutData = new GridData();
-		bracketsGroupLayoutData.horizontalSpan=2;
-		bracketsGroupLayoutData.widthHint=400;
-		
-		Group bracketsGroup = new Group(appearanceComposite,SWT.NONE);
+		bracketsGroupLayoutData.horizontalSpan = 2;
+		bracketsGroupLayoutData.widthHint = 400;
+
+		Group bracketsGroup = new Group(appearanceComposite, SWT.NONE);
 		bracketsGroup.setText("Brackets");
 		bracketsGroup.setLayout(new GridLayout());
 		bracketsGroup.setLayoutData(bracketsGroupLayoutData);
 
-		autoCreateEndBrackets = new BooleanFieldEditor(P_EDITOR_AUTO_CREATE_END_BRACKETSY.getId(),
+		autoCreateEndBrackets = new BooleanFieldEditor(P_EDITOR_AUTO_CREATE_END_BRACKETS.getId(),
 				"Auto create ending brackets", bracketsGroup);
 		addField(autoCreateEndBrackets);
 
@@ -233,27 +239,26 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		/* --------------------- */
 
 		GridData codeAssistGroupLayoutData = new GridData();
-		codeAssistGroupLayoutData.horizontalSpan=2;
-		codeAssistGroupLayoutData.widthHint=400;
-		
-		Group codeAssistGroup = new Group(appearanceComposite,SWT.NONE);
+		codeAssistGroupLayoutData.horizontalSpan = 2;
+		codeAssistGroupLayoutData.widthHint = 400;
+
+		Group codeAssistGroup = new Group(appearanceComposite, SWT.NONE);
 		codeAssistGroup.setText("Code assistence");
 		codeAssistGroup.setLayout(new GridLayout());
 		codeAssistGroup.setLayoutData(codeAssistGroupLayoutData);
-		
-		
+
 		codeAssistWithYamlKeywords = new BooleanFieldEditor(P_CODE_ASSIST_ADD_KEYWORDS.getId(),
 				"Yaml keywords and external commands", codeAssistGroup);
-		codeAssistWithYamlKeywords.getDescriptionControl(codeAssistGroup)
-		.setToolTipText("When enabled the standard keywords supported by yaml editor are always automatically available as code proposals");
+		codeAssistWithYamlKeywords.getDescriptionControl(codeAssistGroup).setToolTipText(
+				"When enabled the standard keywords supported by yaml editor are always automatically available as code proposals");
 		addField(codeAssistWithYamlKeywords);
-		
-		codeAssistWithSimpleWords = new BooleanFieldEditor(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(),
-				"Existing words", codeAssistGroup);
-		codeAssistWithSimpleWords.getDescriptionControl(codeAssistGroup)
-		.setToolTipText("When enabled the current source will be scanned for words. The existing words will be available as code proposals");
+
+		codeAssistWithSimpleWords = new BooleanFieldEditor(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(), "Existing words",
+				codeAssistGroup);
+		codeAssistWithSimpleWords.getDescriptionControl(codeAssistGroup).setToolTipText(
+				"When enabled the current source will be scanned for words. The existing words will be available as code proposals");
 		addField(codeAssistWithSimpleWords);
-		
+
 	}
 
 	@Override

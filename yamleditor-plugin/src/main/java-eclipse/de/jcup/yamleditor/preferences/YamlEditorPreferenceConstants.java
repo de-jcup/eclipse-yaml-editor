@@ -28,7 +28,7 @@ public enum YamlEditorPreferenceConstants implements PreferenceIdentifiable{
 	P_EDITOR_ENCLOSING_BRACKETS("enclosingBrackets"),
 	P_EDITOR_MATCHING_BRACKETS_COLOR("matchingBracketsColor"),
 	P_EDITOR_MARGIN_RULE_LINE_COLOR("colorMarginRule"),
-	P_EDITOR_AUTO_CREATE_END_BRACKETSY("autoCreateEndBrackets"),
+	P_EDITOR_AUTO_CREATE_END_BRACKETS("autoCreateEndBrackets"),
 	
 	P_LINK_OUTLINE_WITH_EDITOR("linkOutlineWithEditor"),
 	
@@ -36,6 +36,8 @@ public enum YamlEditorPreferenceConstants implements PreferenceIdentifiable{
 	P_CODE_ASSIST_ADD_SIMPLEWORDS("codeAssistAddsSimpleWords"),
 	
 	P_CODE_FOLDING_ENABLED("codeFoldingEnabled"),
+	
+	P_SPACES_TO_REPLACE_TAB("spacesToReplaceTab"),
 	
 	;
 

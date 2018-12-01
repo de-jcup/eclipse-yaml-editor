@@ -166,6 +166,10 @@ public class YamlEditorPreferences {
 		return INSTANCE;
 	}
 
+	public int getAmountOfSpacesToReplaceTab() {
+		return getPreferenceStore().getInt(P_SPACES_TO_REPLACE_TAB.getId());
+	}
+
 	
 
 	

@@ -43,7 +43,7 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		store.setDefault(P_EDITOR_MATCHING_BRACKETS_ENABLED.getId(), true); // per default matching is enabled, but without the two other special parts
 		store.setDefault(P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION.getId(), false);
 		store.setDefault(P_EDITOR_ENCLOSING_BRACKETS.getId(), false);
-		store.setDefault(P_EDITOR_AUTO_CREATE_END_BRACKETSY.getId(), true);
+		store.setDefault(P_EDITOR_AUTO_CREATE_END_BRACKETS.getId(), true);
 		
 		/* bracket color */
 		preferences.setDefaultColor(P_EDITOR_MATCHING_BRACKETS_COLOR, GRAY_JAVA);
@@ -58,6 +58,8 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		store.setDefault(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(), true);
 		
 		store.setDefault(P_CODE_FOLDING_ENABLED.getId(), true);
+		
+		store.setDefault(P_SPACES_TO_REPLACE_TAB.getId(),3);
 		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */

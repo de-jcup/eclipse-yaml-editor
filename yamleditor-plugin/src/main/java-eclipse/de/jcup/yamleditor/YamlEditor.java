@@ -41,7 +41,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.CursorLinePainter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.Annotation;
@@ -61,7 +60,6 @@ import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
-import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -96,7 +94,7 @@ import de.jcup.yamleditor.script.YamlScriptModelBuilder;
 
 @AdaptedFromEGradle
 /**
- * Inspiredby BashEditor, EGradleEditor and additonally by my older stuff:
+ * Inspired by BashEditor, EGradleEditor and additionally by my older stuff:
  * https://sourceforge.net/p/yamli/code/HEAD/tree/de.jcup.yaml.editor/src/java/de/jcup/yaml/editor/YamlEditor.java
  * 
  * @author Albert Tregnaghi
@@ -117,7 +115,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	private YamlScriptModelBuilder modelBuilder;
 	private Object monitor = new Object();
 	private boolean quickOutlineOpened;
-	private int lastCaretPosition;
+	int lastCaretPosition;
 	
 
 	public YamlEditor() {
@@ -358,7 +356,6 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 	private boolean ignoreNextCaretMove;
 	private ProjectionViewer viewer;
 	private YamlMarginRulePainter marginRulePainter;
-	private VerifyKeyListener verifier;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -437,7 +434,6 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		String text = getDocumentText();
 
 		EclipseUtil.safeAsyncExec(new Runnable() {
-
 			@Override
 			public void run() {
 				YamlEditorUtil.removeScriptErrors(YamlEditor.this);
@@ -550,48 +546,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		setup.lineColor = getColorManager().getColor(lineColor);
 		setup.lineStyle = SWT.LINE_DASH;
 
-		verifier = new VerifyKeyListener() {
-
-			public void verifyKey(VerifyEvent event) {
-				/* we do not allow tab in any case ! */
-				if (event.character == '\t') {
-
-					event.doit = false;
-
-					EclipseUtil.safeAsyncExec(new Runnable() {
-
-						public void run() {
-
-							ISelection selection = getSelectionProvider().getSelection();
-							if (!(selection instanceof ITextSelection)) {
-								return;
-							}
-							ITextSelection ts = (ITextSelection) selection;
-							IDocumentProvider dp = getDocumentProvider();
-							IDocument doc = dp.getDocument(getEditorInput());
-							int offset = ts.getOffset();
-							if (offset == -1) {
-								offset = lastCaretPosition;
-							}
-							try {
-								String toInsert = "   ";
-								int toInsertLength = toInsert.length();
-								doc.replace(offset, ts.getLength(), toInsert);
-								Control control = getAdapter(Control.class);
-								if (control instanceof StyledText) {
-									StyledText t = (StyledText) control;
-									t.setCaretOffset(offset + toInsertLength);
-								}
-							} catch (BadLocationException e) {
-								EclipseUtil.logError("Cannot insert tab replacement at " + offset, e);
-							}
-						}
-					});
-				}
-			}
-		};
-
-		viewer.getTextWidget().addVerifyKeyListener(verifier);
+		viewer.getTextWidget().addVerifyKeyListener(new ReplaceTabBySpacesVerifyKeyListener(this));
 
 		CursorLinePainter cursorLinePainter = new CursorLinePainter(viewer);
 		viewer.addPainter(cursorLinePainter);
