@@ -23,8 +23,11 @@ import static de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants.P_EDI
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.eclipse.core.resources.IFile;
@@ -59,7 +62,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -557,40 +559,80 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 		getSourceViewerDecorationSupport(viewer);
 		return viewer;
 	}
-
-	private Annotation[] oldAnnotations;
+	
 	private boolean codeFoldingEnabled;
 
 	protected void updateFoldingStructure(SortedSet<FoldingPosition> positions) {
 		if (!isCodeFoldingEnabled()) {
 			return;
 		}
+		
 		ProjectionAnnotationModel annotationModel = viewer.getProjectionAnnotationModel();
 		if (annotationModel==null) {
 			return;
 		}
-		Annotation[] annotations = new Annotation[positions.size()];
-
+		Map<Position,ProjectionAnnotation> allAnnotations= new HashMap<>();
+		Iterator<Annotation> it = annotationModel.getAnnotationIterator();
+		while (it.hasNext()) {
+			Annotation v = it.next();
+			if (!(v instanceof ProjectionAnnotation)) {
+				continue;
+			}
+			ProjectionAnnotation anno = (ProjectionAnnotation) v;
+			allAnnotations.put(annotationModel.getPosition(anno), anno);
+		}
+		
+		
 		// this will hold the new annotations along
 		// with their corresponding positions
 		Map<ProjectionAnnotation, Position> newAnnotations = new HashMap<>();
-
-		int i = 0;
+		
+		List<ProjectionAnnotation> deletedAnnotationsList = new ArrayList<>(allAnnotations.values());
+		
+		List<ProjectionAnnotation> modifiedAnnotationsList = new ArrayList<>();
+		
 		for (FoldingPosition foldingPos : positions) {
 			ProjectionAnnotation annotation = new ProjectionAnnotation();
 			Position pos = new Position(foldingPos.getOffset());
 			pos.length = foldingPos.getLength();
-
+			
+			/* check if already existing*/
+			ProjectionAnnotation found = allAnnotations.get(pos);
+			if (found!=null) {
+				/* already found - so ignore / keep as is */
+				deletedAnnotationsList.remove(found);
+				continue;
+			}
+			/* check if modified */
+			Set<Position> keySet = new LinkedHashSet<Position>(allAnnotations.keySet());
+			for (Position key: keySet) {
+				boolean foundSamePosButModified = (key.getOffset()==pos.getOffset()) && (key.getLength() != pos.getLength());
+				if (foundSamePosButModified) {
+					ProjectionAnnotation annoBefore = allAnnotations.get(key);
+					allAnnotations.remove(key);           // remove old position - will be readded with new one
+					if (annoBefore==null) {
+						/* should never happen...*/
+						continue;
+					}
+					annotation= annoBefore; /* reuse existing*/
+					deletedAnnotationsList.remove(annoBefore); // do not delete
+					modifiedAnnotationsList.add(annoBefore);  // mark as modified
+					break;
+				}
+			}
+			allAnnotations.put(pos,annotation);
 			newAnnotations.put(annotation, pos);
 
-			annotations[i++] = annotation;
 		}
 		
-		annotationModel.modifyAnnotations(oldAnnotations, newAnnotations, null);
+		Annotation[] deletions = deletedAnnotationsList.toArray(new Annotation[deletedAnnotationsList.size()]);
+		Annotation[] modifications = modifiedAnnotationsList.toArray(new Annotation[modifiedAnnotationsList.size()]);
+		
+		annotationModel.modifyAnnotations(deletions, newAnnotations, modifications);
 
-		oldAnnotations = annotations;
 	}
 
+	
 	public boolean isCodeFoldingEnabled() {
 		return codeFoldingEnabled;
 	}
