@@ -143,23 +143,27 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
                     if (lengthBlock <= 0) {
                         return; // should never happen - just in case
                     }
-
                     String lineBlock = doc.get(offsetBlockStart, lengthBlock);
 
                     // split each line and insert the additional indent in each line:
                     String lines[] = lineBlock.split("\\r?\\n");
                     ArrayList<String> replacement = new ArrayList<String>();
                     for (String line : lines) {
+                        String newLine = null;
                         if (doIndent) {
-                            replacement.add(indent(line, tabReplacement));
-                        }
+                            newLine=indent(line, tabReplacement);
+                        }   
                         else {
-                            replacement.add(outdent(line, numSpaces));
+                            newLine=outdent(line, numSpaces);
                         }
+                        replacement.add(newLine);
                     }
 
                     String strReplacement = String.join("\n", replacement);
-                    doc.replace(offsetBlockStart, lengthBlock, strReplacement);
+                    // why next line with lenthBlock-1 ?
+                    // lineBlock is WITH lineEnding ending. 
+                    // String.join is without last \n, to keep the last line ending we use lengthBlock-1...
+                    doc.replace(offsetBlockStart, lengthBlock-1, strReplacement);
 
                     // select the whole block we just indented/outdented:
                     yamlEditor.selectAndReveal(offsetBlockStart, strReplacement.length());
