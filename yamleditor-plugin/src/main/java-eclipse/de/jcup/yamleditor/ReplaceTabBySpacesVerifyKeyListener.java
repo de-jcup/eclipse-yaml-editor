@@ -32,155 +32,169 @@ import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 
 class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
 
-	private final YamlEditor yamlEditor;
+    private final YamlEditor yamlEditor;
 
-	ReplaceTabBySpacesVerifyKeyListener(YamlEditor yamlEditor) {
-		if (yamlEditor == null) {
-			throw new IllegalArgumentException();
-		}
-		this.yamlEditor = yamlEditor;
-	}
+    ReplaceTabBySpacesVerifyKeyListener(YamlEditor yamlEditor) {
+        if (yamlEditor == null) {
+            throw new IllegalArgumentException();
+        }
+        this.yamlEditor = yamlEditor;
+    }
 
-	public void verifyKey(VerifyEvent event) {
-		/* we do not allow tab in any case ! */
-		if (event.character == '\t') {
+    public void verifyKey(VerifyEvent event) {
+        /* we do not allow tab in any case ! */
+        if (event.character == '\t') {
 
-			event.doit = false;
+            event.doit = false;
 
-			EclipseUtil.safeAsyncExec(new Runnable() {
+            EclipseUtil.safeAsyncExec(new Runnable() {
 
-				public void run() {
+                public void run() {
 
-					ISelection selection = yamlEditor.getSelectionProvider().getSelection();
-					if (!(selection instanceof ITextSelection)) {
-						return;
-					}
-					ITextSelection ts = (ITextSelection) selection;
-					IDocumentProvider dp = yamlEditor.getDocumentProvider();
-					IDocument doc = dp.getDocument(yamlEditor.getEditorInput());
-					int offset = ts.getOffset();
-					if (offset == -1) {
-						offset = yamlEditor.lastCaretPosition;
-					}
+                    ISelection selection = yamlEditor.getSelectionProvider().getSelection();
+                    if (!(selection instanceof ITextSelection)) {
+                        return;
+                    }
+                    ITextSelection ts = (ITextSelection) selection;
+                    IDocumentProvider dp = yamlEditor.getDocumentProvider();
+                    IDocument doc = dp.getDocument(yamlEditor.getEditorInput());
+                    int offset = ts.getOffset();
+                    if (offset == -1) {
+                        offset = yamlEditor.lastCaretPosition;
+                    }
 
-					boolean isMultiline = ts.getStartLine() != -1 && ts.getEndLine() > ts.getStartLine();
-					boolean doIndent = event.stateMask == 0;
-					boolean doOutdent = (event.stateMask & SWT.SHIFT) == SWT.SHIFT;
-					if (!doIndent && !doOutdent)
-						return;
+                    boolean isMultiline = ts.getStartLine() != -1 && ts.getEndLine() > ts.getStartLine();
+                    boolean doIndent = event.stateMask == 0;
+                    boolean doOutdent = (event.stateMask & SWT.SHIFT) == SWT.SHIFT;
+                    
+                    if (!doIndent && !doOutdent) {
+                        return;
+                    }
 
-					try {
-						int numSpaces = YamlEditorPreferences.getInstance().getAmountOfSpacesToReplaceTab();
-						if (numSpaces < 1)
-							return;
+                    try {
+                        int numSpaces = YamlEditorPreferences.getInstance().getAmountOfSpacesToReplaceTab();
+                        if (numSpaces < 1) {
+                            return;
+                        }
 
-						String tabReplacement = createTabReplacement(numSpaces);
+                        String tabReplacement = createTabReplacement(numSpaces);
 
-						if (isMultiline) {
-							// in case there is a multiline selection, we mimic the Eclipse behavior
-							// (which is quite standard across editors) and thus we:
-							// - discard the actual selected text and consider instead only the
-							// start/end line of the selection
-							// - then we indent/outdent the whole block of lines
+                        if (isMultiline) {
+                            handleMultiLineSelection(ts, doc, doIndent, numSpaces, tabReplacement);
+                        } else {
+                            handleSingleLineSelection(ts, doc, offset, doIndent, numSpaces, tabReplacement);
+                        }
 
-							int offsetBlockStart = doc.getLineOffset(ts.getStartLine());
-							int offsetBlockEnd = doc.getLineOffset(ts.getEndLine())
-									+ doc.getLineLength(ts.getEndLine());
-							int lengthBlock = offsetBlockEnd - offsetBlockStart;
-							if (lengthBlock <= 0)
-								return; // should never happen - just in case
-							
-							String lineBlock = doc.get(offsetBlockStart, lengthBlock);
+                    } catch (BadLocationException e) {
+                        EclipseUtil.logError("Cannot insert tab replacement at " + offset, e);
+                    }
+                }
 
-							// split each line and insert the additional indent in each line:
-							String lines[] = lineBlock.split("\\r?\\n");
-							ArrayList<String> replacement = new ArrayList<String>();
-							for (String line : lines) {
-								if (doIndent)
-									replacement.add(indent(line, tabReplacement));
-								else
-									replacement.add(outdent(line, numSpaces));
-							}
+                private void handleSingleLineSelection(ITextSelection ts, IDocument doc, int offset, boolean doIndent, int numSpaces, String tabReplacement) throws BadLocationException {
+                    int newCaretPosition;
+                
+                    if (doIndent) {
+                        // replace the selected text with our TAB-equivalent string:
+                        doc.replace(offset, ts.getLength(), tabReplacement);
+                        newCaretPosition = offset + numSpaces;
+                    } else {
+                        // special behavior: for single-line outdent the logic is similar to the
+                        // multiline outdent except for the fact that the replaced block shall not be
+                        // selected entirely, instead only the caret will be adjusted:
+                
+                        int offsetBlockStart = doc.getLineOffset(ts.getStartLine());
+                        int offsetBlockEnd = doc.getLineOffset(ts.getEndLine()) + doc.getLineLength(ts.getEndLine());
+                        int lengthBlock = offsetBlockEnd - offsetBlockStart;
+                        if (lengthBlock <= 0) {
+                            return; // should never happen - just in case
+                        }
+                
+                        String line = doc.get(offsetBlockStart, lengthBlock);
+                        String replacement = outdent(line, numSpaces);
+                
+                        doc.replace(offsetBlockStart, lengthBlock, replacement);
+                
+                        if (offset > offsetBlockStart + numSpaces) {
+                            // there is enough space to move left the caret on the current line:
+                            newCaretPosition = offset - numSpaces;
+                        } else {
+                            // don't place the caret on the line before the current one:
+                            newCaretPosition = offsetBlockStart;
+                        }
+                    }
+                
+                    Control control = yamlEditor.getAdapter(Control.class);
+                    if (control instanceof StyledText) {
+                        StyledText t = (StyledText) control;
+                        t.setCaretOffset(newCaretPosition);
+                    }
+                }
 
-							String strReplacement = String.join("\n", replacement);
-							doc.replace(offsetBlockStart, lengthBlock, strReplacement);
+                private void handleMultiLineSelection(ITextSelection ts, IDocument doc, boolean doIndent, int numSpaces, String tabReplacement) throws BadLocationException {
+                    // in case there is a multiline selection, we mimic the Eclipse behavior
+                    // (which is quite standard across editors) and thus we:
+                    // - discard the actual selected text and consider instead only the
+                    // start/end line of the selection
+                    // - then we indent/outdent the whole block of lines
 
-							// select the whole block we just indented/outdented:
-							yamlEditor.selectAndReveal(offsetBlockStart, strReplacement.length());
-						} else {
-							int newCaretPosition;
+                    int offsetBlockStart = doc.getLineOffset(ts.getStartLine());
+                    int offsetBlockEnd = doc.getLineOffset(ts.getEndLine()) + doc.getLineLength(ts.getEndLine());
+                    int lengthBlock = offsetBlockEnd - offsetBlockStart;
+                    if (lengthBlock <= 0) {
+                        return; // should never happen - just in case
+                    }
 
-							if (doIndent) {
-								// replace the selected text with our TAB-equivalent string:
-								doc.replace(offset, ts.getLength(), tabReplacement);
-								newCaretPosition = offset + numSpaces;
-							} else {
-								// special behavior: for single-line outdent the logic is similar to the
-								// multiline outdent except for the fact that the replaced block shall not be
-								// selected entirely, instead only the caret will be adjusted:
+                    String lineBlock = doc.get(offsetBlockStart, lengthBlock);
 
-								int offsetBlockStart = doc.getLineOffset(ts.getStartLine());
-								int offsetBlockEnd = doc.getLineOffset(ts.getEndLine())
-										+ doc.getLineLength(ts.getEndLine());
-								int lengthBlock = offsetBlockEnd - offsetBlockStart;
-								if (lengthBlock <= 0)
-									return; // should never happen - just in case
-								
-								String line = doc.get(offsetBlockStart, lengthBlock);
-								String replacement = outdent(line, numSpaces);
+                    // split each line and insert the additional indent in each line:
+                    String lines[] = lineBlock.split("\\r?\\n");
+                    ArrayList<String> replacement = new ArrayList<String>();
+                    for (String line : lines) {
+                        if (doIndent) {
+                            replacement.add(indent(line, tabReplacement));
+                        }
+                        else {
+                            replacement.add(outdent(line, numSpaces));
+                        }
+                    }
 
-								doc.replace(offsetBlockStart, lengthBlock, replacement);
+                    String strReplacement = String.join("\n", replacement);
+                    doc.replace(offsetBlockStart, lengthBlock, strReplacement);
 
-								if (offset > offsetBlockStart + numSpaces)
-									// there is enough space to move left the caret on the current line:
-									newCaretPosition = offset - numSpaces;
-								else
-									// don't place the caret on the line before the current one:
-									newCaretPosition = offsetBlockStart;
-							}
+                    // select the whole block we just indented/outdented:
+                    yamlEditor.selectAndReveal(offsetBlockStart, strReplacement.length());
+                }
+            });
+        }
 
-							Control control = yamlEditor.getAdapter(Control.class);
-							if (control instanceof StyledText) {
-								StyledText t = (StyledText) control;
-								t.setCaretOffset(newCaretPosition);
-							}
-						}
+    }
 
-					} catch (BadLocationException e) {
-						EclipseUtil.logError("Cannot insert tab replacement at " + offset, e);
-					}
-				}
-			});
-		}
+    private String createTabReplacement(int spaces) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < spaces; i++) {
+            sb.append(' ');
+        }
+        return sb.toString();
+    }
 
-	}
+    private String outdent(String line, int spaces) {
+        int numLeadingSpaces = 0;
+        for (int i = 0; i < spaces && i < line.length(); i++) {
+            if (line.charAt(i) == ' ')
+                numLeadingSpaces++;
+            else
+                break;
+        }
 
-	private String createTabReplacement(int spaces) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < spaces; i++) {
-			sb.append(' ');
-		}
-		return sb.toString();
-	}
+        // most editors, including default Eclipse text editor, will outdent a line even
+        // if
+        // the number of leading spaces is smaller than the configured TAB length:
+        // in such a case they simply remove all leading spaces:
+        return line.substring(Math.min(numLeadingSpaces, spaces));
+    }
 
-	private String outdent(String line, int spaces) {
-		int numLeadingSpaces = 0;
-		for (int i = 0; i < spaces && i < line.length(); i++) {
-			if (line.charAt(i) == ' ')
-				numLeadingSpaces++;
-			else
-				break;
-		}
-
-		// most editors, including default Eclipse text editor, will outdent a line even
-		// if
-		// the number of leading spaces is smaller than the configured TAB length:
-		// in such a case they simply remove all leading spaces:
-		return line.substring(Math.min(numLeadingSpaces, spaces));
-	}
-
-	// just for symmetry with outdent():
-	private String indent(String line, String toInsert) {
-		return toInsert + line;
-	}
+    // just for symmetry with outdent():
+    private String indent(String line, String toInsert) {
+        return toInsert + line;
+    }
 }
