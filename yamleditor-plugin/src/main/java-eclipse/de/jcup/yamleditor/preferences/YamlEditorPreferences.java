@@ -170,6 +170,14 @@ public class YamlEditorPreferences {
 		return getPreferenceStore().getInt(P_SPACES_TO_REPLACE_TAB.getId());
 	}
 
+    public int getSourceFormatterLineLength() {
+        return getPreferenceStore().getInt(P_SOURCE_FORMAT_LINE_LENGTH.getId());
+    }
+    
+    public int getSourceFormatterIndent() {
+        return getPreferenceStore().getInt(P_SOURCE_FORMAT_INDENT.getId());
+    }
+
 	
 
 	

@@ -60,6 +60,8 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		store.setDefault(P_CODE_FOLDING_ENABLED.getId(), true);
 		
 		store.setDefault(P_SPACES_TO_REPLACE_TAB.getId(),3);
+		store.setDefault(P_SOURCE_FORMAT_INDENT.getId(),3);
+		store.setDefault(P_SOURCE_FORMAT_LINE_LENGTH.getId(),120);
 		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */

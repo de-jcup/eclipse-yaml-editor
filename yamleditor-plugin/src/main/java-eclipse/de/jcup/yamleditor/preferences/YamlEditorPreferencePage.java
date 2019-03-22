@@ -39,6 +39,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import de.jcup.yamleditor.script.formatter.SnakeYamlSourceFormatterConfig;
+import de.jcup.yamleditor.script.formatter.YamlSourceFormatterConfig;
+
 /**
  * Parts are inspired by <a href=
  * "https://github.com/eclipse/eclipse.jdt.ui/blob/master/org.eclipse.jdt.ui/ui/org/eclipse/jdt/internal/ui/preferences/JavaEditorAppearanceConfigurationBlock.java">org.eclipse.jdt.internal.ui.preferences.JavaEditorAppearanceConfigurationBlock
@@ -139,14 +142,28 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 				.setToolTipText("Via this setting the default behaviour for new opened outlines is set");
 		addField(linkEditorWithOutline);
 
+		/* ---------------------------------------- */
+		/* - source formatter + space replacement - */
+		/* ---------------------------------------- */
 		IntegerFieldEditor replaceTabsBySpacesEditor = new IntegerFieldEditor(P_SPACES_TO_REPLACE_TAB.getId(),
 				"Spaces used for tab replacement", otherComposite);
-		replaceTabsBySpacesEditor.setValidRange(1, 20);
+		replaceTabsBySpacesEditor.setValidRange(1, SnakeYamlSourceFormatterConfig.SNAKE_MAX_INDENT);
 		addField(replaceTabsBySpacesEditor);
 		replaceTabsBySpacesEditor.getLabelControl(otherComposite).setToolTipText(
 				"Yaml editor replaces all tab key presses with spaces,because illegal for YAML format.\n"
-				+ "This defines the amout of spaces to use.");
+				+ "This defines the amout of spaces to use.\n\nAlso used by source formatter on indent calculation.");
+		
+		IntegerFieldEditor lineLengthEditor = new IntegerFieldEditor(P_SOURCE_FORMAT_LINE_LENGTH.getId(),
+                "Source formatter max line length", otherComposite);
+		lineLengthEditor.setValidRange(40, SnakeYamlSourceFormatterConfig.SNAKE_MAX_LINELENGTH);
+        addField(lineLengthEditor);
+        lineLengthEditor.getLabelControl(otherComposite).setToolTipText(
+                "Line length used by source formatter");
+		
 
+        /* ---------------- */
+        /* - Margin ruler - */
+        /* ---------------- */
 		marginRuleColor = new ColorFieldEditor(P_EDITOR_MARGIN_RULE_LINE_COLOR.getId(), "Margin rule line color",
 				otherComposite);
 		addField(marginRuleColor);

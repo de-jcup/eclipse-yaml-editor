@@ -39,6 +39,9 @@ public enum YamlEditorPreferenceConstants implements PreferenceIdentifiable{
 	
 	P_SPACES_TO_REPLACE_TAB("spacesToReplaceTab"),
 	
+	P_SOURCE_FORMAT_LINE_LENGTH("sourceFormatlineLength"),
+	
+	P_SOURCE_FORMAT_INDENT("sourceFormatIndent"),
 	;
 
 	private String id;

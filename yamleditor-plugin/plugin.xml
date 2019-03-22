@@ -37,6 +37,14 @@
    		id="yamleditor.preferences.keyword.todo"
    		label="todo">
      </keyword>
+     <keyword
+   		id="yamleditor.preferences.keyword.format"
+   		label="format">
+     </keyword>
+     <keyword
+   		id="yamleditor.preferences.keyword.formatter"
+   		label="formatter">
+     </keyword>
     
    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -321,6 +329,21 @@
          </keywordReference>
           <keywordReference
                id="yamleditor.preferences.keyword.color">
+         </keywordReference>
+      </page>
+      <page
+         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorFormatterPreferencePage"
+         class="de.jcup.yamleditor.preferences.YamlEditorFormatterPreferencePage"
+         name="Formatter"
+         category="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage">
+         <keywordReference
+               id="yamleditor.preferences.keyword.yaml">
+         </keywordReference>
+          <keywordReference
+               id="yamleditor.preferences.keyword.format">
+         </keywordReference>
+          <keywordReference
+               id="yamleditor.preferences.keyword.formatter">
          </keywordReference>
       </page>
       <page
