@@ -120,6 +120,12 @@
             id="yamleditor.editor.commands.source.toggleComment">
       </command>
       <command
+            name="Format"
+            description="Format yaml source code"
+            categoryId="yamleditor.commands.category"
+            id="yamleditor.editor.commands.source.format">
+      </command>
+      <command
             name="Goto matching bracket"
             description="Goto matching bracket inside gradle document"
             categoryId="yamleditor.commands.category"
@@ -158,6 +164,10 @@
       <handler
             commandId="yamleditor.editor.commands.source.toggleComment"
             class="de.jcup.yamleditor.handlers.ToggleCommentHandler">
+      </handler>
+      <handler
+            commandId="yamleditor.editor.commands.source.format"
+            class="de.jcup.yamleditor.handlers.FormatSQLHandler">
       </handler>
        <handler
             commandId="yamleditor.editor.commands.gotomatchingbracket"
@@ -202,6 +212,12 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
 		</key>
 		<key
+            sequence="M1+SHIFT+F"
+            contextId="yamleditor.editors.YamlEditor.context"
+            commandId="yamleditor.editor.commands.source.format"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+		<key
             sequence="M1+M2+P"
             contextId="yamleditor.editors.YamlEditor.context"
             commandId="yamleditor.editor.commands.gotomatchingbracket"
@@ -225,11 +241,23 @@
                commandId="yamleditor.editor.commands.quickoutline"
                >
         </command>
-        <command commandId="yamleditor.editor.commands.movecolumnline">
-        </command>
-        <command commandId="yamleditor.editor.commands.validate" icon="icons/yaml-validation-call.png">
-         	
-        </command>
+        <menu
+               id="yamleditor.editor.menu.sourceMenu"
+               label="Source"
+               mnemonic="S"
+               >
+               <visibleWhen checkEnabled="true">
+                     <with variable="activeEditor">
+                        <instanceof
+                            value="de.jcup.yamleditor.YamlEditor"/>
+                     </with>
+               </visibleWhen>
+            <command commandId="yamleditor.editor.commands.movecolumnline"></command>
+            <command commandId="yamleditor.editor.commands.source.format"></command>
+            <command commandId="yamleditor.editor.commands.source.toggleComment"></command>
+            <command commandId="yamleditor.editor.commands.validate" icon="icons/yaml-validation-call.png"></command>
+           
+         </menu>
       </menuContribution>
       
       <menuContribution
@@ -254,13 +282,10 @@
                             value="de.jcup.yamleditor.YamlEditor"/>
                      </with>
                </visibleWhen>
-            <command commandId="yamleditor.editor.commands.movecolumnline">
-            </command>
-            <command commandId="yamleditor.editor.commands.source.toggleComment">
-            </command>
-             <command commandId="yamleditor.editor.commands.validate" icon="icons/yaml-validation-call.png">
-             	
-            </command>
+            <command commandId="yamleditor.editor.commands.movecolumnline"></command>
+            <command commandId="yamleditor.editor.commands.source.format"></command>
+            <command commandId="yamleditor.editor.commands.source.toggleComment"></command>
+            <command commandId="yamleditor.editor.commands.validate" icon="icons/yaml-validation-call.png"></command>
            
          </menu>
       </menuContribution>
