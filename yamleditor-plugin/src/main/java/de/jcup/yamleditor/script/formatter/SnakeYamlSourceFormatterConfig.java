@@ -3,7 +3,11 @@ package de.jcup.yamleditor.script.formatter;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.DumperOptions.ScalarStyle;
 
-class SnakeYamlSourceFormatterConfig implements YamlSourceFormatterConfig {
+public class SnakeYamlSourceFormatterConfig implements YamlSourceFormatterConfig {
+    
+    public static final int SNAKE_MAX_LINELENGTH = 400;// snake max is ?
+    public static final int SNAKE_MAX_INDENT = 10;// snake max is 10
+    
     private boolean explicitStart = false;
     private boolean explicitEnd = false;
     private int indent = 2;
@@ -21,10 +25,25 @@ class SnakeYamlSourceFormatterConfig implements YamlSourceFormatterConfig {
             return;
         }
         this.indent=toCopy.getIndent();
+        if (this.indent>SNAKE_MAX_INDENT) {
+            this.indent=SNAKE_MAX_INDENT;
+        }
         this.lineLength=toCopy.getLineLength();
+        if (this.lineLength>SNAKE_MAX_LINELENGTH) {
+            this.lineLength=SNAKE_MAX_LINELENGTH;
+        }
     }
     
     
+    @Override
+    public int getIndent() {
+        return indent;
+    }
+    
+    @Override
+    public int getLineLength() {
+        return lineLength;
+    }
     public boolean isExplicitEnd() {
         return explicitEnd;
     }
@@ -45,44 +64,29 @@ class SnakeYamlSourceFormatterConfig implements YamlSourceFormatterConfig {
         return scalarStyle;
     }
 
-    @Override
-    public int getIndent() {
-        return indent;
-    }
 
-    @Override
-    public int getLineLength() {
-        return lineLength;
-    }
-
-    public YamlSourceFormatterConfig explicitStart(boolean explicitStart) {
+    public void setExplicitStart(boolean explicitStart) {
         this.explicitStart = explicitStart;
-        return this;
     }
 
-    public YamlSourceFormatterConfig explicitEnd(boolean explicitEnd) {
+    public void setExplicitEnd(boolean explicitEnd) {
         this.explicitEnd = explicitEnd;
-        return this;
     }
 
-    public YamlSourceFormatterConfig indent(int indent) {
+    public void setIndent(int indent) {
         this.indent = indent;
-        return this;
     }
 
-    public YamlSourceFormatterConfig flowStyle(FlowStyle flowStyle) {
+    public void setFlowStyle(FlowStyle flowStyle) {
         this.flowStyle = flowStyle;
-        return this;
     }
 
-    public YamlSourceFormatterConfig prettyFlow(boolean prettyFlow) {
+    public void setPrettyFlow(boolean prettyFlow) {
         this.prettyFlow = prettyFlow;
-        return this;
     }
 
-    public YamlSourceFormatterConfig scalarStyle(ScalarStyle scalarStyle) {
+    public void setScalarStyle(ScalarStyle scalarStyle) {
         this.scalarStyle = scalarStyle;
-        return this;
     }
 
 }

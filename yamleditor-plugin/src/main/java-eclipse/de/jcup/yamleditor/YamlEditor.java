@@ -90,6 +90,7 @@ import de.jcup.yamleditor.script.YamlError;
 import de.jcup.yamleditor.script.YamlScriptModel;
 import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 import de.jcup.yamleditor.script.YamlScriptModelBuilder;
+import de.jcup.yamleditor.script.formatter.DefaultYamlSourceFormatterConfig;
 import de.jcup.yamleditor.script.formatter.YamlSourceFormatter;
 
 @AdaptedFromEGradle
@@ -830,7 +831,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
     }
 
     public void toggleFolding() {
-        boolean old = this.codeFoldingEnabled;// getPreferences().getBooleanPreference(YamlEditorPreferenceConstants.P_CODE_FOLDING_ENABLED);
+        boolean old = this.codeFoldingEnabled;
         this.codeFoldingEnabled = !old;
 
         ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
@@ -844,8 +845,15 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 
     public void formatSourceCode() {
         String code = getDocumentText();
-        String output = new YamlSourceFormatter().format(code);
+
+        DefaultYamlSourceFormatterConfig config = new DefaultYamlSourceFormatterConfig();
+        config.setIndent(getPreferences().getSourceFormatterIndent());
+        config.setLineLength(getPreferences().getSourceFormatterLineLength());
+        
+        String output = new YamlSourceFormatter().format(code,config);
+        
         getDocument().set(output);
 
     }
+    
 }
