@@ -14,56 +14,54 @@ public class YamlSourceFormatter {
         return format(source, null);
     }
 
-    private class CommentMarker {
-
-        public boolean fullLine;
-        public String comment;
-        public int lineNr;
-
-    }
-
     public String format(String source, YamlSourceFormatterConfig config) {
-        SnakeYamlSourceFormatterConfig internalConfig = new SnakeYamlSourceFormatterConfig(config);
+        if (config==null) {
+            config = new DefaultYamlSourceFormatterConfig();
+        }
+        SnakeYamlConfig snakeConfig = new SnakeYamlConfig(config);
 
         /* backup meta info */
-        List<CommentMarker> commentMarkers = backupCommentsAndMetaData(source, internalConfig);
+        List<CommentMarker> commentMarkers = backupCommentsAndMetaData(source, snakeConfig);
 
         /* parse + pretty print */
         Yaml yamlParser = new Yaml();
         Iterable<Object> yamlDocuments = yamlParser.loadAll(source);
-        String formatted = formatDocuments(yamlDocuments, internalConfig);
+        String formatted = formatDocuments(yamlDocuments, snakeConfig);
 
         /* restore meta info */
-        String result = dropFirstBlockIfNotDefinedBefore(formatted, internalConfig);
-        result = restoreFullComments(result, commentMarkers, internalConfig);
-        result = restoreEndingComments(result, commentMarkers, internalConfig);
-        result = appendOrphanedComments(result, commentMarkers, internalConfig);
+        String result = dropFirstBlockIfNotDefinedBefore(formatted, snakeConfig);
+        if (config.isRestoreCommentsEnabled()) {
+            result = restoreFullComments(result, commentMarkers, snakeConfig);
+            result = restoreEndingComments(result, commentMarkers, snakeConfig);
+            result = appendOrphanedComments(result, commentMarkers, snakeConfig);
+        }
         return result.trim();
 
     }
 
-    private String appendOrphanedComments(String result, List<CommentMarker> commentMarkers, SnakeYamlSourceFormatterConfig internalConfig) {
+    private String appendOrphanedComments(String result, List<CommentMarker> commentMarkers, SnakeYamlConfig internalConfig) {
         if (commentMarkers.isEmpty()) {
             return result;
         }
         StringBuilder sb = new StringBuilder();
         sb.append(result.trim());
+        sb.append("\n");
+        sb.append("# ----------------\n");
+        sb.append("# Orphan comments:\n");
+        sb.append("# ----------------\n");
         for (CommentMarker marker : commentMarkers) {
-            sb.append("\n");
-            sb.append("# ----------------");
-            sb.append("# Orphan comments:");
-            sb.append("# ----------------");
             if (marker.fullLine) {
                 sb.append(marker.comment);
             } else {
                 sb.append("# Formerly at end of line:" + marker.lineNr + " :");
                 sb.append(marker.comment);
             }
+            sb.append("\n");
         }
-        return null;
+        return sb.toString();
     }
 
-    private List<CommentMarker> backupCommentsAndMetaData(String source, SnakeYamlSourceFormatterConfig internalConfig) {
+    private List<CommentMarker> backupCommentsAndMetaData(String source, SnakeYamlConfig internalConfig) {
         String[] lines = source.split("\n");
         List<CommentMarker> commentMarkers = new ArrayList<CommentMarker>();
 
@@ -133,7 +131,7 @@ public class YamlSourceFormatter {
      * snake yaml removes all comments - seems to be inside spec of 1.1/1.2 but we
      * want to keep it...
      */
-    private String dropFirstBlockIfNotDefinedBefore(String formatted, SnakeYamlSourceFormatterConfig config) {
+    private String dropFirstBlockIfNotDefinedBefore(String formatted, SnakeYamlConfig config) {
         if (config.multiDocFileStartingWithSeparator) {
             return formatted;
         }
@@ -158,7 +156,7 @@ public class YamlSourceFormatter {
      * snake yaml removes all comments - seems to be inside spec of 1.1/1.2 but we
      * want to keep it...
      */
-    private String restoreFullComments(String formatted, List<CommentMarker> commentMarkers, SnakeYamlSourceFormatterConfig config) {
+    private String restoreFullComments(String formatted, List<CommentMarker> commentMarkers, SnakeYamlConfig config) {
         String[] linesFormatted = formatted.split("\n");
         StringBuilder sb = new StringBuilder();
         int lineNr = 0;
@@ -173,7 +171,7 @@ public class YamlSourceFormatter {
         return sb.toString();
     }
 
-    private String restoreEndingComments(String formatted, List<CommentMarker> commentMarkers, SnakeYamlSourceFormatterConfig internalConfig) {
+    private String restoreEndingComments(String formatted, List<CommentMarker> commentMarkers, SnakeYamlConfig internalConfig) {
         String[] linesFormatted = formatted.split("\n");
         StringBuilder sb = new StringBuilder();
         int lineNr = 0;
@@ -223,7 +221,7 @@ public class YamlSourceFormatter {
         return lineAdded;
     }
 
-    private String formatDocuments(Iterable<Object> documents, SnakeYamlSourceFormatterConfig config) {
+    private String formatDocuments(Iterable<Object> documents, SnakeYamlConfig config) {
 
         DumperOptions options = new DumperOptions();
         options.setExplicitStart(config.isExplicitStart());
@@ -247,6 +245,14 @@ public class YamlSourceFormatter {
             }
         }
         return sb.toString();
+    }
+    
+    private class CommentMarker {
+
+        public boolean fullLine;
+        public String comment;
+        public int lineNr;
+
     }
 
 }

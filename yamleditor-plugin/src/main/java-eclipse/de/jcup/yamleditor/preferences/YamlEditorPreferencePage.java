@@ -39,8 +39,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import de.jcup.yamleditor.script.formatter.SnakeYamlSourceFormatterConfig;
-import de.jcup.yamleditor.script.formatter.YamlSourceFormatterConfig;
+import de.jcup.yamleditor.script.formatter.SnakeYamlConfig;
 
 /**
  * Parts are inspired by <a href=
@@ -147,7 +146,7 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		/* ---------------------------------------- */
 		IntegerFieldEditor replaceTabsBySpacesEditor = new IntegerFieldEditor(P_SPACES_TO_REPLACE_TAB.getId(),
 				"Spaces used for tab replacement", otherComposite);
-		replaceTabsBySpacesEditor.setValidRange(1, SnakeYamlSourceFormatterConfig.SNAKE_MAX_INDENT);
+		replaceTabsBySpacesEditor.setValidRange(1, SnakeYamlConfig.SNAKE_MAX_INDENT);
 		addField(replaceTabsBySpacesEditor);
 		replaceTabsBySpacesEditor.getLabelControl(otherComposite).setToolTipText(
 				"Yaml editor replaces all tab key presses with spaces,because illegal for YAML format.\n"
@@ -155,7 +154,7 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		
 		IntegerFieldEditor lineLengthEditor = new IntegerFieldEditor(P_SOURCE_FORMAT_LINE_LENGTH.getId(),
                 "Source formatter max line length", otherComposite);
-		lineLengthEditor.setValidRange(40, SnakeYamlSourceFormatterConfig.SNAKE_MAX_LINELENGTH);
+		lineLengthEditor.setValidRange(40, SnakeYamlConfig.SNAKE_MAX_LINELENGTH);
         addField(lineLengthEditor);
         lineLengthEditor.getLabelControl(otherComposite).setToolTipText(
                 "Line length used by source formatter");

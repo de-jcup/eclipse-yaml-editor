@@ -17,6 +17,7 @@ package de.jcup.yamleditor.preferences;
 
 import static de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants.*;
 
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.swt.widgets.Composite;
@@ -24,7 +25,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.yamleditor.YamlEditorUtil;
-import de.jcup.yamleditor.script.formatter.SnakeYamlSourceFormatterConfig;
+import de.jcup.yamleditor.script.formatter.SnakeYamlConfig;
+import de.jcup.yamleditor.script.formatter.YamlEdtiorFormatterScalarStyle;
 
 public class YamlEditorFormatterPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -43,18 +45,38 @@ public class YamlEditorFormatterPreferencePage extends FieldEditorPreferencePage
 		  
         IntegerFieldEditor indentEditor = new IntegerFieldEditor(P_SOURCE_FORMAT_INDENT.getId(),
                 "Indent", parent);
-        indentEditor.setValidRange(3, SnakeYamlSourceFormatterConfig.SNAKE_MAX_INDENT);
+        indentEditor.setValidRange(3, SnakeYamlConfig.SNAKE_MAX_INDENT);
         addField(indentEditor);
         indentEditor.getLabelControl(parent).setToolTipText(
                 "Indention used by source formatter");
 			
 		IntegerFieldEditor lineLengthEditor = new IntegerFieldEditor(P_SOURCE_FORMAT_LINE_LENGTH.getId(),
                 "Max line length", parent);
-        lineLengthEditor.setValidRange(40, SnakeYamlSourceFormatterConfig.SNAKE_MAX_LINELENGTH);
+        lineLengthEditor.setValidRange(40, SnakeYamlConfig.SNAKE_MAX_LINELENGTH);
         addField(lineLengthEditor);
         lineLengthEditor.getLabelControl(parent).setToolTipText(
                 "Maximum lne length used by source formatter");
-		
+        
+        String labelText = "Scalar style";
+        YamlEdtiorFormatterScalarStyle[] allStyles = YamlEdtiorFormatterScalarStyle.values();
+        String[][] entryNamesAndValues= new String[allStyles.length][2];
+        int index=0;
+        for (YamlEdtiorFormatterScalarStyle style: allStyles) {
+            entryNamesAndValues[index++]=new String[] {
+                    style.getText(),style.getId()
+            };
+        }
+        ChangeableComboFieldEditor comboEditor = new ChangeableComboFieldEditor(P_SOURCE_SCALAR_STYLE_ID.getId(), labelText, entryNamesAndValues, parent);
+		addField(comboEditor);
+        
+		BooleanFieldEditor rescueCommentsEditor = new BooleanFieldEditor(P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED.getId(),
+                "Rescue comments", parent);
+        addField(rescueCommentsEditor);
+        rescueCommentsEditor.getLabelControl(parent).setToolTipText(
+                "When enabled comments will be rescued at formatting time.\n"
+                + "(Full line comments will be at same line number as before, comments\n"
+                + "at end of a yaml line are tried to be added at end of those lines again)");
+        
 	}
 	
 }

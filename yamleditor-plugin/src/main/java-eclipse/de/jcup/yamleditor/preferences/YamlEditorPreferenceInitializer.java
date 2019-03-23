@@ -24,6 +24,8 @@ import static de.jcup.yamleditor.preferences.YamlEditorSyntaxColorPreferenceCons
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import de.jcup.yamleditor.script.formatter.YamlEdtiorFormatterScalarStyle;
+
 /**
  * Class used to initialize default preference values.
  */
@@ -62,6 +64,8 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		store.setDefault(P_SPACES_TO_REPLACE_TAB.getId(),3);
 		store.setDefault(P_SOURCE_FORMAT_INDENT.getId(),3);
 		store.setDefault(P_SOURCE_FORMAT_LINE_LENGTH.getId(),120);
+		store.setDefault(P_SOURCE_SCALAR_STYLE_ID.getId(), YamlEdtiorFormatterScalarStyle.PLAIN.getId());
+		store.setDefault(P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED.getId(), true);
 		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */
