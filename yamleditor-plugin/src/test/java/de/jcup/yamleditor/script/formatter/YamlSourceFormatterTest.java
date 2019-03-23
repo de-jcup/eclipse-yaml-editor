@@ -1,4 +1,4 @@
-package de.jcup.yamleditor.script;
+package de.jcup.yamleditor.script.formatter;
 
 import static org.junit.Assert.*;
 
@@ -119,6 +119,50 @@ public class YamlSourceFormatterTest {
         /* prepare */
         String source = "# I am line 1\n# and in line2!\napiVersion:      v1 # Kubernetes rocks\n# I am line 4\n# I am line 5\nkind: Pod\nmetadata:\n  name: busybox-sleep";
         String expected = "# I am line 1\n# and in line2!\napiVersion: v1 # Kubernetes rocks\n# I am line 4\n# I am line 5\nkind: Pod\nmetadata:\n  name: busybox-sleep";
+        
+        /* execute */
+        String result = formatterToTest.format(source);
+        
+        /* test */
+        assertEquals(expected,result);
+        
+    }
+    
+    
+    @Test
+    public void line_with_ending_comment_where_line_has_changed_will_be_inside_changed_one() {
+        /* prepare */
+        String source = "a:\n\n b: value1 #comment of b";
+        String expected = "a:\n  b: value1 #comment of b";
+        
+        /* execute */
+        String result = formatterToTest.format(source);
+        
+        /* test */
+        assertEquals(expected,result);
+        
+    }
+    
+    @Test
+    public void line_with_ending_comment_where_line_and_format_has_changed_will_be_inside_changed_one() {
+        /* prepare */
+        String source = "a:\n\n b:    value1 #comment of b";
+        String expected = "a:\n  b: value1 #comment of b";
+        
+        /* execute */
+        String result = formatterToTest.format(source);
+        
+        /* test */
+        assertEquals(expected,result);
+        
+    }
+    
+    
+    @Test
+    public void line_with_ending_comment_where_line_has_changed_will_be_inside_changed_one_even_when_there_was_same_line_without_comment_before() {
+        /* prepare */
+        String source = "a:\n\n b: value1\n"+"---\na:\n\n b: value1 #comment of b";
+        String expected = "a:\n  b: value1\n"+"---\na:\n  b: value1 #comment of b";
         
         /* execute */
         String result = formatterToTest.format(source);
