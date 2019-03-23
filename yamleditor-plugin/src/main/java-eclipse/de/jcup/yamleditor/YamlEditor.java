@@ -91,6 +91,7 @@ import de.jcup.yamleditor.script.YamlScriptModel;
 import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 import de.jcup.yamleditor.script.YamlScriptModelBuilder;
 import de.jcup.yamleditor.script.formatter.DefaultYamlSourceFormatterConfig;
+import de.jcup.yamleditor.script.formatter.YamlEdtiorFormatterScalarStyle;
 import de.jcup.yamleditor.script.formatter.YamlSourceFormatter;
 
 @AdaptedFromEGradle
@@ -845,10 +846,14 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 
     public void formatSourceCode() {
         String code = getDocumentText();
-
+        String sourceFormatterScalarStyleId = getPreferences().getSourceFormatterScalarStyleId();
+        YamlEdtiorFormatterScalarStyle scalarStyle = YamlEdtiorFormatterScalarStyle.fromId(sourceFormatterScalarStyleId);
+        
         DefaultYamlSourceFormatterConfig config = new DefaultYamlSourceFormatterConfig();
         config.setIndent(getPreferences().getSourceFormatterIndent());
-        config.setLineLength(getPreferences().getSourceFormatterLineLength());
+        config.setMaxLineLength(getPreferences().getSourceFormatterLineLength());
+        config.setScalarStyle(scalarStyle);
+        config.setRestoreCommentsEnabled(getPreferences().isSourceFormatterRescuingComments());
         
         String output = new YamlSourceFormatter().format(code,config);
         

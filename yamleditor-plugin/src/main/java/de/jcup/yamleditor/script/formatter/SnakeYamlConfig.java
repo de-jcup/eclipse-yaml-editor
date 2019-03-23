@@ -3,11 +3,11 @@ package de.jcup.yamleditor.script.formatter;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.DumperOptions.ScalarStyle;
 
-public class SnakeYamlSourceFormatterConfig implements YamlSourceFormatterConfig {
-    
+public class SnakeYamlConfig {
+
     public static final int SNAKE_MAX_LINELENGTH = 400;// snake max is ?
     public static final int SNAKE_MAX_INDENT = 10;// snake max is 10
-    
+
     private boolean explicitStart = false;
     private boolean explicitEnd = false;
     private int indent = 2;
@@ -15,35 +15,56 @@ public class SnakeYamlSourceFormatterConfig implements YamlSourceFormatterConfig
     private FlowStyle flowStyle = FlowStyle.BLOCK;
     private boolean prettyFlow = false;
     private ScalarStyle scalarStyle = ScalarStyle.PLAIN;
-    boolean multiDocFileStartingWithSeparator=false;
+    boolean multiDocFileStartingWithSeparator = false;
 
-    public SnakeYamlSourceFormatterConfig() {
+    public SnakeYamlConfig() {
     }
 
-    public SnakeYamlSourceFormatterConfig(YamlSourceFormatterConfig toCopy) {
-        if (toCopy==null) {
+    public SnakeYamlConfig(YamlSourceFormatterConfig toCopy) {
+        if (toCopy == null) {
             return;
         }
-        this.indent=toCopy.getIndent();
-        if (this.indent>SNAKE_MAX_INDENT) {
-            this.indent=SNAKE_MAX_INDENT;
+        
+        this.indent = toCopy.getIndent();
+        if (this.indent > SNAKE_MAX_INDENT) {
+            this.indent = SNAKE_MAX_INDENT;
         }
-        this.lineLength=toCopy.getLineLength();
-        if (this.lineLength>SNAKE_MAX_LINELENGTH) {
-            this.lineLength=SNAKE_MAX_LINELENGTH;
+        
+        this.lineLength = toCopy.getMaxLineLength();
+        if (this.lineLength > SNAKE_MAX_LINELENGTH) {
+            this.lineLength = SNAKE_MAX_LINELENGTH;
+        }
+        YamlEdtiorFormatterScalarStyle yamlEdtiorFormatterScalarStyle = toCopy.getScalarStyle();
+        if (yamlEdtiorFormatterScalarStyle == null) {
+            return;
+        }
+
+        /* handle supported styles */
+        switch (yamlEdtiorFormatterScalarStyle) {
+        case DOUBLE_QUOTED:
+            this.scalarStyle = ScalarStyle.DOUBLE_QUOTED;
+            this.flowStyle = FlowStyle.BLOCK;
+            break;
+        case SINGLE_QUOTED:
+            this.scalarStyle = ScalarStyle.SINGLE_QUOTED;
+            this.flowStyle = FlowStyle.BLOCK;
+            break;
+        default:
+        case PLAIN:
+            this.scalarStyle = ScalarStyle.PLAIN;
+            this.flowStyle = FlowStyle.BLOCK;
+            break;
         }
     }
-    
-    
-    @Override
+
     public int getIndent() {
         return indent;
     }
-    
-    @Override
+
     public int getLineLength() {
         return lineLength;
     }
+
     public boolean isExplicitEnd() {
         return explicitEnd;
     }
@@ -63,7 +84,6 @@ public class SnakeYamlSourceFormatterConfig implements YamlSourceFormatterConfig
     public ScalarStyle getScalarStyle() {
         return scalarStyle;
     }
-
 
     public void setExplicitStart(boolean explicitStart) {
         this.explicitStart = explicitStart;

@@ -4,6 +4,10 @@ public interface YamlSourceFormatterConfig {
 
     int getIndent();
 
-    int getLineLength();
+    int getMaxLineLength();
+    
+    YamlEdtiorFormatterScalarStyle getScalarStyle();
 
+    boolean isRestoreCommentsEnabled();
+    
 }

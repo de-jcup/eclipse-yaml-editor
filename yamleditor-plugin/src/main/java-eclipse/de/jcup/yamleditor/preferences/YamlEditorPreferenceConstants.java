@@ -42,6 +42,10 @@ public enum YamlEditorPreferenceConstants implements PreferenceIdentifiable{
 	P_SOURCE_FORMAT_LINE_LENGTH("sourceFormatlineLength"),
 	
 	P_SOURCE_FORMAT_INDENT("sourceFormatIndent"),
+	
+	P_SOURCE_SCALAR_STYLE_ID("sourceFormatScalarStyleId"),
+	
+	P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED("sourceFormatRescueCommentsEnabled")
 	;
 
 	private String id;

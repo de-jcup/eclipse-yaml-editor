@@ -178,6 +178,14 @@ public class YamlEditorPreferences {
         return getPreferenceStore().getInt(P_SOURCE_FORMAT_INDENT.getId());
     }
 
+    public String getSourceFormatterScalarStyleId() {
+        return getPreferenceStore().getString(P_SOURCE_SCALAR_STYLE_ID.getId());
+    }
+    
+    public boolean isSourceFormatterRescuingComments() {
+        return getPreferenceStore().getBoolean(P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED.getId());
+    }
+
 	
 
 	
