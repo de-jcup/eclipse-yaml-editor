@@ -172,5 +172,33 @@ public class YamlSourceFormatterTest {
         
     }
     
+    @Test
+    public void line_with_fullcomment_when_structure_changes() {
+        /* prepare */
+        String source = "a:\n\n b: value1\n\n\n"+"#This is here!\n---\na:\n\n b: value1 #comment of b";
+        String expected = "a:\n  b: value1\n"+"#This is here!\n---\na:\n  b: value1 #comment of b";
+        
+        /* execute */
+        String result = formatterToTest.format(source);
+        
+        /* test */
+        assertEquals(expected,result);
+        
+    }
+    
+    @Test
+    public void line_with_fullcomment_when_empty_lines_before_structure_changes() {
+        /* prepare */
+        String source = "\n#In line2\na: value1";
+        String expected = "#In line2\na: value1";
+        
+        /* execute */
+        String result = formatterToTest.format(source);
+        
+        /* test */
+        assertEquals(expected,result);
+        
+    }
+    
 
 }

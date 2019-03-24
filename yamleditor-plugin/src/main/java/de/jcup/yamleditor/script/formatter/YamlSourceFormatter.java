@@ -21,21 +21,30 @@ public class YamlSourceFormatter {
         SnakeYamlConfig snakeConfig = new SnakeYamlConfig(config);
 
         /* backup meta info */
-        CommentsRescueContext context = backupCommentsAndMetaData(source, snakeConfig);
+        boolean restoreCommentsEnabled = config.isRestoreCommentsEnabled();
+        CommentsRescueContext rescueContext = null;
+        if (restoreCommentsEnabled) {
+            rescueContext = backupCommentsAndMetaData(source, snakeConfig);
+        }
 
         /* parse + pretty print */
         Yaml yamlParser = new Yaml();
         Iterable<Object> yamlDocuments = yamlParser.loadAll(source);
         String formatted = formatDocuments(yamlDocuments, snakeConfig);
 
-        /* restore meta info */
+        /* restore meta info - snake yaml parsers does always destroy comment information !*/
         String result = dropFirstBlockIfNotDefinedBefore(formatted, snakeConfig);
-        if (config.isRestoreCommentsEnabled()) {
-            result = restoreFullComments(result, context, snakeConfig);
-            result = restoreEndingCommentsBySearchForNewLine(result, context, snakeConfig);
+        
+        if (restoreCommentsEnabled) {
+            result = restoreEndingCommentsBySearchForNewLine(result, rescueContext, snakeConfig);
             /* next is only fall back for unrecognized situation for ending comments */
-            result = restoreEndingCommentsByLineNumbers(result, context, snakeConfig);
-            result = appendOrphanedComments(result, context, snakeConfig);
+            result = restoreEndingCommentsByLineNumbers(result, rescueContext, snakeConfig);
+           
+            result = restoreFullCommentsBySearchForNewLine(result, rescueContext, snakeConfig);
+            /* next is only fall back for unrecognized situation for full comments */
+            result = restoreFullCommentsByLineNumbers(result, rescueContext, snakeConfig);
+            
+            result = appendOrphanedComments(result, rescueContext, snakeConfig);
         }
         return result.trim();
 
@@ -137,17 +146,83 @@ public class YamlSourceFormatter {
 
     }
 
-    /*
-     * snake yaml removes all comments - seems to be inside spec of 1.1/1.2 but we
-     * want to keep it...
-     */
-    private String restoreFullComments(String formatted, CommentsRescueContext context, SnakeYamlConfig config) {
+    private String restoreFullCommentsBySearchForNewLine(String formatted, CommentsRescueContext context, SnakeYamlConfig internalConfig) {
+        String[] linesFormatted = formatted.split("\n");
+        CommentMarker markerToDrop = null;
+        StringBuilder sb = new StringBuilder();
+
+        List<String> reducedComparableLineParts2=new ArrayList<String>();
+        addFirstFullCommentWhenNoFormerLine(context, sb);
+        
+        for (String lineFormatted : linesFormatted) {
+
+            sb.append(lineFormatted);
+            String reducedComparablePart  = null;
+            if (lineFormatted.startsWith("#")) {
+                reducedComparablePart = context.reduceToComparablePart(lineFormatted);
+            }else {
+                String comment = tryToResolveEndingComment(lineFormatted);
+                if (comment!=null && !comment.isEmpty()) {
+                    String justCode = lineFormatted.substring(0,lineFormatted.length()-comment.length());
+                    reducedComparablePart = context.reduceToComparablePart(justCode);
+                }else {
+                    reducedComparablePart = context.reduceToComparablePart(lineFormatted);
+                }
+            }
+            int currentReducedIndex= context.calculateReducedComparableIndex(reducedComparablePart, reducedComparableLineParts2);
+            reducedComparableLineParts2.add(reducedComparablePart);
+            
+            for (CommentMarker marker : context.commentMarkers) {
+                if (!marker.fullLine) {
+                    continue;
+                }
+                    if (!reducedComparablePart.equals(marker.lineBeforeAsReducedPart)) {
+                        continue;
+                    }
+                    /* check if we are really in the wanted line */ 
+                    if (marker.lineBeforeAsReducedIndex!=currentReducedIndex) {
+                        continue;
+                    }
+                sb.append("\n");
+                sb.append(marker.comment);
+                markerToDrop = marker;
+                break;
+            }
+            if (markerToDrop != null) {
+                context.commentMarkers.remove(markerToDrop);
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    private void addFirstFullCommentWhenNoFormerLine(CommentsRescueContext context, StringBuilder sb) {
+        CommentMarker dropFirst=null;
+        for (CommentMarker marker : context.commentMarkers) {
+            if (!marker.fullLine) {
+                continue;
+            }
+            if (marker.lineBeforeAsReducedPart==null) {
+                /* special case, got nothing before so accept always*/
+                sb.append(marker.comment);
+                sb.append("\n");
+                dropFirst=marker;
+                break;
+            }
+        }
+        if (dropFirst!=null) {
+            context.commentMarkers.remove(dropFirst);
+        }
+    }
+
+    
+    private String restoreFullCommentsByLineNumbers(String formatted, CommentsRescueContext context, SnakeYamlConfig config) {
         String[] linesFormatted = formatted.split("\n");
         StringBuilder sb = new StringBuilder();
         int lineNr = 0;
         for (String lineFormatted : linesFormatted) {
             lineNr++;
-            while (handleFullLineMarkers(context, lineNr, sb)) {
+            while (restoreFullCommentsByLineNumber(context, lineNr, sb)) {
                 lineNr++;
             }
             sb.append(lineFormatted);
@@ -224,7 +299,7 @@ public class YamlSourceFormatter {
         }
     }
 
-    private boolean handleFullLineMarkers(CommentsRescueContext context, int lineNr, StringBuilder sb) {
+    private boolean restoreFullCommentsByLineNumber(CommentsRescueContext context, int lineNr, StringBuilder sb) {
         boolean lineAdded = false;
         CommentMarker markerToDrop = null;
         for (CommentMarker marker : context.commentMarkers) {
@@ -272,8 +347,12 @@ public class YamlSourceFormatter {
 
     private class CommentsRescueContext {
         private String[] originSourceLines;
+        /**
+         * Contains lines of code with out ending comments - and lines with full comment insdie
+         */
         private List<String> reducedComparableLineParts = new ArrayList<String>();
         private List<CommentMarker> commentMarkers = new ArrayList<CommentMarker>();
+        private String lastLineInspectedNotEmpty;
 
         public CommentsRescueContext(String originSource) {
             originSourceLines = originSource.split("\n");
@@ -282,37 +361,44 @@ public class YamlSourceFormatter {
             int lineNr = 0;
             for (String line : originSourceLines) {
                 lineNr++;
-                String potentialComment = line.trim();
-                if (potentialComment.startsWith("#")) {
-                    handleLineComment(lineNr, line, potentialComment);
+                String lineTrimmed = line.trim();
+                if (lineTrimmed.startsWith("#")) {
+                    backupLineComment(lineNr, line);
                 } else {
                     String comment = tryToResolveEndingComment(line);
                     if (comment != null && !comment.isEmpty()) {
-                        handleEndComment(lineNr, line, comment);
+                        backupEndComment(lineNr, line, comment);
                     } else {
-                        handleLineWithoutComment(line);
+                        backupLineWithoutComment(line);
                     }
 
+                }
+                if (! lineTrimmed.isEmpty()) {
+                    lastLineInspectedNotEmpty=line;
                 }
             }
 
         }
 
-        private void handleLineWithoutComment(String line) {
+        private void backupLineWithoutComment(String line) {
             reducedComparableLineParts.add(reduceToComparablePart(line));
         }
 
-        private void handleLineComment(int lineNr, String line, String potentialComment) {
+        private void backupLineComment(int lineNr, String line) {
             CommentMarker marker = new CommentMarker();
             marker.originLine = line;
             marker.fullLine = true;
-            marker.comment = potentialComment;
+            marker.comment = line.trim();
             marker.lineNr = lineNr;
+            if (lastLineInspectedNotEmpty!=null) {
+                marker.lineBeforeAsReducedPart=reduceToComparablePart(lastLineInspectedNotEmpty);
+                marker.lineBeforeAsReducedIndex= calculateCurrentReducedComparableIndex(lastLineInspectedNotEmpty);
+            }
             commentMarkers.add(marker);
-            reducedComparableLineParts.add("");
+            reducedComparableLineParts.add(reduceToComparablePart(marker.comment));
         }
 
-        private void handleEndComment(int lineNr, String line, String comment) {
+        private void backupEndComment(int lineNr, String line, String comment) {
             CommentMarker marker = new CommentMarker();
             marker.originLine = line;
             marker.fullLine = false;
@@ -358,6 +444,11 @@ public class YamlSourceFormatter {
 
     private class CommentMarker {
 
+        public int lineBeforeAsReducedIndex;
+        /**
+         * Contains line before, not empty, but with comment parts inside
+         */
+        public String lineBeforeAsReducedPart;
         public int reducedComparableIndex;
         public String originLine;
         public String reducedComparablePart;
