@@ -45,7 +45,7 @@ public class YamlEditorFormatterPreferencePage extends FieldEditorPreferencePage
 		  
         IntegerFieldEditor indentEditor = new IntegerFieldEditor(P_SOURCE_FORMAT_INDENT.getId(),
                 "Indent", parent);
-        indentEditor.setValidRange(3, SnakeYamlConfig.SNAKE_MAX_INDENT);
+        indentEditor.setValidRange(2, SnakeYamlConfig.SNAKE_MAX_INDENT);
         addField(indentEditor);
         indentEditor.getLabelControl(parent).setToolTipText(
                 "Indention used by source formatter");
