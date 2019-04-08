@@ -1,0 +1,7 @@
+aws: 
+  - aa
+  - bb:bb
+  - ckey: cvalue
+  - d.key: d.value
+
+  

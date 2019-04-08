@@ -21,7 +21,7 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
 /**
- * A special rule to scan yaml variables
+ * A special rule to scan yaml variables.
  * 
  * @author Albert Tregnaghi
  *
@@ -138,7 +138,11 @@ public class YamlMappingRule implements IPredicateRule {
 				return Token.UNDEFINED;
 			}
 			if (c == ':') {
-				return getSuccessToken();
+			    /* check if we got a space afterwards. If not its part of the key!*/
+			    c = (char) slider.moveForward();
+			    if (Character.isWhitespace(c)) {
+			        return getSuccessToken();
+			    }
 			}
 		} while (true);
 	}
@@ -151,8 +155,7 @@ public class YamlMappingRule implements IPredicateRule {
 	}
 
 	private boolean isWordPart(StringBuilder sb, char c) {
-
-		if (c == ':' || c == '-' || c == '_') {
+		if (c == ':' || c == '-' || c == '_'|| c=='.') {
 			return true;
 		}
 		// spaces are allowed inside mappings, see
