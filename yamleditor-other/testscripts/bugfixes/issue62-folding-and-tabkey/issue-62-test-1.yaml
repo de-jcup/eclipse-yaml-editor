@@ -1,0 +1,76 @@
+V1:
+    blabla:
+        - doc: >
+            blah blah@endbrief
+        - |
+            /* md5 = 6b9e8ae7e347e63f1303df89d4d1fb82 */
+        - constants:
+            type: ""
+            values:
+                - apiVersion:
+                    value: "0x0101"
+
+
+    V2:
+                    - sdksdldfkdrs:
+                        isConst: 1
+                        retValType: Count
+                        shortDoc: >
+                            This gets the parameters of this event.
+                        arguments:
+                            - V3:
+                                type: Arsdasray(dsa consdast)
+                                direction: oudasdt
+                                doc: >
+                                    dads.
+                            - V4:
+                                type: Adasdrray(Strsdadaing cadadaonst)
+                                direction: oadssdsut
+                                doc: >
+                                    Tsdasd sdsadant.
+                        V5: >
+                            sdasdsde
+                            teasdasdanter.
+                            @sdte:
+                            The 2 arrdasdasdasdme of this
+                            objecasdasdasder.
+                    - V6:
+                        sdadsdonst: 1
+                        reasdasdype: String
+                        argadsdasdnts: []
+                        shasdastDoc: >
+                            Rdasdsadrs.
+                        cppDoc: >
+                            @dad dsdsote:
+                            Thasdsject.
+                            Thasdsadt.
+
+    t_easdasda.h:
+        - includes:
+            - dasdasd.h
+        - classes:
+            - Evsdasdasdler:
+                kind: abasdasdasdt
+                doc: >
+                    Thasdasda events from
+                    Turadsaddbrief
+                    
+                    Thdadsdasderfaces.
+                methods:
+                    - haasdasdent:
+                        shoasdasdoc: >
+                            Thidasdasdaat an
+                            evasdasdbrief
+                        argasdasdafnts: !!omap
+                            - eddddsdadav:
+                                type: cosdasdant
+                        doc: >
+                            @par Attention:
+                            
+                            Thsdasdasdawait for a resource that
+                            may beasdasdaesult in a deadlock.
+                            
+                            @pasdsadasdote 1:
+                            
+                            Thdadadbe called before the Turnstile object is fully
+                            operatioasdasdais one.
