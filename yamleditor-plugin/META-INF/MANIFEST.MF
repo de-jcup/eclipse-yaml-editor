@@ -21,3 +21,4 @@ Import-Package: org.eclipse.ui
 Bundle-ClassPath: .,
  libs/de-jcup-eclipse-commons.jar,
  libs/snakeyaml-1.24.jar
+Automatic-Module-Name: de.jcup.yamleditor
