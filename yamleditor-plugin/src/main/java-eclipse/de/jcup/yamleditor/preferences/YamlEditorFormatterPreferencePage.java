@@ -44,11 +44,11 @@ public class YamlEditorFormatterPreferencePage extends FieldEditorPreferencePage
 		Composite parent = getFieldEditorParent();
 		  
         IntegerFieldEditor indentEditor = new IntegerFieldEditor(P_SOURCE_FORMAT_INDENT.getId(),
-                "Indent", parent);
+                "Indent / Tab replacement", parent);
         indentEditor.setValidRange(2, SnakeYamlConfig.SNAKE_MAX_INDENT);
         addField(indentEditor);
         indentEditor.getLabelControl(parent).setToolTipText(
-                "Indention used by source formatter");
+                "Amount of spaces used by source formatter to make indention.\nWill also be used when inserting spaces while pressing TAB key.");
 			
 		IntegerFieldEditor lineLengthEditor = new IntegerFieldEditor(P_SOURCE_FORMAT_LINE_LENGTH.getId(),
                 "Max line length", parent);
