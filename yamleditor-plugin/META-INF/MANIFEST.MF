@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Import-Package: org.eclipse.ui
+Import-Package: org.eclipse.ui,
+ org.eclipse.ui.texteditor.templates
 Bundle-ClassPath: .,
  libs/de-jcup-eclipse-commons.jar,
  libs/snakeyaml-1.24.jar

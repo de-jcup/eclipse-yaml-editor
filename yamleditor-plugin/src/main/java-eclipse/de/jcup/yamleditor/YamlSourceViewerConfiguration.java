@@ -26,6 +26,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
@@ -47,6 +48,8 @@ import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 
+import de.jcup.eclipse.commons.codeassist.MultipleContentAssistProcessor;
+import de.jcup.eclipse.commons.templates.TemplateSupport;
 import de.jcup.yamleditor.document.YamlDocumentIdentifier;
 import de.jcup.yamleditor.document.YamlDocumentIdentifiers;
 import de.jcup.yamleditor.presentation.PresentationSupport;
@@ -81,23 +84,35 @@ public class YamlSourceViewerConfiguration extends TextSourceViewerConfiguration
 		Assert.isNotNull(adaptable, "adaptable may not be null!");
 		this.annotationHoover = new YamlEditorAnnotationHoover();
 		
-		this.contentAssistant = new ContentAssistant();
-		contentAssistProcessor = new YamlEditorSimpleWordContentAssistProcessor();
-		contentAssistant.enableColoredLabels(true);
+		initContentAssistance();
 		
-		contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
-		for (YamlDocumentIdentifier identifier: YamlDocumentIdentifiers.values()){
-			contentAssistant.setContentAssistProcessor(contentAssistProcessor, identifier.getId());
-		}
-		
-		contentAssistant.addCompletionListener(contentAssistProcessor.getCompletionListener());
-
 		this.colorManager = adaptable.getAdapter(ColorManager.class);
 		Assert.isNotNull(colorManager, " adaptable must support color manager");
 		this.defaultTextAttribute = new TextAttribute(
 				colorManager.getColor(getPreferences().getColor(COLOR_NORMAL_TEXT)));
 		this.adaptable=adaptable;
 	}
+    private void initContentAssistance() {
+        this.contentAssistant = new ContentAssistant();
+        
+		contentAssistProcessor = new YamlEditorSimpleWordContentAssistProcessor();
+		contentAssistant.enableColoredLabels(true);
+		
+		/* yaml parts */
+		for (YamlDocumentIdentifier identifier: YamlDocumentIdentifiers.values()){
+			contentAssistant.setContentAssistProcessor(contentAssistProcessor, identifier.getId());
+		}
+		contentAssistant.addCompletionListener(contentAssistProcessor.getCompletionListener());
+
+		/* templates */
+		TemplateSupport templatesupport = YamlEditorActivator.getDefault().getTemplateSupportProvider().getSupport();
+		IContentAssistProcessor templateProcessor = templatesupport.getProcessor();
+		
+		/* multi content assist processor */
+		MultipleContentAssistProcessor multiProcessor = new MultipleContentAssistProcessor(templateProcessor, contentAssistProcessor);
+        contentAssistant.setContentAssistProcessor(multiProcessor, IDocument.DEFAULT_CONTENT_TYPE);
+    }
+    
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 		return contentAssistant;
 	}

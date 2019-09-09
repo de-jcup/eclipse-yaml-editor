@@ -20,7 +20,9 @@ import org.osgi.framework.BundleContext;
 
 import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvider;
+import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
 import de.jcup.eclipse.commons.ui.PluginContextProviderRegistry;
+import de.jcup.yamleditor.templates.YamlEditorTemplateSupportConfig;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -35,6 +37,7 @@ public class YamlEditorActivator extends AbstractUIPlugin implements PluginConte
 	private ColorManager colorManager;
 	private AbstractConfigurableTaskTagsSupportProvider taskSupportProvider;
 
+    private TemplateSupportProvider templateSupportProvider;
 	/**
 	 * The constructor
 	 */
@@ -42,6 +45,7 @@ public class YamlEditorActivator extends AbstractUIPlugin implements PluginConte
 		colorManager = new ColorManager();
 		taskSupportProvider = new YamlTaskTagsSupportProvider(this) ;
 		PluginContextProviderRegistry.register(this);
+		templateSupportProvider = new TemplateSupportProvider(new YamlEditorTemplateSupportConfig(),this);
 	}
 
 	public ColorManager getColorManager() {
@@ -83,5 +87,9 @@ public class YamlEditorActivator extends AbstractUIPlugin implements PluginConte
 	public String getPluginID() {
 		return PLUGIN_ID;
 	}
+
+    public TemplateSupportProvider getTemplateSupportProvider() {
+        return templateSupportProvider;
+    }
 
 }

@@ -33,6 +33,14 @@
    		id="yamleditor.preferences.keyword.tasks"
    		label="tasks">
      </keyword>
+      <keyword
+        id="yamleditor.preferences.keyword.template"
+        label="template">
+     </keyword>
+     <keyword
+        id="yamleditor.preferences.keyword.templates"
+        label="templates">
+     </keyword>
      <keyword
    		id="yamleditor.preferences.keyword.todo"
    		label="todo">
@@ -96,6 +104,35 @@
 	        
 	  </context>
    </extension>
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          TEMPLATE                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            name="Yaml Editor"
+            class="de.jcup.yamleditor.templates.YamlEditorTemplateContextType"
+            id="de.jcup.yamleditor.template.context">
+      </contextType>
+      <template
+            name="TODO"
+            icon="icons/templates/task.png"
+            description="TODO marker for current user and date"
+            contextTypeId="de.jcup.yamleditor.template.context"
+            id="yamleditor.templates.default.todo">
+         <pattern># TODO ${user}, ${currentDate:date('yyyy-MM-dd')}:${cursor}</pattern>
+      </template>
+      
+      <template
+            name="FIXME"
+            icon="icons/templates/task.png"
+            description="FIXME marker for current user and date"
+            contextTypeId="de.jcup.yamleditor.template.context"
+            id="yamleditor.templates.default.fixme">
+         <pattern># FIXME ${user}, ${currentDate:date('yyyy-MM-dd')}:${cursor}</pattern>
+      </template>
+</extension>
+   
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          COMMANDS                                    -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->^
@@ -305,7 +342,7 @@
    <extension
       point = "org.eclipse.ui.preferencePages">
       <page
-         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage"
+         id="de.jcup.yamleditor.preferences.YamlEditorPreferencePage"
          class="de.jcup.yamleditor.preferences.YamlEditorPreferencePage"
          name="Yaml Editor"
          >
@@ -320,10 +357,10 @@
          </keywordReference>
       </page>
       <page
-         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorSyntaxColorPreferencePage"
+         id="de.jcup.yamleditor.preferences.YamlEditorSyntaxColorPreferencePage"
          class="de.jcup.yamleditor.preferences.YamlEditorSyntaxColorPreferencePage"
          name="Syntax coloring"
-         category="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage">
+         category="de.jcup.yamleditor.preferences.YamlEditorPreferencePage">
          <keywordReference
                id="yamleditor.preferences.keyword.yaml">
          </keywordReference>
@@ -332,10 +369,10 @@
          </keywordReference>
       </page>
       <page
-         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorFormatterPreferencePage"
+         id="de.jcup.yamleditor.preferences.YamlEditorFormatterPreferencePage"
          class="de.jcup.yamleditor.preferences.YamlEditorFormatterPreferencePage"
          name="Formatter"
-         category="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage">
+         category="de.jcup.yamleditor.preferences.YamlEditorPreferencePage">
          <keywordReference
                id="yamleditor.preferences.keyword.yaml">
          </keywordReference>
@@ -347,10 +384,10 @@
          </keywordReference>
       </page>
       <page
-         id="yamleditor.eclipse.gradleeditor.preferences.YamlEditorTaskTagsPreferencePage"
+         id="de.jcup.yamleditor.preferences.YamlTaskTagsPreferencePage"
          class="de.jcup.yamleditor.preferences.YamlTaskTagsPreferencePage"
          name="Task Tags"
-         category="yamleditor.eclipse.gradleeditor.preferences.YamlEditorEditorPreferencePage">
+         category="de.jcup.yamleditor.preferences.YamlEditorPreferencePage">
          <keywordReference
                id="yamleditor.preferences.keyword.yaml">
          </keywordReference>
@@ -362,6 +399,21 @@
          </keywordReference>
           <keywordReference
                id="yamleditor.preferences.keyword.tasks">
+         </keywordReference>
+      </page>
+      <page
+         id="de.jcup.yamleditor.preferences.YamlTemplatePreferencePage"
+         class="de.jcup.yamleditor.preferences.YamlEditorTemplatePreferencePage"
+         name="Templates"
+         category="de.jcup.yamleditor.preferences.YamlEditorPreferencePage">
+         <keywordReference
+               id="yamleditor.preferences.keyword.yaml">
+         </keywordReference>
+         <keywordReference
+               id="yamleditor.preferences.keyword.template">
+         </keywordReference>
+          <keywordReference
+               id="yamleditor.preferences.keyword.templates">
          </keywordReference>
       </page>
     </extension>
