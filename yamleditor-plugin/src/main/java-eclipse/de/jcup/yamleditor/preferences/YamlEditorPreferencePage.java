@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -38,8 +37,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-
-import de.jcup.yamleditor.script.formatter.SnakeYamlConfig;
 
 /**
  * Parts are inspired by <a href=
@@ -141,25 +138,6 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 				.setToolTipText("Via this setting the default behaviour for new opened outlines is set");
 		addField(linkEditorWithOutline);
 
-		/* ---------------------------------------- */
-		/* - source formatter + space replacement - */
-		/* ---------------------------------------- */
-		IntegerFieldEditor replaceTabsBySpacesEditor = new IntegerFieldEditor(P_SPACES_TO_REPLACE_TAB.getId(),
-				"Spaces used for tab replacement", otherComposite);
-		replaceTabsBySpacesEditor.setValidRange(1, SnakeYamlConfig.SNAKE_MAX_INDENT);
-		addField(replaceTabsBySpacesEditor);
-		replaceTabsBySpacesEditor.getLabelControl(otherComposite).setToolTipText(
-				"Yaml editor replaces all tab key presses with spaces,because illegal for YAML format.\n"
-				+ "This defines the amout of spaces to use.\n\nAlso used by source formatter on indent calculation.");
-		
-		IntegerFieldEditor lineLengthEditor = new IntegerFieldEditor(P_SOURCE_FORMAT_LINE_LENGTH.getId(),
-                "Source formatter max line length", otherComposite);
-		lineLengthEditor.setValidRange(40, SnakeYamlConfig.SNAKE_MAX_LINELENGTH);
-        addField(lineLengthEditor);
-        lineLengthEditor.getLabelControl(otherComposite).setToolTipText(
-                "Line length used by source formatter");
-		
-
         /* ---------------- */
         /* - Margin ruler - */
         /* ---------------- */
@@ -259,7 +237,7 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		codeAssistGroupLayoutData.widthHint = 400;
 
 		Group codeAssistGroup = new Group(appearanceComposite, SWT.NONE);
-		codeAssistGroup.setText("Code assistence");
+		codeAssistGroup.setText("Code assistance");
 		codeAssistGroup.setLayout(new GridLayout());
 		codeAssistGroup.setLayoutData(codeAssistGroupLayoutData);
 

@@ -167,7 +167,7 @@ public class YamlEditorPreferences {
 	}
 
 	public int getAmountOfSpacesToReplaceTab() {
-		return getPreferenceStore().getInt(P_SPACES_TO_REPLACE_TAB.getId());
+		return getPreferenceStore().getInt(P_SOURCE_FORMAT_INDENT.getId());
 	}
 
     public int getSourceFormatterLineLength() {

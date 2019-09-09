@@ -37,8 +37,6 @@ public enum YamlEditorPreferenceConstants implements PreferenceIdentifiable{
 	
 	P_CODE_FOLDING_ENABLED("codeFoldingEnabled"),
 	
-	P_SPACES_TO_REPLACE_TAB("spacesToReplaceTab"),
-	
 	P_SOURCE_FORMAT_LINE_LENGTH("sourceFormatlineLength"),
 	
 	P_SOURCE_FORMAT_INDENT("sourceFormatIndent"),
