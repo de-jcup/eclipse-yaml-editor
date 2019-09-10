@@ -181,7 +181,7 @@ public class YamlSourceViewerConfiguration extends TextSourceViewerConfiguration
 	}
 
 	private void addDefaultPresentation(PresentationReconciler reconciler) {
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getGradleDefaultTextScanner());
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getYamlDefaultTextScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 	}
@@ -199,7 +199,7 @@ public class YamlSourceViewerConfiguration extends TextSourceViewerConfiguration
 		reconciler.setRepairer(presentation, id);
 	}
 
-	private YamlDefaultTextScanner getGradleDefaultTextScanner() {
+	private YamlDefaultTextScanner getYamlDefaultTextScanner() {
 		if (scanner == null) {
 			scanner = new YamlDefaultTextScanner(colorManager);
 			updateTextScannerDefaultColorToken();

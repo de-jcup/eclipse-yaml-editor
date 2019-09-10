@@ -1,0 +1,17 @@
+something1:
+  something.without.asterisk: # this line was already colorized
+    - value1
+    - value2
+something2:
+  something.with.asterisk.*: # this line was not colorized
+    - value1
+    - value2
+something3:
+  something-with-asterisk*: # this line was not colorized
+    - value1
+    - value2
+something4:
+  something-with-asterisk*xxx: # this line was not colorized
+    - value1
+    - value2
+    

@@ -65,7 +65,7 @@ public class YamlMappingRule implements IPredicateRule {
 			int cbefore = slider.readBefore();
 
 			newLine = isNewLine(scanner, (char) cbefore);
-			int backwardSteps = 0;
+
 			StringBuilder prefixSb = null;
 			while (!newLine) {
 				if (prefixSb == null) {
@@ -155,7 +155,7 @@ public class YamlMappingRule implements IPredicateRule {
 	}
 
 	private boolean isWordPart(StringBuilder sb, char c) {
-		if (c == ':' || c == '-' || c == '_'|| c=='.') {
+		if (c == ':' || c == '-' || c == '_'|| c=='.' || c=='*') {
 			return true;
 		}
 		// spaces are allowed inside mappings, see
