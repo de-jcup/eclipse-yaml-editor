@@ -4,9 +4,8 @@ BINTRAY_API_KEY=$2
 
 function show_help_and_exit() {
 	echo "Usage:"
-	echo " deploy.sh bintrayUser apiKey version"
+	echo " deploy.sh bintrayUser apiKey"
 	echo " "
-	echo " version can be e.g. 1.4.2"
 	exit 1
 }
 
