@@ -1,7 +1,6 @@
 #!/bin/bash
 BINTRAY_USER=$1
 BINTRAY_API_KEY=$2
-BINTRAY_VERSION=$3
 
 function show_help_and_exit() {
 	echo "Usage:"
@@ -23,4 +22,4 @@ if [ -z "$BINTRAY_VERSION" ]; then
     echo "bintray version not set"
     show_help_and_exit;
 fi
-./pushToBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup yamleditor update-site ${BINTRAY_VERSION} ./yamleditor-updatesite/
+./pushToBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup yamleditor update-site 1.5.0 ./yamleditor-updatesite/
