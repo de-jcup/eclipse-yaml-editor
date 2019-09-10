@@ -125,7 +125,7 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
 		otherComposite.setLayout(otherLayout);
 
 		/* code folding */
-		codeFoldingEnabledOnNewEditors = new BooleanFieldEditor(P_CODE_FOLDING_ENABLED.getId(),
+		codeFoldingEnabledOnNewEditors = new BooleanFieldEditor(P_OPEN_NEW_EDITORS_WITH_CODE_FOLDING_ENABLED.getId(),
 				"New opened editors have code folding enabled", otherComposite);
 		codeFoldingEnabledOnNewEditors.getDescriptionControl(otherComposite).setToolTipText(
 				"When enabled code foldings is active per default. Can be changed in ruler context menu for each editor instance");

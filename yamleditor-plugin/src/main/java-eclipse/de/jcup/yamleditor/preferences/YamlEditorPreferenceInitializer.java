@@ -59,7 +59,7 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		store.setDefault(P_CODE_ASSIST_ADD_KEYWORDS.getId(), true);
 		store.setDefault(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(), true);
 		
-		store.setDefault(P_CODE_FOLDING_ENABLED.getId(), true);
+		store.setDefault(P_OPEN_NEW_EDITORS_WITH_CODE_FOLDING_ENABLED.getId(), false);
 		
 		store.setDefault(P_SOURCE_FORMAT_INDENT.getId(),3);
 		store.setDefault(P_SOURCE_FORMAT_LINE_LENGTH.getId(),120);

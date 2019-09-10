@@ -122,7 +122,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
     public YamlEditor() {
         setSourceViewerConfiguration(new YamlSourceViewerConfiguration(this));
         this.modelBuilder = new YamlScriptModelBuilder();
-        codeFoldingEnabled = YamlEditorPreferences.getInstance().isCodeFoldingEnabled();
+        codeFoldingEnabled = YamlEditorPreferences.getInstance().isCodeFoldingEnabledOnEditorStartup();
     }
 
     public void resourceChanged(IResourceChangeEvent event) {

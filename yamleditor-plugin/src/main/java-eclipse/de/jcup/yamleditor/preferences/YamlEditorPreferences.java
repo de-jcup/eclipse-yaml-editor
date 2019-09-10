@@ -154,8 +154,8 @@ public class YamlEditorPreferences {
 		return webColor;
 	}
 	
-	public boolean isCodeFoldingEnabled() {
-		return getBooleanPreference(P_CODE_FOLDING_ENABLED);
+	public boolean isCodeFoldingEnabledOnEditorStartup() {
+		return getBooleanPreference(P_OPEN_NEW_EDITORS_WITH_CODE_FOLDING_ENABLED);
 	}
 
 	public void setDefaultColor(PreferenceIdentifiable identifiable, RGB color) {
