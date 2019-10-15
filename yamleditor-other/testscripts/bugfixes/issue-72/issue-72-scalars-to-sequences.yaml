@@ -1,0 +1,17 @@
+#This must be shown in outline as following:
+#
+# +Human
+# | |_Adam
+# | |_Eva
+# |
+# +Animal
+#   |_Fury
+#   |_Snoopy
+
+Human:
+- Adam
+- Eva
+
+Anmial:
+- Fury
+- Snoopy

@@ -30,6 +30,8 @@ import org.yaml.snakeyaml.nodes.SequenceNode;
 import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 
 public class YamlScriptModelBuilder {
+    
+    private static boolean DEBUG = Boolean.getBoolean("de.jcup.yamleditor.model.debug");
 	private Yaml yamlParser;
 
 	public YamlScriptModelBuilder() {
@@ -42,11 +44,14 @@ public class YamlScriptModelBuilder {
 		try {
 			StringReader reader = new StringReader(text);
 
-			Iterable<Node> nodes = yamlParser.composeAll(reader);
 			YamlNode root = model.getRootNode();
+			Iterable<Node> nodes = yamlParser.composeAll(reader);
+
 			for (Node node : nodes) {
 				buildNode(model, root, node);
 			}
+			
+			/* build folding */
 			IndentionBlockBuilder builder = new IndentionBlockBuilder();
 			List<IndentionBlock> blocks = builder.build(text);
 			transformIndentionsToFoldings(model,blocks);
@@ -89,45 +94,67 @@ public class YamlScriptModelBuilder {
 		parent.getChildren().add(yamlNode);
 
 	}
-
 	protected String resolveName(Node node) {
-		if (node instanceof ScalarNode) {
+	    return resolveName(node,-1);
+	}
+	
+	protected String resolveName(Node node, int count) {
+		String name =  internalResolveName(node, count);
+		if (DEBUG) {
+		    name=node.getClass().getSimpleName()+":"+name;
+		}
+		return name;
+	}
+
+    private String internalResolveName(Node node, int count) {
+        if (node instanceof ScalarNode) {
 			return ((ScalarNode) node).getValue();
 		}
 		if (node instanceof SequenceNode) {
-			return "<sequence>";
+		    if (count>-1) {
+                return ""+count+",";
+            }else {
+                return "<sequence>";
+            }
 		}
 		if (node instanceof MappingNode) {
-			return "<mapping>";
+		    if (count>-1) {
+		        return "["+count+"]";
+		    }else {
+		        return "<mapping>";
+		    }
+		    
 		}
 		return node.getType().getName();
-	}
+    }
 
 	private void appendSequence(YamlScriptModel model, YamlNode parent, SequenceNode node) {
+	    int count=0;
+	    List<Node> values = node.getValue();
+	    int valueCount = values.size();
 		for (Node element : node.getValue()) {
-			createYamlNodeAndAddToParent(model, parent, element);
+			createYamlNodeAndAddToParent(model, parent, element,count++,valueCount);
 		}
 
 	}
 
 	private void appendMappings(YamlScriptModel model, YamlNode parent, MappingNode node) {
-		for (NodeTuple nodeTuple : node.getValue()) {
+	    int count=0;
+		List<NodeTuple> values = node.getValue();
+		int valueCount = values.size();
+        for (NodeTuple nodeTuple : values) {
 			Node keyNode = nodeTuple.getKeyNode();
-			YamlNode yamlkeyNode = createYamlNodeAndAddToParent(model, parent, keyNode);
+			YamlNode yamlkeyNode = createYamlNodeAndAddToParent(model, parent, keyNode,count++,valueCount);
 
 			Node valNode = nodeTuple.getValueNode();
-			createYamlNodeAndAddToParent(model, yamlkeyNode, valNode);
+			createYamlNodeAndAddToParent(model, yamlkeyNode, valNode, -1,-1);
 		}
 	}
 
-	protected YamlNode createYamlNodeAndAddToParent(YamlScriptModel model, YamlNode parent, Node node) {
+	protected YamlNode createYamlNodeAndAddToParent(YamlScriptModel model, YamlNode parent, Node node, int count, int maxCount) {
 		YamlNode yamlNodeToAppendNext = parent;
-		if (isShown(node)) {
-			String keyName = resolveName(node);
-			YamlNode yamlNode = new YamlNode(keyName);
-			prepare(yamlNode, node);
-			parent.getChildren().add(yamlNode);
-			yamlNodeToAppendNext = yamlNode;
+		if (isShown(node,maxCount)) {
+			yamlNodeToAppendNext = buildShownNode(model, parent, node,count);
 		} else {
 			buildNode(model, parent, node);
 		}
@@ -135,8 +162,65 @@ public class YamlScriptModelBuilder {
 		return yamlNodeToAppendNext;
 	}
 
-	private boolean isShown(Node node) {
-		return node instanceof ScalarNode;
+    private YamlNode buildShownNode(YamlScriptModel model, YamlNode parent, Node node, int count) {
+        YamlNode yamlNodeToAppendNext=null;
+        if (node instanceof ScalarNode) {
+            String keyName = resolveName(node);
+            YamlNode yamlNode = new YamlNode(keyName);
+            prepare(yamlNode, node);
+            parent.getChildren().add(yamlNode);
+            yamlNodeToAppendNext = yamlNode;
+            
+        }else if (node instanceof MappingNode) {
+            MappingNode mp = (MappingNode) node;
+            String keyName = resolveName(node,count);
+            YamlNode yamlNode = new YamlNode(keyName);
+            prepare(yamlNode, node);
+            parent.getChildren().add(yamlNode);
+            
+            appendMappings(model, yamlNode, mp);
+            
+            yamlNodeToAppendNext = yamlNode;
+        }else {
+            yamlNodeToAppendNext = new YamlNode("<failure>");
+        }
+        return yamlNodeToAppendNext;
+    }
+
+	private boolean isShown(Node node, int maxCount) {
+		if( node instanceof ScalarNode) {
+		    return true;
+		}
+		if (node instanceof MappingNode) {
+		    if (maxCount>1) {
+		        
+		        /* 
+		         * @formattter:off
+		         * special: we have problems to differ between
+		         * 
+		         * X
+		         *  - val1:
+		         *      A
+		         *    val2:
+		         *      B
+		         * ---- and -----
+                 * X
+                 *  val1:
+                 *      A
+                 *  val2:
+                 *      B
+		         *  
+		         * To avoid having [0] as output for last variant we do not show
+		         * array indexes for mappings with one key only!
+		         *    
+		         * @formattter:on
+		         * 
+		         */
+		        return true;
+		    }
+		    return false;
+		}
+		return false;
 	}
 
 	void prepare(YamlNode yamlNode, Node node) {

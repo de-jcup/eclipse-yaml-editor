@@ -1,0 +1,19 @@
+# This must be shown in outline as following:
+#
+# +AList
+#  |_(0)
+#  | |+Name
+#  | |  |_A
+#  | |+Year
+#  |   |_1970
+#  |_(1)
+#  | |+Name
+#  | |  |_B
+#  | |+Year
+#  |   |_1971
+   
+AList:
+- Name: A
+  Year: 1970
+- Name: B
+  Year: 1971
