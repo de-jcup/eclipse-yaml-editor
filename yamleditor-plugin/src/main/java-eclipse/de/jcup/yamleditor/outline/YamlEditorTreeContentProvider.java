@@ -161,21 +161,31 @@ public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 			if (items == null) {
 				return null;
 			}
-			for (Object oitem : items) {
-				if (!(oitem instanceof Item)) {
-					continue;
-				}
-				Item item = (Item) oitem;
-				int itemStart = item.getOffset();
-				int itemEnd = item.getEndOffset();// old:
-													// itemStart+item.getLength();
-				if (offset >= itemStart && offset <= itemEnd) {
-					return item;
-				}
-			}
+			Object[] children = items;
+			Item item = tryToFindItemWithOffset(offset, children);
+			return item;
 
 		}
-		return null;
 	}
+
+    private Item tryToFindItemWithOffset(int offset, Object[] children) {
+        for (Object oitem : children) {
+        	if (!(oitem instanceof Item)) {
+        		continue;
+        	}
+        	Item item = (Item) oitem;
+        	int itemStart = item.getOffset();
+        	int itemEnd = item.getEndOffset();
+        	if (offset >= itemStart && offset <= itemEnd) {
+        		return item;
+        	}
+        	Item result = tryToFindItemWithOffset(offset, item.getChildren().toArray());
+        	if (result!=null) {
+        	    return result;
+        	}
+        	
+        }
+        return null;
+    }
 
 }

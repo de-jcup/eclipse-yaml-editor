@@ -752,23 +752,25 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
     }
 
     public void openSelectedTreeItemInEditor(ISelection selection, boolean grabFocus) {
-        if (selection instanceof IStructuredSelection) {
-            IStructuredSelection ss = (IStructuredSelection) selection;
-            Object firstElement = ss.getFirstElement();
-            if (firstElement instanceof Item) {
-                Item item = (Item) firstElement;
-                int offset = item.getOffset();
-                int length = item.getLength();
-                if (length == 0) {
-                    /* fall back */
-                    length = 1;
-                }
-                ignoreNextCaretMove = true;
-                selectAndReveal(offset, length);
-                if (grabFocus) {
-                    setFocus();
-                }
-            }
+        if (!(selection instanceof IStructuredSelection)) {
+            return;
+        }
+        IStructuredSelection ss = (IStructuredSelection) selection;
+        Object firstElement = ss.getFirstElement();
+        if (!(firstElement instanceof Item)) {
+            return;
+        }
+        Item item = (Item) firstElement;
+        int offset = item.getOffset();
+        int length = item.getLength();
+        if (length == 0) {
+            /* fall back */
+            length = 1;
+        }
+        ignoreNextCaretMove = true;
+        selectAndReveal(offset, length);
+        if (grabFocus) {
+            setFocus();
         }
     }
 
@@ -848,17 +850,17 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
         String code = getDocumentText();
         String sourceFormatterScalarStyleId = getPreferences().getSourceFormatterScalarStyleId();
         YamlEdtiorFormatterScalarStyle scalarStyle = YamlEdtiorFormatterScalarStyle.fromId(sourceFormatterScalarStyleId);
-        
+
         DefaultYamlSourceFormatterConfig config = new DefaultYamlSourceFormatterConfig();
         config.setIndent(getPreferences().getSourceFormatterIndent());
         config.setMaxLineLength(getPreferences().getSourceFormatterLineLength());
         config.setScalarStyle(scalarStyle);
         config.setRestoreCommentsEnabled(getPreferences().isSourceFormatterRescuingComments());
-        
-        String output = new YamlSourceFormatter().format(code,config);
-        
+
+        String output = new YamlSourceFormatter().format(code, config);
+
         getDocument().set(output);
 
     }
-    
+
 }

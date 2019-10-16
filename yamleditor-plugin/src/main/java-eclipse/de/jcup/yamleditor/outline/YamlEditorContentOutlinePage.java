@@ -171,7 +171,7 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
             YamlEditorTreeContentProvider gcp = (YamlEditorTreeContentProvider) contentProvider;
             Item item = gcp.tryToFindByOffset(caretOffset);
             if (item != null) {
-                StructuredSelection selection = new StructuredSelection(item);
+                selection = new StructuredSelection(item);
                 getTreeViewer().setSelection(selection, true);
             }
         }
