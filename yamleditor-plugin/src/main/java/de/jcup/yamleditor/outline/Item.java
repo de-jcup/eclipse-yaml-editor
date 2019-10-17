@@ -17,10 +17,11 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Item {
 
-	ItemType type;
+    ItemType type;
 	String name;
 	int offset;
 	int length;
@@ -51,6 +52,10 @@ public class Item {
 		return endOffset;
 	}
 	
+	public Item getParent() {
+        return parent;
+    }
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -67,6 +72,27 @@ public class Item {
 		sb.append(endOffset);
 		return sb.toString();
 	}
+	
+	@Override
+    public int hashCode() {
+        return Objects.hash(endOffset, name, offset, type);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Item)) {
+            return false;
+        }
+        Item other = (Item) obj;
+        return endOffset == other.endOffset && Objects.equals(name, other.name) && offset == other.offset && type == other.type;
+    }
+
 
 	public String buildSearchString() {
 		return name;

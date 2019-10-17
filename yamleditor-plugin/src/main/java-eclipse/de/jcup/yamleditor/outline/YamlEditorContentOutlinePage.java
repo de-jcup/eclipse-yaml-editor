@@ -48,6 +48,7 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
     private static ImageDescriptor IMG_DESC_NOT_LINKED =createImageDescriptor("/icons/outline/sync_broken.png");
     private static ImageDescriptor IMG_DESC_EXPAND_ALL = createImageDescriptor("/icons/expandall.png");
     private static ImageDescriptor IMG_DESC_COLLAPSE_ALL = createImageDescriptor("/icons/collapseall.png");
+    private static ImageDescriptor IMG_DESC_ALPHAB_SORT = createImageDescriptor("/icons/outline/alphab_sort_co.png");
 
     private YamlEditorTreeContentProvider contentProvider;
     private Object input;
@@ -87,10 +88,13 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
         CollapseAllAction collapseAllAction = new CollapseAllAction();
         ExpandSelectionAction expandSelectionAction = new ExpandSelectionAction();
         CollapseSelectionAction collapseSelectionAction = new CollapseSelectionAction();
+        SortAllAction sortAllAction = new SortAllAction();
+        SortSelectionAction sortSelectionAction = new SortSelectionAction();
         
         MenuManager menuMgr = new MenuManager();
         menuMgr.add(expandSelectionAction);
         menuMgr.add(collapseSelectionAction);
+        menuMgr.add(sortSelectionAction);
         
         Menu menu = menuMgr.createContextMenu(viewer.getTree());
         viewer.getControl().setMenu(menu);
@@ -114,6 +118,7 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
         toolBarManager.add(expandAllAction);
         toolBarManager.add(collapseAllAction);
         toolBarManager.add(toggleLinkingAction);
+        toolBarManager.add(sortAllAction);
 
         IMenuManager viewMenuManager = actionBars.getMenuManager();
         viewMenuManager.add(new Separator("EndFilterGroup")); //$NON-NLS-1$
@@ -125,6 +130,9 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
         viewMenuManager.add(new Separator("treeSelectionGroup")); //$NON-NLS-1$
         viewMenuManager.add(expandSelectionAction);
         viewMenuManager.add(collapseSelectionAction);
+        viewMenuManager.add(new Separator("treeSortGroup")); //$NON-NLS-1$
+        viewMenuManager.add(sortAllAction);
+        viewMenuManager.add(sortSelectionAction);
 
         /*
          * when no input is set on init state - let the editor rebuild outline (async)
@@ -226,6 +234,43 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
         @Override
         public void run() {
             getTreeViewer().expandAll();
+        }
+    }
+    
+    class SortAllAction extends Action {
+
+        private SortAllAction() {
+            setImageDescriptor(IMG_DESC_ALPHAB_SORT);
+            setText("Sort root children");
+            setToolTipText("Will sort children of root, but not deeper");
+        }
+
+        @Override
+        public void run() {
+            Item item = contentProvider.getRoot();
+            editor.sortMembers(item);
+        }
+    }
+    
+    class SortSelectionAction extends Action {
+
+        private SortSelectionAction() {
+            setImageDescriptor(IMG_DESC_ALPHAB_SORT);
+            setText("Sort children");
+            setToolTipText("Will sort children ,but not deeper");
+        }
+
+        @Override
+        public void run() {
+            Object element = getFirstSelectedElement();
+            if (element==null) {
+                return ;
+            }
+            if (! (element instanceof Item)) {
+               return;
+            }
+            Item item = (Item) element;
+            editor.sortMembers(item);
         }
     }
     

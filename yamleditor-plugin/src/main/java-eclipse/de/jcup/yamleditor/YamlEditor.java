@@ -90,6 +90,7 @@ import de.jcup.yamleditor.script.YamlError;
 import de.jcup.yamleditor.script.YamlScriptModel;
 import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 import de.jcup.yamleditor.script.YamlScriptModelBuilder;
+import de.jcup.yamleditor.script.YamlScriptSortMemberSupport;
 import de.jcup.yamleditor.script.formatter.DefaultYamlSourceFormatterConfig;
 import de.jcup.yamleditor.script.formatter.YamlEdtiorFormatterScalarStyle;
 import de.jcup.yamleditor.script.formatter.YamlSourceFormatter;
@@ -861,6 +862,54 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 
         getDocument().set(output);
 
+    }
+
+    public void sortMembers(Item item) {
+        if (item==null) {
+            return;
+        }
+        String full = getDocument().get();
+        
+        Item parent = item.getParent();
+        List<Item> children = item.getChildren();
+        /* at least 2 children necessary for a sort ...*/
+        if (children.size()<2) {
+            return;
+        }
+        Iterator<Item> it = children.iterator();
+        Item first = it.next();
+        int offset1 = first.getOffset();
+        int length = full.length();
+        int offset2 = length-1;
+        if (parent!=null) {
+            /* find next child entry where possible */
+            Iterator<Item> pit = parent.getChildren().iterator();
+            Item next = null;
+            while (pit.hasNext()) {
+                Item current = pit.next();
+                if (item.equals(current)) {
+                    if (pit.hasNext()) {
+                        next=pit.next();
+                        break;
+                    }
+                }
+            }
+            if (next!=null) {
+                offset2= next.getOffset()-1;
+            }
+        }
+
+        String before = full.substring(0,offset1);
+        String input = full.substring(offset1,offset2);
+        String after = "";
+        if (offset2<length-1) {
+            after = full.substring(offset2);
+        }
+        
+        YamlScriptSortMemberSupport support = new YamlScriptSortMemberSupport();
+        String output = support.sortFirstMembers(input);
+        
+        getDocument().set(before+output+after);
     }
 
 }
