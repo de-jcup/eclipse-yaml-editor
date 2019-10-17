@@ -30,11 +30,16 @@ public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 	private static final Object[] RESULT_WHEN_EMPTY = new Object[] {};
 	private Object[] items;
 	private Object monitor = new Object();
+    private RootItem root;
 
 	YamlEditorTreeContentProvider() {
 		items = RESULT_WHEN_EMPTY;
 	}
 
+	public RootItem getRoot() {
+        return root;
+    }
+	
 	@Override
 	public Object[] getElements(Object inputElement) {
 		synchronized (monitor) {
@@ -80,7 +85,7 @@ public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 
 	private Item[] createItems(YamlScriptModel model) {
 		List<YamlNode> nodes = model.getRootNode().getChildren();
-		RootItem root = new RootItem();
+		root = new RootItem();
 		List<Item> list = root.getChildren();
 		buildItems(root, nodes);
 
