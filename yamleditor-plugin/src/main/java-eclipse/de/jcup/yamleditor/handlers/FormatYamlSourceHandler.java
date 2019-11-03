@@ -17,7 +17,7 @@
 
 import de.jcup.yamleditor.YamlEditor;
 
-public class FormatSQLHandler extends AbstractYamlEditorHandler {
+public class FormatYamlSourceHandler extends AbstractYamlEditorHandler {
 
     @Override
     protected void executeOnYamlEditor(YamlEditor yamlEditor) {
