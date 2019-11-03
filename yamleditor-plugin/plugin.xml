@@ -183,6 +183,12 @@
       		id="yamleditor.editor.commands.validate">
       </command>
       <command
+      		name="Sort mapping (ascending)"
+      		description="Sorts and changes yaml source code. Mapping will be sorted ascending after this"
+      		categoryId="yamleditor.commands.category"
+      		id="yamleditor.editor.commands.sortAscending">
+      </command>
+      <command
       		name="Toggle folding enabled"
       		description="Toggle folding enabled state for this editor. If you want change initial behaviour change preferences"
       		categoryId="yamleditor.commands.category"
@@ -212,7 +218,7 @@
       </handler>
       <handler
             commandId="yamleditor.editor.commands.source.format"
-            class="de.jcup.yamleditor.handlers.FormatSQLHandler">
+            class="de.jcup.yamleditor.handlers.FormatYamlSourceHandler">
       </handler>
        <handler
             commandId="yamleditor.editor.commands.gotomatchingbracket"
@@ -225,6 +231,10 @@
       <handler
       		commandId="yamleditor.editor.commands.validate"
       		class="de.jcup.yamleditor.handlers.YamlValidationHandler">
+      </handler>
+        <handler
+            commandId="yamleditor.editor.commands.sortAscending"
+            class="de.jcup.yamleditor.handlers.YamlSortAscendingHandler">
       </handler>
       <handler
       		commandId="yamleditor.editor.commands.folding.toggle"
@@ -301,7 +311,7 @@
             <command commandId="yamleditor.editor.commands.source.format"></command>
             <command commandId="yamleditor.editor.commands.source.toggleComment"></command>
             <command commandId="yamleditor.editor.commands.validate" icon="icons/yaml-validation-call.png"></command>
-           
+            <command commandId="yamleditor.editor.commands.sortAscending" icon="icons/alphab_sort_co.png"></command>
          </menu>
       </menuContribution>
       
@@ -331,6 +341,7 @@
             <command commandId="yamleditor.editor.commands.source.format"></command>
             <command commandId="yamleditor.editor.commands.source.toggleComment"></command>
             <command commandId="yamleditor.editor.commands.validate" icon="icons/yaml-validation-call.png"></command>
+            <command commandId="yamleditor.editor.commands.sortAscending" icon="icons/alphab_sort_co.png"></command>
            
          </menu>
       </menuContribution>
