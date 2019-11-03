@@ -36,7 +36,6 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
@@ -874,7 +873,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
         }
         YamlScriptSortMemberSupport support = new YamlScriptSortMemberSupport();
         if (support.isHavingCommentsInside(yamlContent)) {
-            boolean confirmed = MessageDialog.openConfirm(de.jcup.eclipse.commons.ui.EclipseUtil.getActiveWorkbenchShell(), "Wwarning",
+            boolean confirmed = MessageDialog.openConfirm(de.jcup.eclipse.commons.ui.EclipseUtil.getActiveWorkbenchShell(), "Warning",
                     "It seems you have got comments inside your yaml file.\nAt the moment sorting will destroy comments!\n\nDo you still want to sort?");
             if (!confirmed) {
                 return;
