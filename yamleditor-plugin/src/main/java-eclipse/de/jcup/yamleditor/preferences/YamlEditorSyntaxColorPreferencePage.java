@@ -70,6 +70,7 @@ public class YamlEditorSyntaxColorPreferencePage extends FieldEditorPreferencePa
 				changeColor(editorMap, COLOR_BOOLEANS, new RGB(104,151,187));
 				changeColor(editorMap, COLOR_MAPPINGS, new RGB(204,108,29));
 				changeColor(editorMap, COLOR_BLOCK,new RGB(49,98,98));
+				changeColor(editorMap, COLOR_TEMPLATE_VARIABLE,new RGB(255,51,153));
 				
 			}
 

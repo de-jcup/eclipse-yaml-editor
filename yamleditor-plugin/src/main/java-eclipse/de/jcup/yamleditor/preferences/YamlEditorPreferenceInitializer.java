@@ -66,6 +66,8 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		store.setDefault(P_SOURCE_SCALAR_STYLE_ID.getId(), YamlEdtiorFormatterScalarStyle.PLAIN.getId());
 		store.setDefault(P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED.getId(), true);
 		
+		store.setDefault(P_GO_TEMPLATE_SUPPORT_ENABLED.getId(), true);
+		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */
 		/* +++++++++++++++++ */
@@ -81,6 +83,7 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		preferences.setDefaultColor(COLOR_MAPPINGS, DARK_BLUE);
 		
 		preferences.setDefaultColor(COLOR_BLOCK, GRAY);
+		preferences.setDefaultColor(COLOR_TEMPLATE_VARIABLE, GRAY);
 		
 	}
 	

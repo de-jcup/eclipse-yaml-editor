@@ -52,6 +52,7 @@ import de.jcup.eclipse.commons.codeassist.MultipleContentAssistProcessor;
 import de.jcup.eclipse.commons.templates.TemplateSupport;
 import de.jcup.yamleditor.document.YamlDocumentIdentifier;
 import de.jcup.yamleditor.document.YamlDocumentIdentifiers;
+import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 import de.jcup.yamleditor.presentation.PresentationSupport;
 import de.jcup.yamleditor.presentation.YamlDefaultTextScanner;
 /**
@@ -176,6 +177,9 @@ public class YamlSourceViewerConfiguration extends TextSourceViewerConfiguration
 		addPresentation(reconciler, COMMENT.getId(), getPreferences().getColor(COLOR_COMMENT),SWT.NONE);
 		addPresentation(reconciler, MAPPINGS.getId(), getPreferences().getColor(COLOR_MAPPINGS),SWT.BOLD);
 		
+		if (YamlEditorPreferences.getInstance().isGoTemplateSupportEnabled()) {
+		    addPresentation(reconciler, GO_TEMPLATE_BLOCK.getId(), getPreferences().getColor(COLOR_TEMPLATE_VARIABLE),SWT.ITALIC);
+		}
 		
 		return reconciler;
 	}

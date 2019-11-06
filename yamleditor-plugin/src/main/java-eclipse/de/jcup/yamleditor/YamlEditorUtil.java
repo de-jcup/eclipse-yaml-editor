@@ -15,6 +15,7 @@
  */
 package de.jcup.yamleditor;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
@@ -62,14 +63,25 @@ public class YamlEditorUtil {
 		scriptProblemMarkerHelper.removeMarkers(editorResource);
 	}
 
+	public static void addScriptInfo(IEditorPart editor, int line, String message) {
+	    addScriptMarker(editor, line, IMarker.SEVERITY_INFO, message, -1,-1);
+	}
+	
 	public static void addScriptError(IEditorPart editor, int line, YamlError error, int severity) {
-		if (editor == null) {
-			return;
-		}
 		if (error == null) {
 			return;
 		}
+		String message = error.getMessage();
+		int start = error.getStart();
+		int end = error.getEnd();
 
+		addScriptMarker(editor, line, severity, message, start, end);
+	}
+
+    private static void addScriptMarker(IEditorPart editor, int line, int severity, String message, int start, int end) {
+        if (editor == null) {
+		    return;
+		}
 		IEditorInput input = editor.getEditorInput();
 		if (input == null) {
 			return;
@@ -79,12 +91,12 @@ public class YamlEditorUtil {
 			return;
 		}
 		try {
-			scriptProblemMarkerHelper.createScriptMarker(severity, editorResource, error.getMessage(), line, error.getStart(),
-					+ error.getEnd());
+            scriptProblemMarkerHelper.createScriptMarker(severity, editorResource, message, line, start,
+					+ end);
 		} catch (CoreException e){
 			logError("Was not able to add error markers", e);
 		}
-	}
+    }
 
 	private static ILog getLog() {
 		ILog log = YamlEditorActivator.getDefault().getLog();

@@ -87,7 +87,9 @@ import de.jcup.yamleditor.outline.YamlEditorTreeContentProvider;
 import de.jcup.yamleditor.outline.YamlQuickOutlineDialog;
 import de.jcup.yamleditor.preferences.YamlEditorPreferenceConstants;
 import de.jcup.yamleditor.preferences.YamlEditorPreferences;
+import de.jcup.yamleditor.script.GoTemplateSanitizer;
 import de.jcup.yamleditor.script.YamlError;
+import de.jcup.yamleditor.script.YamlSanitizer;
 import de.jcup.yamleditor.script.YamlScriptModel;
 import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 import de.jcup.yamleditor.script.YamlScriptModelBuilder;
@@ -113,6 +115,8 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
     /** The COMMAND_ID of the editor ruler context menu */
     public static final String EDITOR_RULER_CONTEXT_MENU_ID = EDITOR_CONTEXT_MENU_ID + ".ruler";
 
+    private static final GoTemplateSanitizer GO_TEMPLATE_SANITIZER = new GoTemplateSanitizer();
+    
     private YamlBracketsSupport bracketMatcher = new YamlBracketsSupport();
     private SourceViewerDecorationSupport additionalSourceViewerSupport;
     private YamlEditorContentOutlinePage outlinePage;
@@ -149,7 +153,9 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
             quickOutlineOpened = true;
         }
         Shell shell = getEditorSite().getShell();
-        YamlScriptModel model = buildModelWithoutValidation();
+        String text = getDocumentText();
+        YamlScriptModel model = modelBuilder.setSanitizers(calculateSanitizers()).setCalculateFoldings(false).build(text);
+        
         YamlQuickOutlineDialog dialog = new YamlQuickOutlineDialog(this, shell, "Quick outline");
         dialog.setInput(model);
 
@@ -159,12 +165,6 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
         }
     }
 
-    private YamlScriptModel buildModelWithoutValidation() {
-        String text = getDocumentText();
-
-        YamlScriptModel model = modelBuilder.build(text);
-        return model;
-    }
 
     void setTitleImageDependingOnSeverity(int severity) {
         EclipseUtil.safeAsyncExec(new Runnable() {
@@ -264,7 +264,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
             return;
         }
 
-        // turn projection mode on
+        // turn projection mode onaddErrorMarkers
         viewer.doOperation(ProjectionViewer.TOGGLE);
 
     }
@@ -436,8 +436,8 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
             @Override
             public void run() {
                 YamlEditorUtil.removeScriptErrors(YamlEditor.this);
-
-                YamlScriptModel model = modelBuilder.build(text);
+                
+                YamlScriptModel model = modelBuilder.setSanitizers(calculateSanitizers()).setCalculateFoldings(isCodeFoldingEnabled()).build(text);
 
                 getOutlinePage().rebuild(model);
                 updateFoldingStructure(model.getFoldingPositions());
@@ -445,8 +445,22 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
                 if (model.hasErrors()) {
                     addErrorMarkers(model, IMarker.SEVERITY_ERROR);
                 }
+                for (String message: model.getMessages()) {
+                    YamlEditorUtil.addScriptInfo(YamlEditor.this, -1, message);
+                }
             }
         });
+    }
+    
+    protected YamlSanitizer[] calculateSanitizers() {
+        if (isGoTemplateSupportEnabled()) {
+            return new YamlSanitizer[] {GO_TEMPLATE_SANITIZER};
+        }
+        return null;
+    }
+
+    public boolean isGoTemplateSupportEnabled() {
+        return YamlEditorPreferences.getInstance().isGoTemplateSupportEnabled();
     }
 
     /**

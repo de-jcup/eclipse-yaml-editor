@@ -22,13 +22,15 @@ import java.util.List;
 
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
-import de.jcup.yamleditor.document.keywords.YamlReservedWords;
-import de.jcup.yamleditor.document.keywords.YamlBooleanKeyWords;
 import de.jcup.yamleditor.document.keywords.DocumentKeyWord;
+import de.jcup.yamleditor.document.keywords.YamlBooleanKeyWords;
+import de.jcup.yamleditor.document.keywords.YamlReservedWords;
+import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 
 public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 
@@ -58,6 +60,11 @@ public class YamlDocumentPartitionScanner extends RuleBasedPartitionScanner {
 		rules.add(new SingleLineRule("<tag:", ">", yamlReservedWords, (char) -1, true));
 
 		rules.add(new YamlMappingRule(mappings));
+		if (YamlEditorPreferences.getInstance().isGoTemplateSupportEnabled()) {
+		    IToken goTemplates= createToken(GO_TEMPLATE_BLOCK);
+		    rules.add(new MultiLineRule("{{","}}",goTemplates));
+		    
+		}
 
 		buildWordRules(rules, booleans, YamlBooleanKeyWords.values());
 		buildWordRules(rules, yamlReservedWords, YamlReservedWords.values());

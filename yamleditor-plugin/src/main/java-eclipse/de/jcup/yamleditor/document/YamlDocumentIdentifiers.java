@@ -30,6 +30,8 @@ public enum YamlDocumentIdentifiers implements YamlDocumentIdentifier {
 	MAPPINGS,
 	
 	BLOCK_KEYWORD,
+	
+	GO_TEMPLATE_BLOCK,
 	;
 
 

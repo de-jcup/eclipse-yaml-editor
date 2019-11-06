@@ -32,7 +32,7 @@ public class YamlScriptModelBuilderTest {
 
     @Before
     public void before() {
-        builderToTest = new YamlScriptModelBuilder();
+        builderToTest = new YamlScriptModelBuilder().setCalculateFoldings(true);
     }
 
     @Test

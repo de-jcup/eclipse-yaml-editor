@@ -70,13 +70,13 @@ public class YamlEditorFormatterPreferencePage extends FieldEditorPreferencePage
 		addField(comboEditor);
         
 		BooleanFieldEditor rescueCommentsEditor = new BooleanFieldEditor(P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED.getId(),
-                "Rescue comments", parent);
+                "xxRescue comments", parent);
         addField(rescueCommentsEditor);
-        rescueCommentsEditor.getLabelControl(parent).setToolTipText(
+        rescueCommentsEditor.getDescriptionControl(parent).setToolTipText(
                 "When enabled comments will be rescued at formatting time.\n"
                 + "(Full line comments will be at same line number as before, comments\n"
                 + "at end of a yaml line are tried to be added at end of those lines again)");
-        
+       
 	}
 	
 }

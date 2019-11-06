@@ -17,6 +17,7 @@ package de.jcup.yamleditor.script;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -29,6 +30,8 @@ public class YamlScriptModel {
 	private YamlNode rootNode;
 
 	private SortedSet<FoldingPosition> foldingPositions = new TreeSet<>();
+
+    private List<String> messages = new ArrayList<String>();
 
 	public YamlScriptModel() {
 		rootNode = new YamlNode("root");
@@ -44,6 +47,10 @@ public class YamlScriptModel {
 
 	public Collection<YamlError> getErrors() {
 		return errors;
+	}
+	
+	public List<String> getMessages(){
+	    return messages;
 	}
 
 

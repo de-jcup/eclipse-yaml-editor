@@ -43,7 +43,10 @@ public enum YamlEditorPreferenceConstants implements PreferenceIdentifiable{
 	
 	P_SOURCE_SCALAR_STYLE_ID("sourceFormatScalarStyleId"),
 	
-	P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED("sourceFormatRescueCommentsEnabled")
+	P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED("sourceFormatRescueCommentsEnabled"),
+	
+	P_GO_TEMPLATE_SUPPORT_ENABLED("goTemplateSupportEnabled"),
+	
 	;
 
 	private String id;

@@ -29,6 +29,7 @@ public enum YamlEditorSyntaxColorPreferenceConstants implements PreferenceIdenti
 	COLOR_COMMENT("colorComments", "Comment"),
 	COLOR_MAPPINGS("colorMappings","Mappings"),
 	COLOR_BLOCK("colorBlock","Block"),
+	COLOR_TEMPLATE_VARIABLE("colorTemplateVariable","Template variable"),
 	
 	;
 

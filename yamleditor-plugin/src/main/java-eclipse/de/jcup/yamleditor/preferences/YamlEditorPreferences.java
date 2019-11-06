@@ -186,6 +186,10 @@ public class YamlEditorPreferences {
         return getPreferenceStore().getBoolean(P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED.getId());
     }
 
+    public boolean isGoTemplateSupportEnabled() {
+        return getPreferenceStore().getBoolean(P_GO_TEMPLATE_SUPPORT_ENABLED.getId());
+    }
+
 	
 
 	

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "fullname" . }}-rules
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    role: {{ template "fullname" . }}-rulefiles
+    prometheus: {{ template "fullname" . }}
+data:
+  {{ (.Files.Glob "files/kubernetes.rules").AsConfig }}
+  {{ (.Files.Glob "files/etcd2.rules").AsConfig }}
+  {{ (.Files.Glob "files/custom_alert.rules").AsConfig }}
