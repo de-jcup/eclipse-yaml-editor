@@ -1,0 +1,10 @@
+{{ if and .Values.apollo (eq .Values.apollo "true") }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apollo
+  labels:
+    app: apollo
+spec:
+ ...
+{{ end }}

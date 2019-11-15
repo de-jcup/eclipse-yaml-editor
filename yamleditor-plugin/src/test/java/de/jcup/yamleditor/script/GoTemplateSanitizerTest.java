@@ -69,6 +69,17 @@ public class GoTemplateSanitizerTest {
     public void normal_templateVariable1_text_is_changed() {
         assertEquals("normal (( .TEMPLATE_VARIABLE1 ))-text", supportToTest.sanitize("normal {{ .TEMPLATE_VARIABLE1 }}-text", new YamlSanitizerContext()));
     }
+    
+    @Test
+    public void starting_templateVariable1_text_is_changed() {
+        assertEquals("#(( .TEMPLATE_VARIABLE1 ))-text", supportToTest.sanitize("{{ .TEMPLATE_VARIABLE1 }}-text", new YamlSanitizerContext()));
+    }
+    
+    @Test
+    public void starting_spaces_3_templateVariable1_text_is_changed() {
+        assertEquals("#   (( .TEMPLATE_VARIABLE1 ))-text", supportToTest.sanitize("   {{ .TEMPLATE_VARIABLE1 }}-text", new YamlSanitizerContext()));
+    }
+    
 
     @Test
     public void complex_part_with_double_quotes_iniide_will_be_reduced() {
