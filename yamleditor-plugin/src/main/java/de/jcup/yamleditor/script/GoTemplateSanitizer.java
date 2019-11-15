@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public class GoTemplateSanitizer implements YamlSanitizer {
 
-    private static final String SANITIZER_MESSAGE = "Did found Go template parts and sanitized them to have valid yaml: Replaced mapping parts internally by ((..._...)) and template only parts as comments to have valid yaml for parsing and ensure AST for outline.\n"
+    private static final String SANITIZER_MESSAGE = "Found Go template parts and sanitized them to have valid yaml: Replaced mapping parts internally by ((..._...)) and template only parts as comments to have valid yaml for parsing and ensure AST for outline.\n"
             + "Also syntax highlighting for Go templates was enabled.\n\nIf you do not like this, please disable 'Go Template Support' inside Yaml Editor preferences.";
 
     private static final String GO_TEMPLATE_START = "{{";
