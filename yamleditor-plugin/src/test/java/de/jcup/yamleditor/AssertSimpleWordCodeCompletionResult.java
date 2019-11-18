@@ -38,7 +38,7 @@ public class AssertSimpleWordCodeCompletionResult{
 		
 		for (String exp: expected){
 			if (! result.contains(exp)){
-				fail("Did not found:"+exp+" as word.\n"+createDiffText(expected));
+				fail("Did not find: "+exp+" as word.\n"+createDiffText(expected));
 			}
 		}
 		return this;
