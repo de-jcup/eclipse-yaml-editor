@@ -31,6 +31,7 @@ public class SnakeYamlConfig {
     private boolean prettyFlow = false;
     private ScalarStyle scalarStyle = ScalarStyle.PLAIN;
     boolean multiDocFileStartingWithSeparator = false;
+    private boolean preventTypeConversionOnFormat;
 
     public SnakeYamlConfig() {
     }
@@ -41,6 +42,7 @@ public class SnakeYamlConfig {
         }
         
         this.indent = toCopy.getIndent();
+        this.preventTypeConversionOnFormat = toCopy.isPreventingTypeConversion();
         if (this.indent > SNAKE_MAX_INDENT) {
             this.indent = SNAKE_MAX_INDENT;
         }
@@ -122,6 +124,10 @@ public class SnakeYamlConfig {
 
     public void setScalarStyle(ScalarStyle scalarStyle) {
         this.scalarStyle = scalarStyle;
+    }
+
+    public boolean isPreventingTypeConversionOnFormat() {
+        return preventTypeConversionOnFormat;
     }
 
 }

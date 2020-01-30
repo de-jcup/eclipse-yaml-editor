@@ -26,6 +26,7 @@ public class DefaultYamlSourceFormatterConfig implements YamlSourceFormatterConf
     private int maxLineLength=DEFAULT_MAX_LINE_LENGTH;
     private YamlEdtiorFormatterScalarStyle scalarStyle = DEFAULT_SCALAR_STYLE;
     private boolean restoreCommentsEnabled=DEFAULT_RESTORE_COMMENTS_ENABLED;
+    private boolean preventTypeConversion;
     
     public void setIndent(int indent) {
         this.indent = indent;
@@ -61,6 +62,14 @@ public class DefaultYamlSourceFormatterConfig implements YamlSourceFormatterConf
     @Override
     public boolean isRestoreCommentsEnabled() {
         return restoreCommentsEnabled;
+    }
+
+    public void setPreventTypeConversion(boolean preventTypeConversion) {
+        this.preventTypeConversion = preventTypeConversion;
+    }
+    @Override
+    public boolean isPreventingTypeConversion() {
+        return preventTypeConversion;
     }
 
 }

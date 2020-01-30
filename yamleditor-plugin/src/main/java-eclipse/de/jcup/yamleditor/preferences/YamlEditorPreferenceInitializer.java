@@ -67,6 +67,7 @@ public class YamlEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		store.setDefault(P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED.getId(), true);
 		
 		store.setDefault(P_GO_TEMPLATE_SUPPORT_ENABLED.getId(), true);
+		store.setDefault(P_PREVENT_TYPE_CONVERSION_ON_FORMAT_ENABLED.getId(), true);
 		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */

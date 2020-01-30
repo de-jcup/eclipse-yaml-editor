@@ -70,12 +70,20 @@ public class YamlEditorFormatterPreferencePage extends FieldEditorPreferencePage
 		addField(comboEditor);
         
 		BooleanFieldEditor rescueCommentsEditor = new BooleanFieldEditor(P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED.getId(),
-                "xxRescue comments", parent);
+                "Rescue comments", parent);
         addField(rescueCommentsEditor);
         rescueCommentsEditor.getDescriptionControl(parent).setToolTipText(
                 "When enabled comments will be rescued at formatting time.\n"
                 + "(Full line comments will be at same line number as before, comments\n"
                 + "at end of a yaml line are tried to be added at end of those lines again)");
+        
+        BooleanFieldEditor tcpOnFormatEditor = new BooleanFieldEditor(P_PREVENT_TYPE_CONVERSION_ON_FORMAT_ENABLED.getId(), "Prevent type conversion", parent);
+        addField(tcpOnFormatEditor);
+        tcpOnFormatEditor.getDescriptionControl(parent)
+        .setToolTipText("When enabled source formatter will try to keep data as is. \n"
+                + "For example: 'on' is recognized as a boolean and is normally transformed into `true`.\n"
+                + "This is prevented by having this option enabled.\n");
+
        
 	}
 	

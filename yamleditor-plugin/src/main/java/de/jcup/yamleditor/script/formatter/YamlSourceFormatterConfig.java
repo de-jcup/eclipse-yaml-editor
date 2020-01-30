@@ -24,5 +24,7 @@ public interface YamlSourceFormatterConfig {
     YamlEdtiorFormatterScalarStyle getScalarStyle();
 
     boolean isRestoreCommentsEnabled();
+
+    boolean isPreventingTypeConversion();
     
 }

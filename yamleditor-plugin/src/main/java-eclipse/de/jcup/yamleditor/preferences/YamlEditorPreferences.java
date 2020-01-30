@@ -190,6 +190,10 @@ public class YamlEditorPreferences {
         return getPreferenceStore().getBoolean(P_GO_TEMPLATE_SUPPORT_ENABLED.getId());
     }
 
+    public boolean isPreventingTypeConversionOnFormat() {
+        return getPreferenceStore().getBoolean(P_PREVENT_TYPE_CONVERSION_ON_FORMAT_ENABLED.getId());
+    }
+
 	
 
 	

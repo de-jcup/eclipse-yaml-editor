@@ -20,7 +20,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
+import org.yaml.snakeyaml.resolver.Resolver;
 
 public class YamlSourceFormatter {
     private static final String START_BLOCK = "---";
@@ -43,22 +47,25 @@ public class YamlSourceFormatter {
         }
 
         /* parse + pretty print */
-        Yaml yamlParser = new Yaml();
+        Yaml yamlParser = createYaml(new DumperOptions(),snakeConfig);
         Iterable<Object> yamlDocuments = yamlParser.loadAll(source);
         String formatted = formatDocuments(yamlDocuments, snakeConfig);
 
-        /* restore meta info - snake yaml parsers does always destroy comment information !*/
+        /*
+         * restore meta info - snake yaml parsers does always destroy comment
+         * information !
+         */
         String result = dropFirstBlockIfNotDefinedBefore(formatted, snakeConfig);
-        
+
         if (restoreCommentsEnabled) {
             result = restoreEndingCommentsBySearchForNewLine(result, rescueContext, snakeConfig);
             /* next is only fall back for unrecognized situation for ending comments */
             result = restoreEndingCommentsByLineNumbers(result, rescueContext, snakeConfig);
-           
+
             result = restoreFullCommentsBySearchForNewLine(result, rescueContext, snakeConfig);
             /* next is only fall back for unrecognized situation for full comments */
             result = restoreFullCommentsByLineNumbers(result, rescueContext, snakeConfig);
-            
+
             result = appendOrphanedComments(result, rescueContext, snakeConfig);
         }
         return result.trim();
@@ -166,38 +173,38 @@ public class YamlSourceFormatter {
         CommentMarker markerToDrop = null;
         StringBuilder sb = new StringBuilder();
 
-        List<String> reducedComparableLineParts2=new ArrayList<String>();
+        List<String> reducedComparableLineParts2 = new ArrayList<String>();
         addFirstFullCommentWhenNoFormerLine(context, sb);
-        
+
         for (String lineFormatted : linesFormatted) {
 
             sb.append(lineFormatted);
-            String reducedComparablePart  = null;
+            String reducedComparablePart = null;
             if (lineFormatted.startsWith("#")) {
                 reducedComparablePart = context.reduceToComparablePart(lineFormatted);
-            }else {
+            } else {
                 String comment = tryToResolveEndingComment(lineFormatted);
-                if (comment!=null && !comment.isEmpty()) {
-                    String justCode = lineFormatted.substring(0,lineFormatted.length()-comment.length());
+                if (comment != null && !comment.isEmpty()) {
+                    String justCode = lineFormatted.substring(0, lineFormatted.length() - comment.length());
                     reducedComparablePart = context.reduceToComparablePart(justCode);
-                }else {
+                } else {
                     reducedComparablePart = context.reduceToComparablePart(lineFormatted);
                 }
             }
-            int currentReducedIndex= context.calculateReducedComparableIndex(reducedComparablePart, reducedComparableLineParts2);
+            int currentReducedIndex = context.calculateReducedComparableIndex(reducedComparablePart, reducedComparableLineParts2);
             reducedComparableLineParts2.add(reducedComparablePart);
-            
+
             for (CommentMarker marker : context.commentMarkers) {
                 if (!marker.fullLine) {
                     continue;
                 }
-                    if (!reducedComparablePart.equals(marker.lineBeforeAsReducedPart)) {
-                        continue;
-                    }
-                    /* check if we are really in the wanted line */ 
-                    if (marker.lineBeforeAsReducedIndex!=currentReducedIndex) {
-                        continue;
-                    }
+                if (!reducedComparablePart.equals(marker.lineBeforeAsReducedPart)) {
+                    continue;
+                }
+                /* check if we are really in the wanted line */
+                if (marker.lineBeforeAsReducedIndex != currentReducedIndex) {
+                    continue;
+                }
                 sb.append("\n");
                 sb.append(marker.comment);
                 markerToDrop = marker;
@@ -212,25 +219,24 @@ public class YamlSourceFormatter {
     }
 
     private void addFirstFullCommentWhenNoFormerLine(CommentsRescueContext context, StringBuilder sb) {
-        CommentMarker dropFirst=null;
+        CommentMarker dropFirst = null;
         for (CommentMarker marker : context.commentMarkers) {
             if (!marker.fullLine) {
                 continue;
             }
-            if (marker.lineBeforeAsReducedPart==null) {
-                /* special case, got nothing before so accept always*/
+            if (marker.lineBeforeAsReducedPart == null) {
+                /* special case, got nothing before so accept always */
                 sb.append(marker.comment);
                 sb.append("\n");
-                dropFirst=marker;
+                dropFirst = marker;
                 break;
             }
         }
-        if (dropFirst!=null) {
+        if (dropFirst != null) {
             context.commentMarkers.remove(dropFirst);
         }
     }
 
-    
     private String restoreFullCommentsByLineNumbers(String formatted, CommentsRescueContext context, SnakeYamlConfig config) {
         String[] linesFormatted = formatted.split("\n");
         StringBuilder sb = new StringBuilder();
@@ -251,14 +257,14 @@ public class YamlSourceFormatter {
         CommentMarker markerToDrop = null;
         StringBuilder sb = new StringBuilder();
 
-        List<String> reducedComparableLineParts2=new ArrayList<String>();
+        List<String> reducedComparableLineParts2 = new ArrayList<String>();
         for (String lineFormatted : linesFormatted) {
 
             sb.append(lineFormatted);
-            String reducedComparablePart  = context.reduceToComparablePart(lineFormatted);
-            int currentReducedIndex= context.calculateReducedComparableIndex(reducedComparablePart, reducedComparableLineParts2);
+            String reducedComparablePart = context.reduceToComparablePart(lineFormatted);
+            int currentReducedIndex = context.calculateReducedComparableIndex(reducedComparablePart, reducedComparableLineParts2);
             reducedComparableLineParts2.add(reducedComparablePart);
-            
+
             for (CommentMarker marker : context.commentMarkers) {
                 if (marker.fullLine) {
                     continue;
@@ -266,8 +272,8 @@ public class YamlSourceFormatter {
                 if (!reducedComparablePart.equals(marker.reducedComparablePart)) {
                     continue;
                 }
-                /* check if we are really in the wanted line */ 
-                if (marker.reducedComparableIndex!=currentReducedIndex) {
+                /* check if we are really in the wanted line */
+                if (marker.reducedComparableIndex != currentReducedIndex) {
                     continue;
                 }
                 sb.append(" ");
@@ -345,7 +351,7 @@ public class YamlSourceFormatter {
         options.setPrettyFlow(config.isPrettyFlow());
         options.setDefaultScalarStyle(config.getScalarStyle());
 
-        Yaml yaml = new Yaml(options);
+        Yaml yaml = createYaml(options,config);
 
         StringBuilder sb = new StringBuilder();
 
@@ -360,10 +366,23 @@ public class YamlSourceFormatter {
         return sb.toString();
     }
 
+    private Yaml createYaml(DumperOptions options, SnakeYamlConfig config) {
+        Resolver resolver = null;
+        
+        if (config!=null && config.isPreventingTypeConversionOnFormat()) {
+            resolver = new TypeConversionPreventionSnakeYamlResolver();
+        }else {
+            resolver = new Resolver();
+        }
+        
+        return new Yaml(new Constructor(), new Representer(), options, new LoaderOptions(), resolver);
+    }
+
     private class CommentsRescueContext {
         private String[] originSourceLines;
         /**
-         * Contains lines of code with out ending comments - and lines with full comment insdie
+         * Contains lines of code with out ending comments - and lines with full comment
+         * insdie
          */
         private List<String> reducedComparableLineParts = new ArrayList<String>();
         private List<CommentMarker> commentMarkers = new ArrayList<CommentMarker>();
@@ -388,8 +407,8 @@ public class YamlSourceFormatter {
                     }
 
                 }
-                if (! lineTrimmed.isEmpty()) {
-                    lastLineInspectedNotEmpty=line;
+                if (!lineTrimmed.isEmpty()) {
+                    lastLineInspectedNotEmpty = line;
                 }
             }
 
@@ -405,9 +424,9 @@ public class YamlSourceFormatter {
             marker.fullLine = true;
             marker.comment = line.trim();
             marker.lineNr = lineNr;
-            if (lastLineInspectedNotEmpty!=null) {
-                marker.lineBeforeAsReducedPart=reduceToComparablePart(lastLineInspectedNotEmpty);
-                marker.lineBeforeAsReducedIndex= calculateCurrentReducedComparableIndex(lastLineInspectedNotEmpty);
+            if (lastLineInspectedNotEmpty != null) {
+                marker.lineBeforeAsReducedPart = reduceToComparablePart(lastLineInspectedNotEmpty);
+                marker.lineBeforeAsReducedIndex = calculateCurrentReducedComparableIndex(lastLineInspectedNotEmpty);
             }
             commentMarkers.add(marker);
             reducedComparableLineParts.add(reduceToComparablePart(marker.comment));

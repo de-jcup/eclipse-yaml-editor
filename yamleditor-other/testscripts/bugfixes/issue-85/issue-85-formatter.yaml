@@ -1,0 +1,8 @@
+name: GitHub CI
+
+on:
+
+  push:
+    branches:
+    - master
+    tags: [ '**' ]

@@ -16,20 +16,29 @@
 package de.jcup.yamleditor.handlers;
 
 import de.jcup.yamleditor.YamlEditor;
+import de.jcup.yamleditor.preferences.YamlEditorPreferences;
 
 public abstract class AbstractYamlEditorFoldingHandler extends AbstractYamlEditorHandler {
 
-	public AbstractYamlEditorFoldingHandler(){
-		setBaseEnabled(getYamlEditor().isCodeFoldingEnabled());
-	}
-	
-	@Override
-	public void setEnabled(Object evaluationContext) {
-		YamlEditor yamlEditor = getYamlEditor();
-		if (yamlEditor==null) {
-			return;
-		}
-		setBaseEnabled(yamlEditor.isCodeFoldingEnabled());
-	}
+    public AbstractYamlEditorFoldingHandler() {
+        handleCodeFoldingEnabled();
+    }
 
+    @Override
+    public void setEnabled(Object evaluationContext) {
+        handleCodeFoldingEnabled();
+    }
+
+    private void handleCodeFoldingEnabled() {
+        YamlEditor yamlEditor = getYamlEditor();
+        boolean codeFoldingEnabled;
+        
+        if (yamlEditor == null) {
+            codeFoldingEnabled = YamlEditorPreferences.getInstance().isCodeFoldingEnabledOnEditorStartup();
+        } else {
+            codeFoldingEnabled = yamlEditor.isCodeFoldingEnabled();
+        }
+        setBaseEnabled(codeFoldingEnabled);
+        
+    }
 }

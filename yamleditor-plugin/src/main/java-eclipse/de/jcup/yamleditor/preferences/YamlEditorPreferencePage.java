@@ -134,7 +134,7 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
         linkEditorWithOutline = new BooleanFieldEditor(P_LINK_OUTLINE_WITH_EDITOR.getId(), "New opened editors are linked with outline", otherComposite);
         linkEditorWithOutline.getDescriptionControl(otherComposite).setToolTipText("Via this setting the default behaviour for new opened outlines is set");
         addField(linkEditorWithOutline);
-
+        
         /* ---------------- */
         /* - Margin ruler - */
         /* ---------------- */
@@ -259,6 +259,8 @@ public class YamlEditorPreferencePage extends FieldEditorPreferencePage implemen
         addField(goTemplateSupportEditor);
         goTemplateSupportEditor.getDescriptionControl(specialSupportGroup)
                 .setToolTipText("When enabled go templates will be recognized and escaped before parsing.\n This prevents parse errors because of usage of {{, }}, and other special characters in yaml.\n");
+
+        
 
     }
 
