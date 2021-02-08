@@ -16,11 +16,14 @@
 package de.jcup.yamleditor.script;
 
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.Mark;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
+import org.yaml.snakeyaml.nodes.AnchorNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
@@ -31,11 +34,13 @@ import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 
 public class YamlScriptModelBuilder {
 
+    private static final String UNDEFINED_NAME = "<undefName>";
     private static final YamlSanitizer[] NO_SANITIZING = new YamlSanitizer[0];
     private static boolean DEBUG = Boolean.getBoolean("de.jcup.yamleditor.model.debug");
     private Yaml yamlParser;
     private boolean calculateFoldings;
     private YamlSanitizer[] sanitizers = NO_SANITIZING;
+    private Map<Node, String> nodeNameCacheMap;
 
     public YamlScriptModelBuilder() {
         yamlParser = new Yaml();
@@ -56,16 +61,16 @@ public class YamlScriptModelBuilder {
     }
 
     public YamlScriptModel build(String unsafeSourceCode) {
-
+        nodeNameCacheMap = new HashMap<>();
         YamlScriptModel model = new YamlScriptModel();
         try {
             YamlSanitizerContext context = new YamlSanitizerContext();
             String escapedSource = unsafeSourceCode;
             for (YamlSanitizer yamlSanitizer : this.sanitizers) {
-                escapedSource = yamlSanitizer.sanitize(escapedSource,context);
+                escapedSource = yamlSanitizer.sanitize(escapedSource, context);
             }
             model.getMessages().addAll(context.getSanitizerMessages());
-            
+
             StringReader reader = new StringReader(escapedSource);
 
             YamlNode root = model.getRootNode();
@@ -89,7 +94,8 @@ public class YamlScriptModelBuilder {
             YamlError error = new YamlError(start, end, message);
             model.errors.add(error);
         }
-
+        // clean up
+        nodeNameCacheMap.clear();
         return model;
     }
 
@@ -100,6 +106,18 @@ public class YamlScriptModelBuilder {
     }
 
     private void buildNode(YamlScriptModel model, YamlNode parent, Node node) {
+        String found = nodeNameCacheMap.get(node);
+        if (found != null) {
+            /* exists already - do not build again, snake yaml parser does hold the object only ONE time, so we
+             * have to do same way */
+            YamlNode yamlNode = new YamlNode("<alias to existing anchor>" + resolveName(node));
+            yamlNode.pos=parent.getPosition();
+            yamlNode.end=parent.getEnd();
+            
+            parent.getChildren().add(yamlNode);
+            return;
+        }
+        nodeNameCacheMap.put(node, UNDEFINED_NAME);
         if (node instanceof MappingNode) {
             appendMappings(model, parent, (MappingNode) node);
             return;
@@ -125,14 +143,22 @@ public class YamlScriptModelBuilder {
     }
 
     protected String resolveName(Node node, int count) {
-        String name = internalResolveName(node, count);
+        String name = nodeNameCacheMap.get(node);
+        if (name == null || UNDEFINED_NAME.equals(name)) {
+            name = internalResolveName(node, count);
+        }
         if (DEBUG) {
             name = node.getClass().getSimpleName() + ":" + name;
         }
+        nodeNameCacheMap.put(node, name);
         return name;
     }
 
     private String internalResolveName(Node node, int count) {
+        if (node instanceof AnchorNode) {
+            AnchorNode an = (AnchorNode) node;
+            return internalResolveName(an.getRealNode(), count);
+        }
         if (node instanceof ScalarNode) {
             return ((ScalarNode) node).getValue();
         }
@@ -173,6 +199,7 @@ public class YamlScriptModelBuilder {
             YamlNode yamlkeyNode = createYamlNodeAndAddToParent(model, parent, keyNode, count++, valueCount);
 
             Node valNode = nodeTuple.getValueNode();
+            // the value node is added the created YAML node
             createYamlNodeAndAddToParent(model, yamlkeyNode, valNode, -1, -1);
         }
     }
@@ -182,6 +209,7 @@ public class YamlScriptModelBuilder {
         if (isShown(node, maxCount)) {
             yamlNodeToAppendNext = buildShownNode(model, parent, node, count);
         } else {
+            // node is not shown, so ignore and just show children...
             buildNode(model, parent, node);
         }
 
@@ -214,6 +242,9 @@ public class YamlScriptModelBuilder {
     }
 
     private boolean isShown(Node node, int maxCount) {
+        if (node instanceof AnchorNode) {
+            return true;
+        }
         if (node instanceof ScalarNode) {
             return true;
         }

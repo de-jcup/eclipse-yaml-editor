@@ -17,6 +17,7 @@ package de.jcup.yamleditor.script;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -24,6 +25,7 @@ import java.util.SortedSet;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.jcup.yamleditor.TestScriptLoader;
 import de.jcup.yamleditor.script.YamlScriptModel.FoldingPosition;
 
 public class YamlScriptModelBuilderTest {
@@ -35,6 +37,57 @@ public class YamlScriptModelBuilderTest {
         builderToTest = new YamlScriptModelBuilder().setCalculateFoldings(true);
     }
 
+    @Test
+    public void bugfix_93_working_sequence_before_on_build() throws IOException{
+        /* prepare */
+        String content = TestScriptLoader.loadScriptFromTestScripts("bugfixes/issue-93/stackoverflow-93working-sequence.yaml");
+        
+        /* execute */
+        YamlScriptModel result = builderToTest.build(content);
+        
+        /* test */
+        assertNotNull(result);
+        assertFalse(result.hasErrors());
+    }
+
+    @Test
+    public void bugfix_93_stackoverflow_on_build() throws IOException{
+        /* prepare */
+        String content = TestScriptLoader.loadScriptFromTestScripts("bugfixes/issue-93/stackoverflow-93.yaml");
+        
+        /* execute */
+        YamlScriptModel result = builderToTest.build(content);
+        
+        /* test */
+        assertNotNull(result);
+        assertFalse(result.hasErrors());
+        List<YamlNode> children = result.getRootNode().getChildren();
+        
+        assertNotNull(children);
+        assertEquals(1,children.size()); // env-vars:
+        
+        children = children.iterator().next().getChildren();
+        
+        assertNotNull(children);
+        assertEquals(3,children.size()); // expect all 3 list entries
+        
+        
+    }
+    
+    @Test
+    public void bugfix_93simplified_stackoverflow_on_build() throws IOException{
+        /* prepare */
+        String content = TestScriptLoader.loadScriptFromTestScripts("bugfixes/issue-93/stackoverflow-93simplified.yaml");
+        
+        /* execute */
+        YamlScriptModel result = builderToTest.build(content);
+        
+        /* test */
+        assertNotNull(result);
+        assertFalse(result.hasErrors());
+    }
+    
+    
     @Test
     public void bugfix_72_outline_simple_kubernetes_example() {
         /* prepare */

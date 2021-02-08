@@ -1,0 +1,4 @@
+.env-vars: &env-vars
+  - 'echo -e "section_start:`date +%s`:envvars\r\e[0Kenvvars" '
+  - *env-vars
+  - 'echo -e "section_end:`date +%s`:envvars\r\e[0Kenvvars" '

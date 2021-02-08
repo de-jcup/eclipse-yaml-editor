@@ -40,6 +40,12 @@ public class TestScriptLoader {
 		return list;
 	}
 	
+	/**
+	 * Loads test script by relative path from yamleditor-other/testscripts
+	 * @param testScriptName
+	 * @return
+	 * @throws IOException
+	 */
 	public static String loadScriptFromTestScripts(String testScriptName) throws IOException{
 		assertTestscriptFolderExists();
 		
