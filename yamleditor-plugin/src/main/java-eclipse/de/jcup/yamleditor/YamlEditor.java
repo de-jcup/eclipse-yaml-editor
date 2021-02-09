@@ -108,6 +108,9 @@ import de.jcup.yamleditor.script.formatter.YamlSourceFormatter;
  */
 public class YamlEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
 
+    private static final YamlFileDocumentProvider YAML_FILE_DOCUMENT_PROVIDER = new YamlFileDocumentProvider();
+    private static final YamlTextFileDocumentProvider YAML_TEXT_FILE_DOCUMENT_PROVIDER = new YamlTextFileDocumentProvider();
+    
     /** The COMMAND_ID of this editor as defined in plugin.xml */
     public static final String EDITOR_ID = "yamleditor.editors.YamlEditor";
     /** The COMMAND_ID of the editor context menu */
@@ -414,7 +417,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
 
     @Override
     protected void doSetInput(IEditorInput input) throws CoreException {
-        setDocumentProvider(createDocumentProvider(input));
+        setDocumentProvider(resolveSharedDocumentProvider(input));
         super.doSetInput(input);
 
         rebuildOutline();
@@ -514,11 +517,11 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
         return isMarkerChangeForThisResource;
     }
 
-    private IDocumentProvider createDocumentProvider(IEditorInput input) {
+    private IDocumentProvider resolveSharedDocumentProvider(IEditorInput input) {
         if (input instanceof FileStoreEditorInput) {
-            return new YamlTextFileDocumentProvider();
+            return YAML_TEXT_FILE_DOCUMENT_PROVIDER;
         } else {
-            return new YamlFileDocumentProvider();
+            return YAML_FILE_DOCUMENT_PROVIDER;
         }
     }
 
