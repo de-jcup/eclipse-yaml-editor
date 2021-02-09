@@ -1,7 +1,6 @@
 ![Eclipse YAML editor logo](https://github.com/de-jcup/eclipse-yaml-editor/raw/master/yamleditor-plugin/icons/yaml-editor-logo.png "Eclipse YAML editor")
 
-[![Build status:](https://travis-ci.org/de-jcup/eclipse-yaml-editor.svg?branch=master)](https://travis-ci.org/de-jcup/eclipse-yaml-editor)
-
+![Java CI with Gradle](https://github.com/de-jcup/eclipse-yaml-editor/workflows/Java%20CI%20with%20Gradle/badge.svg)
 ### About
 This is a YAML editor for eclipse. Project is hosted at https://github.com/de-jcup/eclipse-yaml-editor.
 
