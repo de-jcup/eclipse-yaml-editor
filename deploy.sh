@@ -1,4 +1,9 @@
 #!/bin/bash
+# SPDX-License-Identifier: Apache 2.0
+
+# Version 1.0
+# -----------
+# for origin file refer to https://github.com/de-jcup/p2-updatesite-github-pages-automation
 
 #
 # How it works

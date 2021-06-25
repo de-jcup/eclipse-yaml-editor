@@ -21,5 +21,5 @@ Import-Package: org.eclipse.ui,
  org.eclipse.ui.texteditor.templates
 Bundle-ClassPath: .,
  libs/de-jcup-eclipse-commons.jar,
- libs/snakeyaml-1.24.jar
+ libs/snakeyaml-1.29.jar
 Automatic-Module-Name: de.jcup.yamleditor
