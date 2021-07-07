@@ -742,10 +742,10 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
                 int whitespaceOffsetAdd = whitespaces.length();
                 if ("#".equals(foundCode.toString())) {
                     /* comment before */
-                    doc.replace(offset + whitespaceOffsetAdd, 2, "");
+                    doc.replace(offset + whitespaceOffsetAdd, 1, "");
                 } else {
                     /* not commented */
-                    doc.replace(offset, 0, "# ");
+                    doc.replace(offset, 0, "#");
                 }
 
             } catch (BadLocationException e) {
