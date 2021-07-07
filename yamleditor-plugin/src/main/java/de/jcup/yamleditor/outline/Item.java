@@ -16,6 +16,8 @@
  package de.jcup.yamleditor.outline;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,7 +29,7 @@ public class Item {
 	int length;
 	int endOffset;
 	private List<Item> children=new ArrayList<>();
-	Item parent;
+	private Item parent;
 	
 	/**
 	 * @return item type , or <code>null</code>
@@ -109,4 +111,37 @@ public class Item {
 	public boolean isRoot() {
 		return false;
 	}
+
+    public String createKeyFullPath() {
+        StringBuilder sb = new StringBuilder();
+        List<Item> itemList = new ArrayList<Item>();
+        Item render = this;
+        while (render!=null) {
+            if (render.hasChildren() && ! render.isRoot()) {
+                itemList.add(render);
+            }
+            render=render.getParent();
+        }
+        Collections.reverse(itemList);
+
+        for (Iterator<Item> it = itemList.iterator();it.hasNext();) {
+            Item item = it.next();
+            sb.append(item.getName());
+            if (it.hasNext()) {
+                sb.append('.');
+            }
+        }
+        
+        return sb.toString();
+    }
+
+    /**
+     * Add child to parent and set this as the parent to the child
+     * @param child
+     */
+    public void add(Item child) {
+        children.add(child);
+        child.parent = this;
+    }
+
 }

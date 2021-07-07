@@ -15,6 +15,10 @@
  */
 package de.jcup.yamleditor.outline;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -48,6 +52,7 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
     private static ImageDescriptor IMG_DESC_NOT_LINKED =createImageDescriptor("/icons/outline/sync_broken.png");
     private static ImageDescriptor IMG_DESC_EXPAND_ALL = createImageDescriptor("/icons/expandall.png");
     private static ImageDescriptor IMG_DESC_COLLAPSE_ALL = createImageDescriptor("/icons/collapseall.png");
+    private static ImageDescriptor IMG_DESC_COPY_FULLPATH_TO_CLIPBOARD = createImageDescriptor("/icons/outline/copy_fullpath_to_clipboard.png");
 
     private YamlEditorTreeContentProvider contentProvider;
     private Object input;
@@ -87,10 +92,13 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
         CollapseAllAction collapseAllAction = new CollapseAllAction();
         ExpandSelectionAction expandSelectionAction = new ExpandSelectionAction();
         CollapseSelectionAction collapseSelectionAction = new CollapseSelectionAction();
+        CopyFullKeyPathToClipboardAction copyFullKeyPathToClipboardAction = new CopyFullKeyPathToClipboardAction();
         
         MenuManager menuMgr = new MenuManager();
         menuMgr.add(expandSelectionAction);
         menuMgr.add(collapseSelectionAction);
+        menuMgr.add(new Separator("clipboardGroup"));
+        menuMgr.add(copyFullKeyPathToClipboardAction);
         
         Menu menu = menuMgr.createContextMenu(viewer.getTree());
         viewer.getControl().setMenu(menu);
@@ -114,6 +122,7 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
         toolBarManager.add(expandAllAction);
         toolBarManager.add(collapseAllAction);
         toolBarManager.add(toggleLinkingAction);
+        toolBarManager.add(copyFullKeyPathToClipboardAction);
 
         IMenuManager viewMenuManager = actionBars.getMenuManager();
         viewMenuManager.add(new Separator("EndFilterGroup")); //$NON-NLS-1$
@@ -125,6 +134,8 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
         viewMenuManager.add(new Separator("treeSelectionGroup")); //$NON-NLS-1$
         viewMenuManager.add(expandSelectionAction);
         viewMenuManager.add(collapseSelectionAction);
+        viewMenuManager.add(new Separator("clipboardGroup")); //$NON-NLS-1$
+        viewMenuManager.add(copyFullKeyPathToClipboardAction);
 
         /*
          * when no input is set on init state - let the editor rebuild outline (async)
@@ -260,6 +271,31 @@ public class YamlEditorContentOutlinePage extends ContentOutlinePage implements 
                 return ;
             }
             getTreeViewer().collapseToLevel(element,TreeViewer.ALL_LEVELS);
+        }
+       
+    }
+    
+    class CopyFullKeyPathToClipboardAction extends Action {
+
+        private CopyFullKeyPathToClipboardAction() {
+            setImageDescriptor(IMG_DESC_COPY_FULLPATH_TO_CLIPBOARD);
+            setText("Copy qualified key to clipboard");
+            setToolTipText("Copy qualified key to clipboard.\n"
+                    + "Only the selected node and its parents are checked. Select the deepest key node to copy the full path.");
+        }
+
+        @Override
+        public void run() {
+            Object element = getFirstSelectedElement();
+            if (element instanceof Item) {
+                Item item = (Item) element;
+                String keyFullPath = item.createKeyFullPath();
+                
+                StringSelection selection = new StringSelection(keyFullPath);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, selection);
+                
+            }
         }
        
     }

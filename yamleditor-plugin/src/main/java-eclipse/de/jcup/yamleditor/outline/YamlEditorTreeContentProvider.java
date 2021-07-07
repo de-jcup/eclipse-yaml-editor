@@ -66,10 +66,11 @@ public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 	public Object getParent(Object element) {
 		if (element instanceof Item) {
 			Item item = (Item) element;
-			if (item.parent == null || item.parent.isRoot()) {
+			Item parent = item.getParent();
+			if (parent == null || parent.isRoot()) {
 				return null;
 			}
-			return item.parent;
+			return parent;
 		}
 		return null;
 	}
@@ -103,15 +104,14 @@ public class YamlEditorTreeContentProvider implements ITreeContentProvider {
 	}
 
 	protected void buildItems(Item parent, List<YamlNode> nodes) {
-		List<Item> children = parent.getChildren();
 		for (YamlNode yamlNode : nodes) {
 			Item child = new Item();
 			child.offset = yamlNode.getPosition();
 			child.endOffset = yamlNode.getEnd();
 			child.length = yamlNode.getLengthToNameEnd();
 			child.name = yamlNode.getName();
-			children.add(child);
-			child.parent = parent;
+			parent.add(child);
+			
 			appendDebugIfAvailable(yamlNode, child);
 
 			if (yamlNode.hasChildren()) {
