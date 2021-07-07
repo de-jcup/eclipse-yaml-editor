@@ -6,6 +6,9 @@
    <feature url="features/de.jcup.yamleditor_1.7.1.jar" id="de.jcup.yamleditor" version="1.7.1">
       <category name="de.jcup.yamleditor.category.stable"/>
    </feature>
+   <feature url="features/de.jcup.yamleditor_1.8.0.jar" id="de.jcup.yamleditor" version="1.8.0">
+      <category name="de.jcup.yamleditor.category.stable"/>
+   </feature>
    <category-def name="de.jcup.yamleditor.category.stable" label="Stable">
       <description>
          Stable releases
