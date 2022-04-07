@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.sound.sampled.LineListener;
-
 /**
  * Yaml entry folding should work then when the "3 line must" strategy is used:
  * Example

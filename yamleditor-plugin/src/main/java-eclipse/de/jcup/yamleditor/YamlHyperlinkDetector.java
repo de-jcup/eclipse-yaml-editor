@@ -29,10 +29,8 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
  */
 public class YamlHyperlinkDetector extends AbstractHyperlinkDetector {
 
-	private IAdaptable adaptable;
 
 	YamlHyperlinkDetector(IAdaptable editor) {
-		this.adaptable = editor;
 	}
 
 	@Override

@@ -49,7 +49,6 @@ public class YamlDoubleQuoteRule implements IPredicateRule {
 			return Token.UNDEFINED;
 		}
 
-		int readBefore = -1;
 		int read = 0;
 		boolean foundClosing = false;
 		while ((read = slider.moveForward()) != ICharacterScanner.EOF) {
@@ -74,7 +73,6 @@ public class YamlDoubleQuoteRule implements IPredicateRule {
 			} else {
 				foundClosing = false;
 			}
-			readBefore = read;
 		}
 		if (foundClosing) {
 			return success;

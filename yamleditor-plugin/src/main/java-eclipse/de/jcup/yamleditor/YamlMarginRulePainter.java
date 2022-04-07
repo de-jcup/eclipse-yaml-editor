@@ -30,114 +30,114 @@ import org.eclipse.swt.graphics.Rectangle;
 
 public class YamlMarginRulePainter implements IPainter, PaintListener, ModifyListener {
 
-	private StyledText styledText;
-	private int cachedWidgetX = -1;
-	private boolean active = false;
+    private StyledText styledText;
+    private int cachedWidgetX = -1;
+    private boolean active = false;
 
-	private MarginPaintSetup setup;
-	private int pixels;
+    private MarginPaintSetup setup;
+    private int pixels;
 
-	public YamlMarginRulePainter(ITextViewer textViewer, MarginPaintSetup setup) {
-		styledText = textViewer.getTextWidget();
-		this.setup = setup;
-		
-		initialize();
-	}
+    public YamlMarginRulePainter(ITextViewer textViewer, MarginPaintSetup setup) {
+        styledText = textViewer.getTextWidget();
+        this.setup = setup;
 
-	private void initialize() {
-		computeWidgetX();
-		redrawWidget();
-	}
+        initialize();
+    }
 
-	/**
-	 * Computes and remembers the x-offset of the margin column for the current
-	 * widget font.
-	 */
-	private void computeWidgetX() {
-		int pixels = getCalculatedPixelsForOneCharacter();
+    private void initialize() {
+        computeWidgetX();
+        redrawWidget();
+    }
 
-		cachedWidgetX = pixels * setup.column;
-	}
+    /**
+     * Computes and remembers the x-offset of the margin column for the current
+     * widget font.
+     */
+    private void computeWidgetX() {
+        int pixels = getCalculatedPixelsForOneCharacter();
 
-	private int getCalculatedPixelsForOneCharacter() {
-		if (pixels!=-1){
-			return pixels;
-		}
-		GC gc = new GC(styledText);
-		pixels = gc.getFontMetrics().getAverageCharWidth();
-		gc.dispose();
-		return pixels;
-	}
+        cachedWidgetX = pixels * setup.column;
+    }
 
-	public void setX(int x){
-		if (x==cachedWidgetX){
-			return;
-		}
-		cachedWidgetX=x;
-		redrawWidget();
-	}
-	
-	public void deactivate(boolean redraw) {
-		if (!active) {
-			return;
-		}
-		active = false;
-		cachedWidgetX = -1;
-		styledText.removePaintListener(this);
-		if (redraw) {
-			redrawWidget();
-		}
-	}
+    private int getCalculatedPixelsForOneCharacter() {
+        if (pixels != -1) {
+            return pixels;
+        }
+        GC gc = new GC(styledText);
+        pixels = (int) gc.getFontMetrics().getAverageCharacterWidth();
+        gc.dispose();
+        return pixels;
+    }
 
-	protected void redrawWidget() {
-		styledText.redraw();
-	}
+    public void setX(int x) {
+        if (x == cachedWidgetX) {
+            return;
+        }
+        cachedWidgetX = x;
+        redrawWidget();
+    }
 
-	public void dispose() {
-		styledText = null;
-	}
+    public void deactivate(boolean redraw) {
+        if (!active) {
+            return;
+        }
+        active = false;
+        cachedWidgetX = -1;
+        styledText.removePaintListener(this);
+        if (redraw) {
+            redrawWidget();
+        }
+    }
 
-	public void paint(int reason) {
-		if (active) {
-			if (CONFIGURATION == reason || INTERNAL == reason) {
-				redrawWidget();
-			}
-			return;
-		}
-		active = true;
-		styledText.addPaintListener(this);
-		if (cachedWidgetX == -1){
-			computeWidgetX();
-		}
-		redrawWidget();
-	}
+    protected void redrawWidget() {
+        styledText.redraw();
+    }
 
-	public void paintControl(PaintEvent e) {
-		if (styledText != null) {
-			int x = cachedWidgetX - styledText.getHorizontalPixel();
-			if (x >= 0) {
-				Rectangle area = styledText.getClientArea();
-				e.gc.setForeground(setup.lineColor);
-				e.gc.setLineStyle(setup.lineStyle);
-				e.gc.setLineWidth(setup.lineWidth);
-				
-				/* paint line */
-				e.gc.drawLine(x, 0, x, area.height);
-				
-			}
-		}
-	}
+    public void dispose() {
+        styledText = null;
+    }
 
-	public void setPositionManager(IPaintPositionManager manager) {
-	}
+    public void paint(int reason) {
+        if (active) {
+            if (CONFIGURATION == reason || INTERNAL == reason) {
+                redrawWidget();
+            }
+            return;
+        }
+        active = true;
+        styledText.addPaintListener(this);
+        if (cachedWidgetX == -1) {
+            computeWidgetX();
+        }
+        redrawWidget();
+    }
 
-	public void modifyText(ModifyEvent e) {
-	}
+    public void paintControl(PaintEvent e) {
+        if (styledText != null) {
+            int x = cachedWidgetX - styledText.getHorizontalPixel();
+            if (x >= 0) {
+                Rectangle area = styledText.getClientArea();
+                e.gc.setForeground(setup.lineColor);
+                e.gc.setLineStyle(setup.lineStyle);
+                e.gc.setLineWidth(setup.lineWidth);
 
-	public static class MarginPaintSetup {
-		public int column = 1;
-		public Color lineColor;
-		public int lineStyle = SWT.LINE_SOLID;
-		public int lineWidth = 1;
-	}
+                /* paint line */
+                e.gc.drawLine(x, 0, x, area.height);
+
+            }
+        }
+    }
+
+    public void setPositionManager(IPaintPositionManager manager) {
+    }
+
+    public void modifyText(ModifyEvent e) {
+    }
+
+    public static class MarginPaintSetup {
+        public int column = 1;
+        public Color lineColor;
+        public int lineStyle = SWT.LINE_SOLID;
+        public int lineWidth = 1;
+    }
 }
