@@ -876,6 +876,7 @@ public class YamlEditor extends TextEditor implements StatusMessageSupport, IRes
         config.setScalarStyle(scalarStyle);
         config.setPreventTypeConversion(getPreferences().isPreventingTypeConversionOnFormat());
         config.setRestoreCommentsEnabled(getPreferences().isSourceFormatterRescuingComments());
+        config.setKeepBlankLines(!getPreferences().isSourceFormatterClearingAllBlankLines());
 
         String output = new YamlSourceFormatter().format(code, config);
 

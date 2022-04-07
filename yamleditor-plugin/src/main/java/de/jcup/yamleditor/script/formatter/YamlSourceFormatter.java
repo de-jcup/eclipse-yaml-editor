@@ -29,10 +29,6 @@ import org.yaml.snakeyaml.resolver.Resolver;
 public class YamlSourceFormatter {
     private static final String START_BLOCK = "---";
 
-    public String format(String source) {
-        return format(source, null);
-    }
-
     public String format(String source, YamlSourceFormatterConfig config) {
         if (config == null) {
             config = new DefaultYamlSourceFormatterConfig();
@@ -41,13 +37,15 @@ public class YamlSourceFormatter {
 
         /* backup meta info */
         boolean restoreCommentsEnabled = config.isRestoreCommentsEnabled();
+        boolean restoreBlankLines = config.isKeepingBlankLines();
+
         CommentsRescueContext rescueContext = null;
-        if (restoreCommentsEnabled) {
+        if (restoreCommentsEnabled || restoreBlankLines) {
             rescueContext = backupCommentsAndMetaData(source, snakeConfig);
         }
 
         /* parse + pretty print */
-        Yaml yamlParser = createYaml(new DumperOptions(),snakeConfig);
+        Yaml yamlParser = createYaml(new DumperOptions(), snakeConfig);
         Iterable<Object> yamlDocuments = yamlParser.loadAll(source);
         String formatted = formatDocuments(yamlDocuments, snakeConfig);
 
@@ -68,8 +66,54 @@ public class YamlSourceFormatter {
 
             result = appendOrphanedComments(result, rescueContext, snakeConfig);
         }
-        return result.trim();
+        if (restoreBlankLines) {
+            result = restoreBlankLines(result, rescueContext, snakeConfig);
+        }
+        result = removeLastTrailingNewLine(result);
+        return result;
 
+    }
+
+    private String removeLastTrailingNewLine(String formatted) {
+        if (!formatted.endsWith("\n")) {
+            return formatted;
+        }
+        return formatted.substring(0, formatted.length() - 1);
+    }
+
+    private String restoreBlankLines(String formatted, CommentsRescueContext rescueContext, SnakeYamlConfig snakeConfig) {
+        String[] originLines = rescueContext.originSourceLines;
+        if (originLines == null || originLines.length == 0) {
+            return formatted;
+        }
+        List<Integer> numberListForBlankLines = new ArrayList<Integer>();
+        int i = -1; // -1 so we start inside with 0 when doing i++
+        for (String originLine : originLines) {
+            i++;
+            if (originLine.trim().length() > 0) {
+                continue;
+            }
+            numberListForBlankLines.add(Integer.valueOf(i));
+        }
+        if (numberListForBlankLines.isEmpty()) {
+            /* no blank lines detected... */
+            return formatted;
+        }
+
+        String[] linesFormatted = formatted.split("\n");
+
+        StringBuilder sb = new StringBuilder();
+        int lineNr = 0;
+        for (String line : linesFormatted) {
+            while (numberListForBlankLines.contains(Integer.valueOf(lineNr))) {
+                sb.append("\n");
+                lineNr++;
+            }
+            sb.append(line);
+            sb.append("\n");
+            lineNr++;
+        }
+        return sb.toString();
     }
 
     private String appendOrphanedComments(String result, CommentsRescueContext context, SnakeYamlConfig internalConfig) {
@@ -79,9 +123,9 @@ public class YamlSourceFormatter {
         StringBuilder sb = new StringBuilder();
         sb.append(result.trim());
         sb.append("\n");
-        sb.append("# ----------------\n");
-        sb.append("# Orphan comments:\n");
-        sb.append("# ----------------\n");
+        sb.append("# ------------------\n");
+        sb.append("# Orphaned comments:\n");
+        sb.append("# ------------------\n");
         for (CommentMarker marker : context.commentMarkers) {
             if (marker.fullLine) {
                 sb.append("# Was at begin of line:" + marker.lineNr + " :");
@@ -351,7 +395,7 @@ public class YamlSourceFormatter {
         options.setPrettyFlow(config.isPrettyFlow());
         options.setDefaultScalarStyle(config.getScalarStyle());
 
-        Yaml yaml = createYaml(options,config);
+        Yaml yaml = createYaml(options, config);
 
         StringBuilder sb = new StringBuilder();
 
@@ -368,13 +412,13 @@ public class YamlSourceFormatter {
 
     private Yaml createYaml(DumperOptions options, SnakeYamlConfig config) {
         Resolver resolver = null;
-        
-        if (config!=null && config.isPreventingTypeConversionOnFormat()) {
+
+        if (config != null && config.isPreventingTypeConversionOnFormat()) {
             resolver = new TypeConversionPreventionSnakeYamlResolver();
-        }else {
+        } else {
             resolver = new Resolver();
         }
-        
+
         return new Yaml(new Constructor(), new Representer(), options, new LoaderOptions(), resolver);
     }
 

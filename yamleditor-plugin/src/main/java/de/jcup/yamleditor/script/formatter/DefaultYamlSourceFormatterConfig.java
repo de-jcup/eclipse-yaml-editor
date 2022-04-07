@@ -21,12 +21,14 @@ public class DefaultYamlSourceFormatterConfig implements YamlSourceFormatterConf
     private static final int DEFAULT_MAX_LINE_LENGTH = 80;
     private static final int DEFAULT_INDENT = 2;
     private static final boolean DEFAULT_RESTORE_COMMENTS_ENABLED =true;
+    private static final boolean DEFAULT_RESTORE_BLANK_LINES_ENABLED =true;
     
     private int indent=DEFAULT_INDENT;
     private int maxLineLength=DEFAULT_MAX_LINE_LENGTH;
     private YamlEdtiorFormatterScalarStyle scalarStyle = DEFAULT_SCALAR_STYLE;
     private boolean restoreCommentsEnabled=DEFAULT_RESTORE_COMMENTS_ENABLED;
     private boolean preventTypeConversion;
+    private boolean keepBlankLines=DEFAULT_RESTORE_BLANK_LINES_ENABLED;
     
     public void setIndent(int indent) {
         this.indent = indent;
@@ -70,6 +72,14 @@ public class DefaultYamlSourceFormatterConfig implements YamlSourceFormatterConf
     @Override
     public boolean isPreventingTypeConversion() {
         return preventTypeConversion;
+    }
+
+    public void setKeepBlankLines(boolean keep) {
+        this.keepBlankLines=keep;
+    }
+    
+    public boolean isKeepingBlankLines() {
+        return keepBlankLines;
     }
 
 }

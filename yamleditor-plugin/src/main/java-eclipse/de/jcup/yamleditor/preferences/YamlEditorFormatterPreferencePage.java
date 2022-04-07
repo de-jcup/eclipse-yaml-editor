@@ -77,6 +77,12 @@ public class YamlEditorFormatterPreferencePage extends FieldEditorPreferencePage
                 + "(Full line comments will be at same line number as before, comments\n"
                 + "at end of a yaml line are tried to be added at end of those lines again)");
         
+        BooleanFieldEditor clearBlankLinesEditor = new BooleanFieldEditor(P_SOURCE_FORMAT_CLEAR_ALL_BLANK_LINES_ENABLED.getId(),
+                "Clear all blank lines", parent);
+        addField(clearBlankLinesEditor);
+        clearBlankLinesEditor.getDescriptionControl(parent).setToolTipText(
+                "When enabled blank lines will be removed.");
+        
         BooleanFieldEditor tcpOnFormatEditor = new BooleanFieldEditor(P_PREVENT_TYPE_CONVERSION_ON_FORMAT_ENABLED.getId(), "Prevent type conversion", parent);
         addField(tcpOnFormatEditor);
         tcpOnFormatEditor.getDescriptionControl(parent)

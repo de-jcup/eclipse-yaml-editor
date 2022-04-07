@@ -27,4 +27,6 @@ public interface YamlSourceFormatterConfig {
 
     boolean isPreventingTypeConversion();
     
+    boolean isKeepingBlankLines();
+    
 }

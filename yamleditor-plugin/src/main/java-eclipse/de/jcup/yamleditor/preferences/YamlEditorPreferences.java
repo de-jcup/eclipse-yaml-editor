@@ -185,6 +185,10 @@ public class YamlEditorPreferences {
     public boolean isSourceFormatterRescuingComments() {
         return getPreferenceStore().getBoolean(P_SOURCE_FORMAT_RESCUE_COMMENTS_ENABLED.getId());
     }
+    
+    public boolean isSourceFormatterClearingAllBlankLines() {
+        return getPreferenceStore().getBoolean(P_SOURCE_FORMAT_CLEAR_ALL_BLANK_LINES_ENABLED.getId());
+    }
 
     public boolean isGoTemplateSupportEnabled() {
         return getPreferenceStore().getBoolean(P_GO_TEMPLATE_SUPPORT_ENABLED.getId());
